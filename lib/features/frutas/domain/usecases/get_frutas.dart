@@ -1,0 +1,3 @@
+import '../entities/fruta.dart';
+import '../repositories/frutas_repository.dart';
+class GetFrutasUseCase { final FrutaRepository repository; GetFrutasUseCase(this.repository); Future<List<Fruta>> call() => repository.getAll(); }

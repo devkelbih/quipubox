@@ -1,105 +1,159 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import '../../../../core/state/dispose_safe_notifier.dart';
 import '../../domain/entities/app_user.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../../domain/usecases/get_current_user_usecase.dart';
+import '../../domain/usecases/get_current_session_usecase.dart';
+import '../../domain/usecases/get_profile_usecase.dart';
 import '../../domain/usecases/login_with_google_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 
-class AuthViewModel extends ChangeNotifier {
-  final AuthRepository authRepository;
+class AuthViewModel extends DisposeSafeNotifier {
+  final GetCurrentSessionUseCase getCurrentSessionUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
   final LogoutUseCase logoutUseCase;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
-
+  final GetProfileUseCase getProfileUseCase;
   StreamSubscription<AuthState>? _authSubscription;
+  bool _handlingAuthChange = false;
 
   AuthViewModel({
-    required this.authRepository,
+    required this.getCurrentSessionUseCase,
     required this.loginWithGoogleUseCase,
     required this.logoutUseCase,
-    required this.getCurrentUserUseCase,
+    required this.getProfileUseCase,
   }) {
-    _init();
+    initialize();
   }
 
   AppUser? user;
   bool isLoading = true;
+  bool isSaving = false;
+  bool isDeleting = false;
   String? errorMessage;
+  bool get hasSupabaseSession => getCurrentSessionUseCase() != null;
+  bool get isAuthenticated => hasSupabaseSession && user != null;
+  int get currentCompanyId => user?.idEmpresa ?? 1;
 
-  bool get isAuthenticated => user != null;
-
-  void _init() {
-    user = getCurrentUserUseCase();
-    _listenAuthChanges();
-    isLoading = false;
-    notifyListeners();
+  Future<void> initialize() async {
+    debugPrint('AUTH INIT START');
+    try {
+      _listenAuthChanges();
+      final session = getCurrentSessionUseCase();
+      debugPrint('SESSION: ${session == null ? 'NO' : 'SI'}');
+      if (session == null) {
+        user = null;
+        errorMessage = null;
+        return;
+      }
+      final ok = await loadProfile();
+      if (!ok) await _safeSignOut();
+    } catch (error) {
+      debugPrint('AUTH INIT ERROR: $error');
+      user = null;
+      errorMessage = _clean(error);
+    } finally {
+      debugPrint('AUTH INIT FINISH');
+      _finishLoading();
+    }
   }
 
   void _listenAuthChanges() {
-    _authSubscription = authRepository.authStateChanges.listen((data) {
-      final session = data.session;
-
-      if (session != null) {
-        print('==============================');
-        print('ACCESS TOKEN');
-
-        // Esto no tiene límite de caracteres y forzará a la consola a mostrarlo todo
-        developer.log(session.accessToken, name: 'SUPABASE_AUTH');
-
-        print('==============================');
-
-        print('REFRESH TOKEN');
-        print(session.refreshToken);
-        print('==============================');
-
-        print('USER ID');
-        print(session.user.id);
-        print('==============================');
+    _authSubscription?.cancel();
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      data,
+    ) async {
+      if (_handlingAuthChange) return;
+      _handlingAuthChange = true;
+      try {
+        if (data.session == null) {
+          user = null;
+          errorMessage = null;
+          _finishLoading();
+          return;
+        }
+        final ok = await loadProfile();
+        if (!ok && hasSupabaseSession) await _safeSignOut();
+      } finally {
+        _handlingAuthChange = false;
       }
-
-      user = session == null ? null : getCurrentUserUseCase();
-
-      isLoading = false;
-      errorMessage = null;
-
-      notifyListeners();
     });
   }
 
-  Future<void> loginWithGoogle() async {
+  Future<bool> loadProfile() async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
+    try {
+      user = await getProfileUseCase().timeout(const Duration(seconds: 20));
+      if (user?.estadoAcceso != 'activo') {
+        errorMessage = 'Tu usuario no está autorizado para ingresar.';
+        user = null;
+        return false;
+      }
+      return true;
+    } on TimeoutException {
+      user = null;
+      errorMessage =
+          'La validación de sesión tardó demasiado. Revisa internet e intenta nuevamente.';
+      return false;
+    } on Object catch (error) {
+      user = null;
+      errorMessage = _clean(error);
+      return false;
+    } finally {
+      _finishLoading();
+    }
+  }
 
+  Future<bool> loginWithGoogle() async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
     try {
       await loginWithGoogleUseCase();
-    } catch (e) {
-      errorMessage = e.toString();
-      isLoading = false;
-      notifyListeners();
+      return true;
+    } on Object catch (error) {
+      errorMessage = _clean(error);
+      return false;
+    } finally {
+      _finishLoading();
     }
   }
 
   Future<void> logout() async {
     isLoading = true;
     notifyListeners();
-
     try {
       await logoutUseCase();
       user = null;
       errorMessage = null;
-    } catch (e) {
-      errorMessage = e.toString();
+    } on Object catch (error) {
+      errorMessage = _clean(error);
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _finishLoading();
     }
   }
 
+  Future<void> _safeSignOut() async {
+    try {
+      await logoutUseCase();
+    } on Object catch (error) {
+      debugPrint('No se pudo cerrar sesión de forma segura: $error');
+    } finally {
+      user = null;
+      _finishLoading();
+    }
+  }
+
+  void _finishLoading() {
+    isLoading = false;
+    notifyListeners();
+  }
+
+  String _clean(Object error) => error
+      .toString()
+      .replaceFirst('Exception: ', '')
+      .replaceFirst('AppException: ', '');
   @override
   void dispose() {
     _authSubscription?.cancel();

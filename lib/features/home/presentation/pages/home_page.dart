@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/app_routes.dart';
-import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/navigation/app_routes.dart';
+import '../../../../core/ui/widgets/app_scaffold.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
         ),
       ],
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go(AppRoutes.sedes),
+        onPressed: () => context.push(AppRoutes.sedes),
         icon: const Icon(Icons.add_rounded),
         label: const Text('Registrar'),
       ),
@@ -61,7 +61,10 @@ class _HeroPanel extends StatelessWidget {
     return Container(
       height: 230,
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(32), color: theme.colorScheme.primary),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        color: theme.colorScheme.primary,
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -69,7 +72,10 @@ class _HeroPanel extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.black.withValues(alpha: .82), Colors.black.withValues(alpha: .28)],
+                colors: [
+                  Colors.black.withValues(alpha: .82),
+                  Colors.black.withValues(alpha: .28),
+                ],
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
               ),
@@ -81,11 +87,20 @@ class _HeroPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Spacer(),
-                Text('Centro operativo logístico',
-                    style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                Text(
+                  'Centro operativo logístico',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                Text('Control de cargas, entregas, jabas, retornos y evidencias en campo.',
-                    style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .9))),
+                Text(
+                  'Control de cargas, entregas, jabas, retornos y evidencias en campo.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: .9),
+                  ),
+                ),
                 const SizedBox(height: 14),
                 const Wrap(
                   spacing: 8,
@@ -112,14 +127,38 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
-        Expanded(child: _QuickAction(icon: Icons.business_outlined, label: 'Sedes', route: AppRoutes.sedes)),
-        const SizedBox(width: 10),
-        Expanded(child: _QuickAction(icon: Icons.groups_outlined, label: 'Clientes', route: AppRoutes.clientes)),
-        const SizedBox(width: 10),
-        Expanded(child: _QuickAction(icon: Icons.category_outlined, label: 'Frutas', route: AppRoutes.frutas)),
-        const SizedBox(width: 10),
-        Expanded(child: _QuickAction(icon: Icons.inventory_2_outlined, label: 'Jabas', route: AppRoutes.tiposJaba)),
+      children: const [
+        Expanded(
+          child: _QuickAction(
+            icon: Icons.business_outlined,
+            label: 'Sedes',
+            route: AppRoutes.sedes,
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: _QuickAction(
+            icon: Icons.groups_outlined,
+            label: 'Clientes',
+            route: AppRoutes.clientes,
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: _QuickAction(
+            icon: Icons.category_outlined,
+            label: 'Frutas',
+            route: AppRoutes.frutas,
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: _QuickAction(
+            icon: Icons.inventory_2_outlined,
+            label: 'Jabas',
+            route: AppRoutes.tiposJaba,
+          ),
+        ),
       ],
     );
   }
@@ -130,18 +169,24 @@ class _QuickAction extends StatelessWidget {
   final String label;
   final String route;
 
-  const _QuickAction({required this.icon, required this.label, required this.route});
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: () => context.go(route),
+      onTap: () => context.push(route),
       borderRadius: BorderRadius.circular(22),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: .65),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: .65,
+          ),
           borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
@@ -169,10 +214,30 @@ class _MetricsGrid extends StatelessWidget {
       mainAxisSpacing: 14,
       childAspectRatio: 1.22,
       children: const [
-        _MetricCard(title: 'Jabas pendientes', value: '1,245', detail: '+82 hoy', icon: Icons.inventory_2_outlined),
-        _MetricCard(title: 'Entregas activas', value: '18', detail: '4 retrasadas', icon: Icons.local_shipping_outlined),
-        _MetricCard(title: 'Retornos', value: '856', detail: '94% efectividad', icon: Icons.assignment_turned_in_outlined),
-        _MetricCard(title: 'Incidencias', value: '7', detail: '2 críticas', icon: Icons.warning_amber_outlined),
+        _MetricCard(
+          title: 'Jabas pendientes',
+          value: '1,245',
+          detail: '+82 hoy',
+          icon: Icons.inventory_2_outlined,
+        ),
+        _MetricCard(
+          title: 'Entregas activas',
+          value: '18',
+          detail: '4 retrasadas',
+          icon: Icons.local_shipping_outlined,
+        ),
+        _MetricCard(
+          title: 'Retornos',
+          value: '856',
+          detail: '94% efectividad',
+          icon: Icons.assignment_turned_in_outlined,
+        ),
+        _MetricCard(
+          title: 'Incidencias',
+          value: '7',
+          detail: '2 críticas',
+          icon: Icons.warning_amber_outlined,
+        ),
       ],
     );
   }
@@ -242,7 +307,10 @@ class _DeliveryCard extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.black.withValues(alpha: .65), Colors.transparent],
+                      colors: [
+                        Colors.black.withValues(alpha: .65),
+                        Colors.transparent,
+                      ],
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                     ),
@@ -255,17 +323,32 @@ class _DeliveryCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(title,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18)),
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
+                          ),
+                        ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: .18),
                           borderRadius: BorderRadius.circular(99),
                         ),
-                        child: Text(status,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
+                        child: Text(
+                          status,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -277,19 +360,38 @@ class _DeliveryCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                Row(children: [
-                  Icon(Icons.route_outlined, color: theme.colorScheme.primary),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(route, style: const TextStyle(fontWeight: FontWeight.w800))),
-                ]),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.route_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        route,
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
-                Row(children: [
-                  Icon(Icons.inventory_2_outlined, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(detail)),
-                ]),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(detail)),
+                  ],
+                ),
                 const SizedBox(height: 14),
-                LinearProgressIndicator(value: progress, minHeight: 8, borderRadius: BorderRadius.circular(99)),
+                LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 8,
+                  borderRadius: BorderRadius.circular(99),
+                ),
               ],
             ),
           ),
@@ -309,11 +411,31 @@ class _TimelinePanel extends StatelessWidget {
         padding: EdgeInsets.all(18),
         child: Column(
           children: [
-            _TimelineItem(time: '22:15', title: 'Carga registrada', detail: 'Mala · 320 jabas'),
-            _TimelineItem(time: '23:40', title: 'Camión salió', detail: 'Destino Lima'),
-            _TimelineItem(time: '01:20', title: 'Llegada a Lima', detail: 'Mercado Mayorista'),
-            _TimelineItem(time: '02:05', title: 'Entrega validada', detail: 'Puesto 338 · evidencia tomada'),
-            _TimelineItem(time: '03:12', title: 'Retorno parcial', detail: '50/80 jabas recibidas'),
+            _TimelineItem(
+              time: '22:15',
+              title: 'Carga registrada',
+              detail: 'Mala · 320 jabas',
+            ),
+            _TimelineItem(
+              time: '23:40',
+              title: 'Camión salió',
+              detail: 'Destino Lima',
+            ),
+            _TimelineItem(
+              time: '01:20',
+              title: 'Llegada a Lima',
+              detail: 'Mercado Mayorista',
+            ),
+            _TimelineItem(
+              time: '02:05',
+              title: 'Entrega validada',
+              detail: 'Puesto 338 · evidencia tomada',
+            ),
+            _TimelineItem(
+              time: '03:12',
+              title: 'Retorno parcial',
+              detail: '50/80 jabas recibidas',
+            ),
           ],
         ),
       ),
@@ -326,7 +448,11 @@ class _TimelineItem extends StatelessWidget {
   final String title;
   final String detail;
 
-  const _TimelineItem({required this.time, required this.title, required this.detail});
+  const _TimelineItem({
+    required this.time,
+    required this.title,
+    required this.detail,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -335,22 +461,48 @@ class _TimelineItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(width: 48, child: Text(time, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w900, color: theme.colorScheme.primary))),
+        SizedBox(
+          width: 48,
+          child: Text(
+            time,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ),
         Column(
           children: [
-            Container(width: 11, height: 11, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle)),
-            Container(width: 2, height: 42, color: theme.colorScheme.outlineVariant),
+            Container(
+              width: 11,
+              height: 11,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+            Container(
+              width: 2,
+              height: 42,
+              color: theme.colorScheme.outlineVariant,
+            ),
           ],
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 18),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-              const SizedBox(height: 3),
-              Text(detail),
-            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 3),
+                Text(detail),
+              ],
+            ),
           ),
         ),
       ],
@@ -364,7 +516,12 @@ class _MetricCard extends StatelessWidget {
   final String detail;
   final IconData icon;
 
-  const _MetricCard({required this.title, required this.value, required this.detail, required this.icon});
+  const _MetricCard({
+    required this.title,
+    required this.value,
+    required this.detail,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -373,14 +530,28 @@ class _MetricCard extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(icon, color: theme.colorScheme.primary),
-          const Spacer(),
-          Text(value, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text(detail, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w800)),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: theme.colorScheme.primary),
+            const Spacer(),
+            Text(
+              value,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text(
+              detail,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -394,10 +565,19 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900))),
-      TextButton(onPressed: () {}, child: Text(action)),
-    ]);
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+          ),
+        ),
+        TextButton(onPressed: () {}, child: Text(action)),
+      ],
+    );
   }
 }
 
@@ -411,7 +591,9 @@ class _HeroChip extends StatelessWidget {
     return Chip(
       label: Text(text),
       backgroundColor: Colors.white.withValues(alpha: .18),
-      labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+      labelStyle: const TextStyle(
+        fontWeight: FontWeight.w800,
+      ),
       side: BorderSide.none,
     );
   }

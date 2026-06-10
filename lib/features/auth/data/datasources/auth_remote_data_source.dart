@@ -1,22 +1,15 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/config/app_config.dart';
+import '../../../../core/network/api_client.dart';
+import '../models/app_user_model.dart';
 
 class AuthRemoteDataSource {
-  final SupabaseClient client;
-
-  AuthRemoteDataSource(this.client);
-
-  Future<void> loginWithGoogle() async {
-    await client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: AppConfig.supabaseRedirectUrl,
-    );
-  }
-
-  Future<void> logout() => client.auth.signOut();
-
-  User? getCurrentUser() => client.auth.currentUser;
-
-  Stream<AuthState> get authStateChanges => client.auth.onAuthStateChange;
+  final ApiClient apiClient;
+  AuthRemoteDataSource(this.apiClient);
+  Session? get currentSession => Supabase.instance.client.auth.currentSession;
+  Stream<AuthState> get authStateChanges => Supabase.instance.client.auth.onAuthStateChange;
+  Future<void> loginWithGoogle() => Supabase.instance.client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: AppConfig.supabaseRedirectUrl);
+  Future<void> logout() => Supabase.instance.client.auth.signOut();
+  Future<AppUserModel> getProfile() async => AppUserModel.fromJson(await apiClient.get('/auth/profile') as Map<String, dynamic>);
 }

@@ -1,38 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-class SettingsViewModel extends ChangeNotifier {
-  static const _themeKey = 'theme_mode';
-
-  ThemeMode themeMode = ThemeMode.system;
-  bool get isDarkMode => themeMode == ThemeMode.dark;
-
-  SettingsViewModel() {
-    load();
-  }
-
-  Future<void> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getString(_themeKey);
-    themeMode = switch (value) {
-      'light' => ThemeMode.light,
-      'dark' => ThemeMode.dark,
-      _ => ThemeMode.system,
-    };
-    notifyListeners();
-  }
-
-  Future<void> toggleTheme() async {
-    themeMode = isDarkMode ? ThemeMode.light : ThemeMode.dark;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, themeMode == ThemeMode.dark ? 'dark' : 'light');
-    notifyListeners();
-  }
-
-  Future<void> useSystemTheme() async {
-    themeMode = ThemeMode.system;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, 'system');
-    notifyListeners();
-  }
-}
+import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../domain/usecases/get_theme_mode_usecase.dart';
+import '../../domain/usecases/save_theme_mode_usecase.dart';
+class SettingsViewModel extends DisposeSafeNotifier { final GetThemeModeUseCase getThemeModeUseCase; final SaveThemeModeUseCase saveThemeModeUseCase; SettingsViewModel({required this.getThemeModeUseCase, required this.saveThemeModeUseCase}) { themeMode = getThemeModeUseCase(); } ThemeMode themeMode = ThemeMode.system; bool get isDarkMode => themeMode == ThemeMode.dark; Future<void> setThemeMode(ThemeMode mode) async { themeMode = mode; notifyListeners(); await saveThemeModeUseCase(mode); } Future<void> toggleDarkMode() => setThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark); }
