@@ -16,8 +16,15 @@ Future<void> main() async {
   await Supabase.initialize(
     url: AppConfig.supabaseUrl,
     anonKey: AppConfig.supabaseAnonKey,
-    authOptions: const FlutterAuthClientOptions(authFlowType: AuthFlowType.pkce),
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
 
-  runApp(MultiProvider(providers: AppProviders.providers(preferences), child: const QuipuboxApp()));
+  runApp(
+    MultiProvider(
+      providers: AppProviders.providers(preferences),
+      child: const QuipuboxApp(),
+    ),
+  );
 }

@@ -31,32 +31,88 @@ class AppRouter {
     refreshListenable: authViewModel,
     redirect: (context, state) {
       final location = state.matchedLocation;
-      if (authViewModel.isLoading) return null;
+
+      if (authViewModel.isLoading) {
+        return null;
+      }
+
       final isLogin = location == AppRoutes.login;
       final isSplash = location == AppRoutes.splash;
       final isAuthRoute = isLogin || isSplash;
-      if (!authViewModel.isAuthenticated) return isLogin ? null : AppRoutes.login;
-      if (isAuthRoute) return AppRoutes.home;
+
+      if (!authViewModel.isAuthenticated) {
+        return isLogin ? null : AppRoutes.login;
+      }
+
+      if (isAuthRoute) {
+        return AppRoutes.home;
+      }
+
       return null;
     },
     routes: [
       GoRoute(path: AppRoutes.splash, builder: (_, __) => const SplashPage()),
       GoRoute(path: AppRoutes.login, builder: (_, __) => const LoginPage()),
       GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage()),
-      GoRoute(path: AppRoutes.settings, builder: (_, __) => const SettingsPage()),
-      GoRoute(path: AppRoutes.company, builder: (_, __) => const CompanyProfileScreen()),
-      GoRoute(path: AppRoutes.roles, builder: (_, __) => const RolesListScreen()),
-      GoRoute(path: AppRoutes.sedes, builder: (_, __) => const SedeListScreen()),
-      GoRoute(path: AppRoutes.usuarios, builder: (_, __) => const UsuarioListScreen()),
-      GoRoute(path: AppRoutes.clientes, builder: (_, __) => const ClienteListScreen()),
-      GoRoute(path: AppRoutes.lugaresOperativos, builder: (_, __) => const LugarOperativoListScreen()),
-      GoRoute(path: AppRoutes.puestos, builder: (_, __) => const PuestoListScreen()),
-      GoRoute(path: AppRoutes.frutas, builder: (_, __) => const FrutaListScreen()),
-      GoRoute(path: AppRoutes.variedades, builder: (_, __) => const VariedadListScreen()),
-      GoRoute(path: AppRoutes.calidades, builder: (_, __) => const CalidadListScreen()),
-      GoRoute(path: AppRoutes.tiposJaba, builder: (_, __) => const TipoJabaListScreen()),
-      GoRoute(path: AppRoutes.camiones, builder: (_, __) => const CamionListScreen()),
+      GoRoute(
+        path: AppRoutes.settings,
+        builder: (_, __) => const SettingsPage(),
+      ),
+      //TODO: company screen debe verse en el setting, de la cuenta, no en el menu principal, revisar esto luego
+      GoRoute(
+        path: AppRoutes.company,
+        builder: (_, __) => const CompanyProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.roles,
+        builder: (_, __) => const RolesListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sedes,
+        builder: (_, __) => const SedeListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.usuarios,
+        builder: (_, __) => const UsuarioListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.clientes,
+        builder: (_, __) => const ClienteListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.lugaresOperativos,
+        builder: (_, __) => const LugarOperativoListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.puestos,
+        builder: (_, __) => const PuestoListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.frutas,
+        builder: (_, __) => const FrutaListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.variedades,
+        builder: (_, __) => const VariedadListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.calidades,
+        builder: (_, __) => const CalidadListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.tiposJaba,
+        builder: (_, __) => const TipoJabaListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.camiones,
+        builder: (_, __) => const CamionListScreen(),
+      ),
     ],
-    errorBuilder: (context, state) => Scaffold(appBar: AppBar(title: const Text('Ruta no encontrada')), body: Center(child: Text(state.error?.toString() ?? 'No se encontró la pantalla.'))),
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Ruta no encontrada')),
+      body: Center(
+        child: Text(state.error?.toString() ?? 'No se encontró la pantalla.'),
+      ),
+    ),
   );
 }

@@ -110,92 +110,396 @@ class AppProviders {
     Provider<SharedPreferences>.value(value: preferences),
     Provider<ApiClient>(create: (_) => ApiClient()),
     Provider<NetworkChecker>(create: (_) => NetworkChecker()),
-    Provider<AuthRemoteDataSource>(create: (context) => AuthRemoteDataSource(context.read<ApiClient>())),
-    Provider<AuthRepository>(create: (context) => AuthRepositoryImpl(context.read<AuthRemoteDataSource>())),
-    Provider<GetCurrentSessionUseCase>(create: (context) => GetCurrentSessionUseCase(context.read<AuthRepository>())),
-    Provider<LoginWithGoogleUseCase>(create: (context) => LoginWithGoogleUseCase(context.read<AuthRepository>())),
-    Provider<LogoutUseCase>(create: (context) => LogoutUseCase(context.read<AuthRepository>())),
-    Provider<GetProfileUseCase>(create: (context) => GetProfileUseCase(context.read<AuthRepository>())),
-    ChangeNotifierProvider<AuthViewModel>(create: (context) => AuthViewModel(getCurrentSessionUseCase: context.read<GetCurrentSessionUseCase>(), loginWithGoogleUseCase: context.read<LoginWithGoogleUseCase>(), logoutUseCase: context.read<LogoutUseCase>(), getProfileUseCase: context.read<GetProfileUseCase>())),
-    Provider<AppRouter>(create: (context) => AppRouter(context.read<AuthViewModel>())),
-    Provider<SettingsLocalDataSource>(create: (context) => SettingsLocalDataSource(context.read<SharedPreferences>())),
-    Provider<SettingsRepository>(create: (context) => SettingsRepositoryImpl(context.read<SettingsLocalDataSource>())),
-    Provider<GetThemeModeUseCase>(create: (context) => GetThemeModeUseCase(context.read<SettingsRepository>())),
-    Provider<SaveThemeModeUseCase>(create: (context) => SaveThemeModeUseCase(context.read<SettingsRepository>())),
-    ChangeNotifierProvider<SettingsViewModel>(create: (context) => SettingsViewModel(getThemeModeUseCase: context.read<GetThemeModeUseCase>(), saveThemeModeUseCase: context.read<SaveThemeModeUseCase>())),
-    Provider<RolesRemoteDataSource>(create: (context) => RolesRemoteDataSource(context.read<ApiClient>())),
-    Provider<RolesRepository>(create: (context) => RolesRepositoryImpl(context.read<RolesRemoteDataSource>())),
-    Provider<GetRolesUseCase>(create: (context) => GetRolesUseCase(context.read<RolesRepository>())),
-    ChangeNotifierProvider<RolesViewModel>(create: (context) => RolesViewModel(context.read<GetRolesUseCase>())),
-    Provider<SedeRemoteDataSource>(create: (context) => SedeRemoteDataSource(context.read<ApiClient>())),
-    Provider<SedeRepository>(create: (context) => SedeRepositoryImpl(context.read<SedeRemoteDataSource>())),
-    Provider<GetSedesUseCase>(create: (context) => GetSedesUseCase(context.read<SedeRepository>())),
-    Provider<CreateSedeUseCase>(create: (context) => CreateSedeUseCase(context.read<SedeRepository>())),
-    Provider<UpdateSedeUseCase>(create: (context) => UpdateSedeUseCase(context.read<SedeRepository>())),
-    Provider<DeleteSedeUseCase>(create: (context) => DeleteSedeUseCase(context.read<SedeRepository>())),
-    ChangeNotifierProvider<SedeViewModel>(create: (context) => SedeViewModel(getItemsUseCase: context.read<GetSedesUseCase>(), createUseCase: context.read<CreateSedeUseCase>(), updateUseCase: context.read<UpdateSedeUseCase>(), deleteUseCase: context.read<DeleteSedeUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<LugarOperativoRemoteDataSource>(create: (context) => LugarOperativoRemoteDataSource(context.read<ApiClient>())),
-    Provider<LugarOperativoRepository>(create: (context) => LugarOperativoRepositoryImpl(context.read<LugarOperativoRemoteDataSource>())),
-    Provider<GetLugaresOperativosUseCase>(create: (context) => GetLugaresOperativosUseCase(context.read<LugarOperativoRepository>())),
-    Provider<CreateLugarOperativoUseCase>(create: (context) => CreateLugarOperativoUseCase(context.read<LugarOperativoRepository>())),
-    Provider<UpdateLugarOperativoUseCase>(create: (context) => UpdateLugarOperativoUseCase(context.read<LugarOperativoRepository>())),
-    Provider<DeleteLugarOperativoUseCase>(create: (context) => DeleteLugarOperativoUseCase(context.read<LugarOperativoRepository>())),
-    ChangeNotifierProvider<LugarOperativoViewModel>(create: (context) => LugarOperativoViewModel(getItemsUseCase: context.read<GetLugaresOperativosUseCase>(), createUseCase: context.read<CreateLugarOperativoUseCase>(), updateUseCase: context.read<UpdateLugarOperativoUseCase>(), deleteUseCase: context.read<DeleteLugarOperativoUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<PuestoRemoteDataSource>(create: (context) => PuestoRemoteDataSource(context.read<ApiClient>())),
-    Provider<PuestoRepository>(create: (context) => PuestoRepositoryImpl(context.read<PuestoRemoteDataSource>())),
-    Provider<GetPuestosUseCase>(create: (context) => GetPuestosUseCase(context.read<PuestoRepository>())),
-    Provider<CreatePuestoUseCase>(create: (context) => CreatePuestoUseCase(context.read<PuestoRepository>())),
-    Provider<UpdatePuestoUseCase>(create: (context) => UpdatePuestoUseCase(context.read<PuestoRepository>())),
-    Provider<DeletePuestoUseCase>(create: (context) => DeletePuestoUseCase(context.read<PuestoRepository>())),
-    ChangeNotifierProvider<PuestoViewModel>(create: (context) => PuestoViewModel(getItemsUseCase: context.read<GetPuestosUseCase>(), createUseCase: context.read<CreatePuestoUseCase>(), updateUseCase: context.read<UpdatePuestoUseCase>(), deleteUseCase: context.read<DeletePuestoUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<FrutaRemoteDataSource>(create: (context) => FrutaRemoteDataSource(context.read<ApiClient>())),
-    Provider<FrutaRepository>(create: (context) => FrutaRepositoryImpl(context.read<FrutaRemoteDataSource>())),
-    Provider<GetFrutasUseCase>(create: (context) => GetFrutasUseCase(context.read<FrutaRepository>())),
-    Provider<CreateFrutaUseCase>(create: (context) => CreateFrutaUseCase(context.read<FrutaRepository>())),
-    Provider<UpdateFrutaUseCase>(create: (context) => UpdateFrutaUseCase(context.read<FrutaRepository>())),
-    Provider<DeleteFrutaUseCase>(create: (context) => DeleteFrutaUseCase(context.read<FrutaRepository>())),
-    ChangeNotifierProvider<FrutaViewModel>(create: (context) => FrutaViewModel(getItemsUseCase: context.read<GetFrutasUseCase>(), createUseCase: context.read<CreateFrutaUseCase>(), updateUseCase: context.read<UpdateFrutaUseCase>(), deleteUseCase: context.read<DeleteFrutaUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<VariedadRemoteDataSource>(create: (context) => VariedadRemoteDataSource(context.read<ApiClient>())),
-    Provider<VariedadRepository>(create: (context) => VariedadRepositoryImpl(context.read<VariedadRemoteDataSource>())),
-    Provider<GetVariedadesUseCase>(create: (context) => GetVariedadesUseCase(context.read<VariedadRepository>())),
-    Provider<CreateVariedadUseCase>(create: (context) => CreateVariedadUseCase(context.read<VariedadRepository>())),
-    Provider<UpdateVariedadUseCase>(create: (context) => UpdateVariedadUseCase(context.read<VariedadRepository>())),
-    Provider<DeleteVariedadUseCase>(create: (context) => DeleteVariedadUseCase(context.read<VariedadRepository>())),
-    ChangeNotifierProvider<VariedadViewModel>(create: (context) => VariedadViewModel(getItemsUseCase: context.read<GetVariedadesUseCase>(), createUseCase: context.read<CreateVariedadUseCase>(), updateUseCase: context.read<UpdateVariedadUseCase>(), deleteUseCase: context.read<DeleteVariedadUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<CalidadRemoteDataSource>(create: (context) => CalidadRemoteDataSource(context.read<ApiClient>())),
-    Provider<CalidadRepository>(create: (context) => CalidadRepositoryImpl(context.read<CalidadRemoteDataSource>())),
-    Provider<GetCalidadesUseCase>(create: (context) => GetCalidadesUseCase(context.read<CalidadRepository>())),
-    Provider<CreateCalidadUseCase>(create: (context) => CreateCalidadUseCase(context.read<CalidadRepository>())),
-    Provider<UpdateCalidadUseCase>(create: (context) => UpdateCalidadUseCase(context.read<CalidadRepository>())),
-    Provider<DeleteCalidadUseCase>(create: (context) => DeleteCalidadUseCase(context.read<CalidadRepository>())),
-    ChangeNotifierProvider<CalidadViewModel>(create: (context) => CalidadViewModel(getItemsUseCase: context.read<GetCalidadesUseCase>(), createUseCase: context.read<CreateCalidadUseCase>(), updateUseCase: context.read<UpdateCalidadUseCase>(), deleteUseCase: context.read<DeleteCalidadUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<TipoJabaRemoteDataSource>(create: (context) => TipoJabaRemoteDataSource(context.read<ApiClient>())),
-    Provider<TipoJabaRepository>(create: (context) => TipoJabaRepositoryImpl(context.read<TipoJabaRemoteDataSource>())),
-    Provider<GetTiposJabaUseCase>(create: (context) => GetTiposJabaUseCase(context.read<TipoJabaRepository>())),
-    Provider<CreateTipoJabaUseCase>(create: (context) => CreateTipoJabaUseCase(context.read<TipoJabaRepository>())),
-    Provider<UpdateTipoJabaUseCase>(create: (context) => UpdateTipoJabaUseCase(context.read<TipoJabaRepository>())),
-    Provider<DeleteTipoJabaUseCase>(create: (context) => DeleteTipoJabaUseCase(context.read<TipoJabaRepository>())),
-    ChangeNotifierProvider<TipoJabaViewModel>(create: (context) => TipoJabaViewModel(getItemsUseCase: context.read<GetTiposJabaUseCase>(), createUseCase: context.read<CreateTipoJabaUseCase>(), updateUseCase: context.read<UpdateTipoJabaUseCase>(), deleteUseCase: context.read<DeleteTipoJabaUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<CamionRemoteDataSource>(create: (context) => CamionRemoteDataSource(context.read<ApiClient>())),
-    Provider<CamionRepository>(create: (context) => CamionRepositoryImpl(context.read<CamionRemoteDataSource>())),
-    Provider<GetCamionesUseCase>(create: (context) => GetCamionesUseCase(context.read<CamionRepository>())),
-    Provider<CreateCamionUseCase>(create: (context) => CreateCamionUseCase(context.read<CamionRepository>())),
-    Provider<UpdateCamionUseCase>(create: (context) => UpdateCamionUseCase(context.read<CamionRepository>())),
-    Provider<DeleteCamionUseCase>(create: (context) => DeleteCamionUseCase(context.read<CamionRepository>())),
-    ChangeNotifierProvider<CamionViewModel>(create: (context) => CamionViewModel(getItemsUseCase: context.read<GetCamionesUseCase>(), createUseCase: context.read<CreateCamionUseCase>(), updateUseCase: context.read<UpdateCamionUseCase>(), deleteUseCase: context.read<DeleteCamionUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<UsuarioRemoteDataSource>(create: (context) => UsuarioRemoteDataSource(context.read<ApiClient>())),
-    Provider<UsuarioRepository>(create: (context) => UsuarioRepositoryImpl(context.read<UsuarioRemoteDataSource>())),
-    Provider<GetUsuariosUseCase>(create: (context) => GetUsuariosUseCase(context.read<UsuarioRepository>())),
-    Provider<CreateUsuarioUseCase>(create: (context) => CreateUsuarioUseCase(context.read<UsuarioRepository>())),
-    Provider<UpdateUsuarioUseCase>(create: (context) => UpdateUsuarioUseCase(context.read<UsuarioRepository>())),
-    Provider<DeleteUsuarioUseCase>(create: (context) => DeleteUsuarioUseCase(context.read<UsuarioRepository>())),
-    ChangeNotifierProvider<UsuarioViewModel>(create: (context) => UsuarioViewModel(getItemsUseCase: context.read<GetUsuariosUseCase>(), createUseCase: context.read<CreateUsuarioUseCase>(), updateUseCase: context.read<UpdateUsuarioUseCase>(), deleteUseCase: context.read<DeleteUsuarioUseCase>(), networkChecker: context.read<NetworkChecker>())),
-    Provider<ClienteRemoteDataSource>(create: (context) => ClienteRemoteDataSource(context.read<ApiClient>())),
-    Provider<ClienteRepository>(create: (context) => ClienteRepositoryImpl(context.read<ClienteRemoteDataSource>())),
-    Provider<GetClientesUseCase>(create: (context) => GetClientesUseCase(context.read<ClienteRepository>())),
-    Provider<CreateClienteUseCase>(create: (context) => CreateClienteUseCase(context.read<ClienteRepository>())),
-    Provider<UpdateClienteUseCase>(create: (context) => UpdateClienteUseCase(context.read<ClienteRepository>())),
-    Provider<DeleteClienteUseCase>(create: (context) => DeleteClienteUseCase(context.read<ClienteRepository>())),
-    ChangeNotifierProvider<ClienteViewModel>(create: (context) => ClienteViewModel(getItemsUseCase: context.read<GetClientesUseCase>(), createUseCase: context.read<CreateClienteUseCase>(), updateUseCase: context.read<UpdateClienteUseCase>(), deleteUseCase: context.read<DeleteClienteUseCase>(), networkChecker: context.read<NetworkChecker>()))
+    Provider<AuthRemoteDataSource>(
+      create: (context) => AuthRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<AuthRepository>(
+      create: (context) =>
+          AuthRepositoryImpl(context.read<AuthRemoteDataSource>()),
+    ),
+    Provider<GetCurrentSessionUseCase>(
+      create: (context) =>
+          GetCurrentSessionUseCase(context.read<AuthRepository>()),
+    ),
+    Provider<LoginWithGoogleUseCase>(
+      create: (context) =>
+          LoginWithGoogleUseCase(context.read<AuthRepository>()),
+    ),
+    Provider<LogoutUseCase>(
+      create: (context) => LogoutUseCase(context.read<AuthRepository>()),
+    ),
+    Provider<GetProfileUseCase>(
+      create: (context) => GetProfileUseCase(context.read<AuthRepository>()),
+    ),
+    ChangeNotifierProvider<AuthViewModel>(
+      create: (context) => AuthViewModel(
+        getCurrentSessionUseCase: context.read<GetCurrentSessionUseCase>(),
+        loginWithGoogleUseCase: context.read<LoginWithGoogleUseCase>(),
+        logoutUseCase: context.read<LogoutUseCase>(),
+        getProfileUseCase: context.read<GetProfileUseCase>(),
+      ),
+    ),
+    Provider<AppRouter>(
+      create: (context) => AppRouter(context.read<AuthViewModel>()),
+    ),
+    Provider<SettingsLocalDataSource>(
+      create: (context) =>
+          SettingsLocalDataSource(context.read<SharedPreferences>()),
+    ),
+    Provider<SettingsRepository>(
+      create: (context) =>
+          SettingsRepositoryImpl(context.read<SettingsLocalDataSource>()),
+    ),
+    Provider<GetThemeModeUseCase>(
+      create: (context) =>
+          GetThemeModeUseCase(context.read<SettingsRepository>()),
+    ),
+    Provider<SaveThemeModeUseCase>(
+      create: (context) =>
+          SaveThemeModeUseCase(context.read<SettingsRepository>()),
+    ),
+    ChangeNotifierProvider<SettingsViewModel>(
+      create: (context) => SettingsViewModel(
+        getThemeModeUseCase: context.read<GetThemeModeUseCase>(),
+        saveThemeModeUseCase: context.read<SaveThemeModeUseCase>(),
+      ),
+    ),
+    Provider<RolesRemoteDataSource>(
+      create: (context) => RolesRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<RolesRepository>(
+      create: (context) =>
+          RolesRepositoryImpl(context.read<RolesRemoteDataSource>()),
+    ),
+    Provider<GetRolesUseCase>(
+      create: (context) => GetRolesUseCase(context.read<RolesRepository>()),
+    ),
+    ChangeNotifierProvider<RolesViewModel>(
+      create: (context) => RolesViewModel(context.read<GetRolesUseCase>()),
+    ),
+    Provider<SedeRemoteDataSource>(
+      create: (context) => SedeRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<SedeRepository>(
+      create: (context) =>
+          SedeRepositoryImpl(context.read<SedeRemoteDataSource>()),
+    ),
+    Provider<GetSedesUseCase>(
+      create: (context) => GetSedesUseCase(context.read<SedeRepository>()),
+    ),
+    Provider<CreateSedeUseCase>(
+      create: (context) => CreateSedeUseCase(context.read<SedeRepository>()),
+    ),
+    Provider<UpdateSedeUseCase>(
+      create: (context) => UpdateSedeUseCase(context.read<SedeRepository>()),
+    ),
+    Provider<DeleteSedeUseCase>(
+      create: (context) => DeleteSedeUseCase(context.read<SedeRepository>()),
+    ),
+    ChangeNotifierProxyProvider<AuthViewModel, SedeViewModel>(
+      create: (context) => SedeViewModel(
+        getItemsUseCase: context.read<GetSedesUseCase>(),
+        createUseCase: context.read<CreateSedeUseCase>(),
+        updateUseCase: context.read<UpdateSedeUseCase>(),
+        deleteUseCase: context.read<DeleteSedeUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+        authViewModel: context.read<AuthViewModel>(),
+      ),
+      update: (context, authViewModel, sedeViewModel) {
+        return sedeViewModel ??
+            SedeViewModel(
+              getItemsUseCase: context.read<GetSedesUseCase>(),
+              createUseCase: context.read<CreateSedeUseCase>(),
+              updateUseCase: context.read<UpdateSedeUseCase>(),
+              deleteUseCase: context.read<DeleteSedeUseCase>(),
+              networkChecker: context.read<NetworkChecker>(),
+              authViewModel: authViewModel,
+            );
+      },
+    ),
+    Provider<LugarOperativoRemoteDataSource>(
+      create: (context) =>
+          LugarOperativoRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<LugarOperativoRepository>(
+      create: (context) => LugarOperativoRepositoryImpl(
+        context.read<LugarOperativoRemoteDataSource>(),
+      ),
+    ),
+    Provider<GetLugaresOperativosUseCase>(
+      create: (context) =>
+          GetLugaresOperativosUseCase(context.read<LugarOperativoRepository>()),
+    ),
+    Provider<CreateLugarOperativoUseCase>(
+      create: (context) =>
+          CreateLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
+    ),
+    Provider<UpdateLugarOperativoUseCase>(
+      create: (context) =>
+          UpdateLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
+    ),
+    Provider<DeleteLugarOperativoUseCase>(
+      create: (context) =>
+          DeleteLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
+    ),
+    ChangeNotifierProvider<LugarOperativoViewModel>(
+      create: (context) => LugarOperativoViewModel(
+        getItemsUseCase: context.read<GetLugaresOperativosUseCase>(),
+        createUseCase: context.read<CreateLugarOperativoUseCase>(),
+        updateUseCase: context.read<UpdateLugarOperativoUseCase>(),
+        deleteUseCase: context.read<DeleteLugarOperativoUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<PuestoRemoteDataSource>(
+      create: (context) => PuestoRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<PuestoRepository>(
+      create: (context) =>
+          PuestoRepositoryImpl(context.read<PuestoRemoteDataSource>()),
+    ),
+    Provider<GetPuestosUseCase>(
+      create: (context) => GetPuestosUseCase(context.read<PuestoRepository>()),
+    ),
+    Provider<CreatePuestoUseCase>(
+      create: (context) =>
+          CreatePuestoUseCase(context.read<PuestoRepository>()),
+    ),
+    Provider<UpdatePuestoUseCase>(
+      create: (context) =>
+          UpdatePuestoUseCase(context.read<PuestoRepository>()),
+    ),
+    Provider<DeletePuestoUseCase>(
+      create: (context) =>
+          DeletePuestoUseCase(context.read<PuestoRepository>()),
+    ),
+    ChangeNotifierProvider<PuestoViewModel>(
+      create: (context) => PuestoViewModel(
+        getItemsUseCase: context.read<GetPuestosUseCase>(),
+        createUseCase: context.read<CreatePuestoUseCase>(),
+        updateUseCase: context.read<UpdatePuestoUseCase>(),
+        deleteUseCase: context.read<DeletePuestoUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<FrutaRemoteDataSource>(
+      create: (context) => FrutaRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<FrutaRepository>(
+      create: (context) =>
+          FrutaRepositoryImpl(context.read<FrutaRemoteDataSource>()),
+    ),
+    Provider<GetFrutasUseCase>(
+      create: (context) => GetFrutasUseCase(context.read<FrutaRepository>()),
+    ),
+    Provider<CreateFrutaUseCase>(
+      create: (context) => CreateFrutaUseCase(context.read<FrutaRepository>()),
+    ),
+    Provider<UpdateFrutaUseCase>(
+      create: (context) => UpdateFrutaUseCase(context.read<FrutaRepository>()),
+    ),
+    Provider<DeleteFrutaUseCase>(
+      create: (context) => DeleteFrutaUseCase(context.read<FrutaRepository>()),
+    ),
+    ChangeNotifierProvider<FrutaViewModel>(
+      create: (context) => FrutaViewModel(
+        getItemsUseCase: context.read<GetFrutasUseCase>(),
+        createUseCase: context.read<CreateFrutaUseCase>(),
+        updateUseCase: context.read<UpdateFrutaUseCase>(),
+        deleteUseCase: context.read<DeleteFrutaUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<VariedadRemoteDataSource>(
+      create: (context) => VariedadRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<VariedadRepository>(
+      create: (context) =>
+          VariedadRepositoryImpl(context.read<VariedadRemoteDataSource>()),
+    ),
+    Provider<GetVariedadesUseCase>(
+      create: (context) =>
+          GetVariedadesUseCase(context.read<VariedadRepository>()),
+    ),
+    Provider<CreateVariedadUseCase>(
+      create: (context) =>
+          CreateVariedadUseCase(context.read<VariedadRepository>()),
+    ),
+    Provider<UpdateVariedadUseCase>(
+      create: (context) =>
+          UpdateVariedadUseCase(context.read<VariedadRepository>()),
+    ),
+    Provider<DeleteVariedadUseCase>(
+      create: (context) =>
+          DeleteVariedadUseCase(context.read<VariedadRepository>()),
+    ),
+    ChangeNotifierProvider<VariedadViewModel>(
+      create: (context) => VariedadViewModel(
+        getItemsUseCase: context.read<GetVariedadesUseCase>(),
+        createUseCase: context.read<CreateVariedadUseCase>(),
+        updateUseCase: context.read<UpdateVariedadUseCase>(),
+        deleteUseCase: context.read<DeleteVariedadUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<CalidadRemoteDataSource>(
+      create: (context) => CalidadRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<CalidadRepository>(
+      create: (context) =>
+          CalidadRepositoryImpl(context.read<CalidadRemoteDataSource>()),
+    ),
+    Provider<GetCalidadesUseCase>(
+      create: (context) =>
+          GetCalidadesUseCase(context.read<CalidadRepository>()),
+    ),
+    Provider<CreateCalidadUseCase>(
+      create: (context) =>
+          CreateCalidadUseCase(context.read<CalidadRepository>()),
+    ),
+    Provider<UpdateCalidadUseCase>(
+      create: (context) =>
+          UpdateCalidadUseCase(context.read<CalidadRepository>()),
+    ),
+    Provider<DeleteCalidadUseCase>(
+      create: (context) =>
+          DeleteCalidadUseCase(context.read<CalidadRepository>()),
+    ),
+    ChangeNotifierProvider<CalidadViewModel>(
+      create: (context) => CalidadViewModel(
+        getItemsUseCase: context.read<GetCalidadesUseCase>(),
+        createUseCase: context.read<CreateCalidadUseCase>(),
+        updateUseCase: context.read<UpdateCalidadUseCase>(),
+        deleteUseCase: context.read<DeleteCalidadUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<TipoJabaRemoteDataSource>(
+      create: (context) => TipoJabaRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<TipoJabaRepository>(
+      create: (context) =>
+          TipoJabaRepositoryImpl(context.read<TipoJabaRemoteDataSource>()),
+    ),
+    Provider<GetTiposJabaUseCase>(
+      create: (context) =>
+          GetTiposJabaUseCase(context.read<TipoJabaRepository>()),
+    ),
+    Provider<CreateTipoJabaUseCase>(
+      create: (context) =>
+          CreateTipoJabaUseCase(context.read<TipoJabaRepository>()),
+    ),
+    Provider<UpdateTipoJabaUseCase>(
+      create: (context) =>
+          UpdateTipoJabaUseCase(context.read<TipoJabaRepository>()),
+    ),
+    Provider<DeleteTipoJabaUseCase>(
+      create: (context) =>
+          DeleteTipoJabaUseCase(context.read<TipoJabaRepository>()),
+    ),
+    ChangeNotifierProvider<TipoJabaViewModel>(
+      create: (context) => TipoJabaViewModel(
+        getItemsUseCase: context.read<GetTiposJabaUseCase>(),
+        createUseCase: context.read<CreateTipoJabaUseCase>(),
+        updateUseCase: context.read<UpdateTipoJabaUseCase>(),
+        deleteUseCase: context.read<DeleteTipoJabaUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<CamionRemoteDataSource>(
+      create: (context) => CamionRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<CamionRepository>(
+      create: (context) =>
+          CamionRepositoryImpl(context.read<CamionRemoteDataSource>()),
+    ),
+    Provider<GetCamionesUseCase>(
+      create: (context) => GetCamionesUseCase(context.read<CamionRepository>()),
+    ),
+    Provider<CreateCamionUseCase>(
+      create: (context) =>
+          CreateCamionUseCase(context.read<CamionRepository>()),
+    ),
+    Provider<UpdateCamionUseCase>(
+      create: (context) =>
+          UpdateCamionUseCase(context.read<CamionRepository>()),
+    ),
+    Provider<DeleteCamionUseCase>(
+      create: (context) =>
+          DeleteCamionUseCase(context.read<CamionRepository>()),
+    ),
+    ChangeNotifierProvider<CamionViewModel>(
+      create: (context) => CamionViewModel(
+        getItemsUseCase: context.read<GetCamionesUseCase>(),
+        createUseCase: context.read<CreateCamionUseCase>(),
+        updateUseCase: context.read<UpdateCamionUseCase>(),
+        deleteUseCase: context.read<DeleteCamionUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<UsuarioRemoteDataSource>(
+      create: (context) => UsuarioRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<UsuarioRepository>(
+      create: (context) =>
+          UsuarioRepositoryImpl(context.read<UsuarioRemoteDataSource>()),
+    ),
+    Provider<GetUsuariosUseCase>(
+      create: (context) =>
+          GetUsuariosUseCase(context.read<UsuarioRepository>()),
+    ),
+    Provider<CreateUsuarioUseCase>(
+      create: (context) =>
+          CreateUsuarioUseCase(context.read<UsuarioRepository>()),
+    ),
+    Provider<UpdateUsuarioUseCase>(
+      create: (context) =>
+          UpdateUsuarioUseCase(context.read<UsuarioRepository>()),
+    ),
+    Provider<DeleteUsuarioUseCase>(
+      create: (context) =>
+          DeleteUsuarioUseCase(context.read<UsuarioRepository>()),
+    ),
+    ChangeNotifierProvider<UsuarioViewModel>(
+      create: (context) => UsuarioViewModel(
+        getItemsUseCase: context.read<GetUsuariosUseCase>(),
+        createUseCase: context.read<CreateUsuarioUseCase>(),
+        updateUseCase: context.read<UpdateUsuarioUseCase>(),
+        deleteUseCase: context.read<DeleteUsuarioUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+    Provider<ClienteRemoteDataSource>(
+      create: (context) => ClienteRemoteDataSource(context.read<ApiClient>()),
+    ),
+    Provider<ClienteRepository>(
+      create: (context) =>
+          ClienteRepositoryImpl(context.read<ClienteRemoteDataSource>()),
+    ),
+    Provider<GetClientesUseCase>(
+      create: (context) =>
+          GetClientesUseCase(context.read<ClienteRepository>()),
+    ),
+    Provider<CreateClienteUseCase>(
+      create: (context) =>
+          CreateClienteUseCase(context.read<ClienteRepository>()),
+    ),
+    Provider<UpdateClienteUseCase>(
+      create: (context) =>
+          UpdateClienteUseCase(context.read<ClienteRepository>()),
+    ),
+    Provider<DeleteClienteUseCase>(
+      create: (context) =>
+          DeleteClienteUseCase(context.read<ClienteRepository>()),
+    ),
+    ChangeNotifierProvider<ClienteViewModel>(
+      create: (context) => ClienteViewModel(
+        getItemsUseCase: context.read<GetClientesUseCase>(),
+        createUseCase: context.read<CreateClienteUseCase>(),
+        updateUseCase: context.read<UpdateClienteUseCase>(),
+        deleteUseCase: context.read<DeleteClienteUseCase>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
   ];
 }

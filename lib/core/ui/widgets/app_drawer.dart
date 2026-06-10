@@ -32,126 +32,41 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthViewModel>();
+    final settings = context.watch<SettingsViewModel>();
     final user = auth.user;
+    final theme = Theme.of(context);
+    final topPadding = MediaQuery.paddingOf(context).top;
 
     return Drawer(
-      child: SafeArea(
+      width: MediaQuery.sizeOf(context).width * .86,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(30)),
+      ),
+      child: ColoredBox(
+        color: theme.colorScheme.surface,
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF123C69), Color(0xFF1E5AA8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(28),
-                  bottomRight: Radius.circular(28),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 36,
-                        backgroundColor: Colors.white,
-                        backgroundImage: user?.avatarUrl?.isNotEmpty == true
-                            ? NetworkImage(user!.avatarUrl!)
-                            : null,
-                        child: user?.avatarUrl?.isNotEmpty == true
-                            ? null
-                            : const Icon(
-                                Icons.person_rounded,
-                                size: 36,
-                                color: Color(0xFF1E5AA8),
-                              ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user?.fullName ?? 'Usuario',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              user?.email ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: .82),
-                                fontSize: 12.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: .12),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Column(
-                      children: [
-                        _ProfileInfo(
-                          icon: Icons.badge_outlined,
-                          label: 'Cargo',
-                          value: user?.rolNombre ?? '-',
-                        ),
-                        const SizedBox(height: 10),
-                        _ProfileInfo(
-                          icon: Icons.business_outlined,
-                          label: 'Empresa',
-                          value: user?.empresaNombre ?? '-',
-                        ),
-                        const SizedBox(height: 10),
-                        _ProfileInfo(
-                          icon: Icons.location_on_outlined,
-                          label: 'Sede',
-                          value: user?.sedeNombre ?? '-',
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            _DrawerHeader(
+              topPadding: topPadding,
+              avatarUrl: user?.avatarUrl,
+              name: user?.fullName ?? 'Usuario',
+              email: user?.email ?? '',
+              role: user?.rolNombre ?? '-',
+              company: user?.razonSocial ?? '-',
+              site: user?.sedeNombre ?? '-',
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
                 children: [
-                  /*const _SectionTitle('Principal'),
-                  _Item(
-                    icon: Icons.dashboard_rounded,
-                    title: 'Dashboard',
-                    onTap: () => _open(context, AppRoutes.home),
-                  ),*/
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 18),
                   const _SectionTitle('Administración'),
                   _Module(
-                    icon: Icons.business_rounded,
-                    title: 'Empresas y sedes',
+                    icon: Icons.business_center_rounded,
+                    title: 'Sedes y operaciones',
+                    subtitle: 'Sedes, lugares operativos y puestos',
                     children: [
-                      _SubItem(
-                        title: 'Empresa actual',
-                        onTap: () => _open(context, AppRoutes.company),
-                      ),
+                      
                       _SubItem(
                         title: 'Sedes',
                         onTap: () => _open(context, AppRoutes.sedes),
@@ -168,8 +83,9 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                   _Module(
-                    icon: Icons.people_alt_rounded,
+                    icon: Icons.admin_panel_settings_rounded,
                     title: 'Usuarios y roles',
+                    subtitle: 'Accesos, roles y permisos',
                     children: [
                       _SubItem(
                         title: 'Usuarios',
@@ -185,11 +101,12 @@ class AppDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   const _SectionTitle('Catálogos'),
                   _Module(
-                    icon: Icons.category_rounded,
+                    icon: Icons.inventory_2_rounded,
                     title: 'Productos',
+                    subtitle: 'Frutas, variedades, calidades y jabas',
                     children: [
                       _SubItem(
                         title: 'Frutas',
@@ -214,8 +131,9 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                   _Module(
-                    icon: Icons.groups_rounded,
+                    icon: Icons.groups_2_rounded,
                     title: 'Clientes',
+                    subtitle: 'Clientes, puestos y relación comercial',
                     children: [
                       _SubItem(
                         title: 'Clientes',
@@ -223,11 +141,12 @@ class AppDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   const _SectionTitle('Operaciones'),
                   _Module(
                     icon: Icons.local_shipping_rounded,
                     title: 'Carga y reparto',
+                    subtitle: 'Carga, reparto, entregas y guías',
                     children: [
                       _SubItem(
                         title: 'Nueva carga',
@@ -244,8 +163,9 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                   _Module(
-                    icon: Icons.inventory_2_rounded,
+                    icon: Icons.assignment_return_rounded,
                     title: 'Control de jabas',
+                    subtitle: 'Movimientos, retornos y saldos',
                     children: [
                       _SubItem(
                         title: 'Movimientos',
@@ -261,27 +181,24 @@ class AppDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   const _SectionTitle('Seguimiento'),
-                  _Item(
+                  _SimpleItem(
                     icon: Icons.photo_camera_rounded,
                     title: 'Evidencias',
                     onTap: () => _notAvailable(context),
                   ),
-                  const SizedBox(height: 8),
-                  _Item(
-                    icon: Icons.warning_amber_rounded,
+                  _SimpleItem(
+                    icon: Icons.report_problem_rounded,
                     title: 'Incidencias',
                     onTap: () => _notAvailable(context),
                   ),
-                  const SizedBox(height: 8),
-                  _Item(
-                    icon: Icons.bar_chart_rounded,
+                  _SimpleItem(
+                    icon: Icons.query_stats_rounded,
                     title: 'Reportes',
                     onTap: () => _notAvailable(context),
                   ),
-                  const SizedBox(height: 8),
-                  _Item(
+                  _SimpleItem(
                     icon: Icons.settings_rounded,
                     title: 'Ajustes',
                     onTap: () => _open(context, AppRoutes.settings),
@@ -289,40 +206,14 @@ class AppDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            SwitchListTile(
-              value: context.watch<SettingsViewModel>().isDarkMode,
-              onChanged: (_) =>
+            _DrawerFooter(
+              isDarkMode: settings.isDarkMode,
+              onToggleTheme: () =>
                   context.read<SettingsViewModel>().toggleDarkMode(),
-              secondary: const Icon(Icons.dark_mode_outlined),
-              title: const Text(
-                'Modo oscuro',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 14),
-              child: Material(
-                color: const Color(0xFFFFEDEE),
-                borderRadius: BorderRadius.circular(16),
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.logout_rounded,
-                    color: Color(0xFFD32F2F),
-                  ),
-                  title: const Text(
-                    'Cerrar sesión',
-                    style: TextStyle(
-                      color: Color(0xFFD32F2F),
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    final authViewModel = context.read<AuthViewModel>();
-                    await authViewModel.logout();
-                  },
-                ),
-              ),
+              onLogout: () async {
+                Navigator.of(context).pop();
+                await context.read<AuthViewModel>().logout();
+              },
             ),
           ],
         ),
@@ -331,12 +222,231 @@ class AppDrawer extends StatelessWidget {
   }
 }
 
-class _ProfileInfo extends StatelessWidget {
+class _DrawerHeader extends StatelessWidget {
+  final double topPadding;
+  final String? avatarUrl;
+  final String name;
+  final String email;
+  final String role;
+  final String company;
+  final String site;
+
+  const _DrawerHeader({
+    required this.topPadding,
+    required this.avatarUrl,
+    required this.name,
+    required this.email,
+    required this.role,
+    required this.company,
+    required this.site,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(18, topPadding + 18, 18, 22),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF0F2F4A), Color(0xFF155E95)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(bottomRight: Radius.circular(34)),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -28,
+            top: -18,
+            child: Container(
+              width: 130,
+              height: 130,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: .08),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 28,
+            bottom: -42,
+            child: Container(
+              width: 115,
+              height: 115,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: .06),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: .65),
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 34,
+                      backgroundColor: Colors.white,
+                      backgroundImage: avatarUrl?.isNotEmpty == true
+                          ? NetworkImage(avatarUrl!)
+                          : null,
+                      child: avatarUrl?.isNotEmpty == true
+                          ? null
+                          : const Icon(
+                              Icons.person_rounded,
+                              size: 34,
+                              color: Color(0xFF155E95),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          email,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: .82),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .13),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: .14),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    _HeaderInfo(
+                      icon: Icons.business_rounded,
+                      label: 'Empresa',
+                      value: company,
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _HeaderInfoCompact(
+                            icon: Icons.badge_rounded,
+                            label: 'Cargo',
+                            value: role,
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Expanded(
+                          child: _HeaderInfoCompact(
+                            icon: Icons.location_on_rounded,
+                            label: 'Sede',
+                            value: site,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderInfoCompact extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
 
-  const _ProfileInfo({
+  const _HeaderInfoCompact({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white, size: 16),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: .65),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HeaderInfo extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _HeaderInfo({
     required this.icon,
     required this.label,
     required this.value,
@@ -347,12 +457,13 @@ class _ProfileInfo extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, color: Colors.white, size: 18),
-        const SizedBox(width: 10),
+        const SizedBox(width: 9),
         Text(
           '$label:',
           style: TextStyle(
-            color: Colors.white.withValues(alpha: .72),
+            color: Colors.white.withValues(alpha: .68),
             fontSize: 12,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(width: 6),
@@ -360,11 +471,12 @@ class _ProfileInfo extends StatelessWidget {
           child: Text(
             value,
             textAlign: TextAlign.right,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 13,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ),
@@ -373,44 +485,37 @@ class _ProfileInfo extends StatelessWidget {
   }
 }
 
+
 class _SectionTitle extends StatelessWidget {
   final String title;
+
   const _SectionTitle(this.title);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-      child: Text(
-        title.toUpperCase(),
-        style: const TextStyle(
-          color: Color(0xFF6B7280),
-          fontSize: 11,
-          fontWeight: FontWeight.w900,
-          letterSpacing: .8,
-        ),
-      ),
-    );
-  }
-}
-
-class _Item extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  const _Item({required this.icon, required this.title, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-        trailing: const Icon(Icons.chevron_right_rounded),
-        onTap: onTap,
+      padding: const EdgeInsets.fromLTRB(6, 6, 6, 9),
+      child: Row(
+        children: [
+          Container(
+            width: 18,
+            height: 3,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(99),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              letterSpacing: .9,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -419,28 +524,71 @@ class _Item extends StatelessWidget {
 class _Module extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String subtitle;
   final List<Widget> children;
 
   const _Module({
     required this.icon,
     required this.title,
+    required this.subtitle,
     required this.children,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.primary;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: .85),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: theme.brightness == Brightness.dark ? .18 : .045,
+            ),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
+          ),
+        ],
       ),
-      child: ExpansionTile(
-        leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-        children: children,
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.fromLTRB(13, 8, 10, 8),
+          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          leading: Container(
+            width: 43,
+            height: 43,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: .12),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Icon(icon, color: color),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14.5),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11.8,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          children: children,
+        ),
       ),
     );
   }
@@ -454,36 +602,186 @@ class _SubItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(top: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        decoration: BoxDecoration(
-          color: Theme.of(
-            context,
-          ).colorScheme.surfaceContainerHighest.withValues(alpha: .55),
-          borderRadius: BorderRadius.circular(12),
+    final color = Theme.of(context).colorScheme.primary;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 7),
+      child: Material(
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: .45),
+        borderRadius: BorderRadius.circular(15),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 13,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
         ),
-        child: Row(
+      ),
+    );
+  }
+}
+
+class _SimpleItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _SimpleItem({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.primary;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Material(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(19),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(19),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(19),
+              border: Border.all(color: theme.colorScheme.outlineVariant),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: .11),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: color, size: 21),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerFooter extends StatelessWidget {
+  final bool isDarkMode;
+  final VoidCallback onToggleTheme;
+  final VoidCallback onLogout;
+
+  const _DrawerFooter({
+    required this.isDarkMode,
+    required this.onToggleTheme,
+    required this.onLogout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          border: Border(
+            top: BorderSide(color: theme.colorScheme.outlineVariant),
+          ),
+        ),
+        child: Column(
           children: [
-            Container(
-              width: 7,
-              height: 7,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                shape: BoxShape.circle,
+            Material(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: .55,
+              ),
+              borderRadius: BorderRadius.circular(18),
+              child: SwitchListTile(
+                value: isDarkMode,
+                onChanged: (_) => onToggleTheme(),
+                secondary: Icon(
+                  isDarkMode
+                      ? Icons.dark_mode_rounded
+                      : Icons.light_mode_rounded,
+                ),
+                title: const Text(
+                  'Modo oscuro',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                dense: true,
               ),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
+            const SizedBox(height: 10),
+            Material(
+              color: const Color(0xFFFFEDEE),
+              borderRadius: BorderRadius.circular(18),
+              child: InkWell(
+                onTap: onLogout,
+                borderRadius: BorderRadius.circular(18),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout_rounded, color: Color(0xFFD32F2F)),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Cerrar sesión',
+                          style: TextStyle(
+                            color: Color(0xFFD32F2F),
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
