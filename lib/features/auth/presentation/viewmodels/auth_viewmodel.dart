@@ -94,10 +94,19 @@ class AuthViewModel extends DisposeSafeNotifier {
   /// por ejemplo sedes, clientes, frutas, lugares operativos, etc.
   int? get currentCompanyId => user?.idEmpresa;
 
-  /// ID del rol asignado al usuario.
-  ///
   /// Sirve para permisos, visibilidad de módulos y validaciones de UI.
-  int? get currentRoleId => user?.idRol;
+  /// Un usuario puede tener múltiples roles, por eso es una lista.
+  List<int> get currentRoleIds => user?.roleIds ?? [];
+
+  List<String> get currentRoleNames => user?.roleNames ?? [];
+
+  bool hasRoleId(int roleId) {
+    return user?.hasRoleId(roleId) ?? false;
+  }
+
+  bool hasRoleName(String roleName) {
+    return user?.hasRoleName(roleName) ?? false;
+  }
 
   /// ID de la sede asignada al usuario.
   ///
@@ -191,9 +200,8 @@ class AuthViewModel extends DisposeSafeNotifier {
     notifyListeners();
 
     try {
-      user = await getProfileUseCase().timeout(
-        const Duration(seconds: 20),
-      );
+      user = await getProfileUseCase().timeout(const Duration(seconds: 20));
+
 
       if (user?.estadoAcceso != 'activo') {
         errorMessage = 'Tu usuario no está autorizado para ingresar.';

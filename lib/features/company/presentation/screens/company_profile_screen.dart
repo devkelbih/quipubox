@@ -21,7 +21,7 @@ class CompanyProfileScreen extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
               subtitle: Text(
-                'ID empresa: ${user?.idEmpresa ?? 1}\nSede: ${user?.sedeNombre ?? '-'}\nRol: ${user?.rolNombre ?? '-'}',
+                'ID empresa: ${user?.idEmpresa ?? 1}\nSede: ${user?.sedeNombre ?? '-'}\nRol: ${user?.rolesText ?? '-'}',
               ),
             ),
           ),

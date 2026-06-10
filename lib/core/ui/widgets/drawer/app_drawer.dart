@@ -55,7 +55,7 @@ class AppDrawer extends StatelessWidget {
               avatarUrl: user?.avatarUrl,
               name: user?.fullName ?? 'Usuario',
               email: user?.email ?? '',
-              role: user?.rolNombre ?? '-',
+              role: user?.rolesText ?? '-',
               company: user?.razonSocial ?? '-',
               site: user?.sedeNombre ?? '-',
             ),

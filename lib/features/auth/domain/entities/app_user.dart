@@ -1,14 +1,17 @@
 class AppUser {
   final int id;
   final int idEmpresa;
-  final int idRol;
   final int idSede;
+
+  final List<int> roleIds;
+  final List<String> roleNames;
 
   final String email;
   final String nombres;
   final String apellidos;
   final String estadoAcceso;
   final bool estado;
+
   final String? telefono;
   final String? avatarUrl;
 
@@ -17,14 +20,14 @@ class AppUser {
   final String? nombreComercial;
   final String? empresaRuc;
 
-  final String? rolNombre;
   final String? sedeNombre;
 
   const AppUser({
     required this.id,
     required this.idEmpresa,
-    required this.idRol,
     required this.idSede,
+    required this.roleIds,
+    required this.roleNames,
     required this.email,
     required this.nombres,
     required this.apellidos,
@@ -36,9 +39,23 @@ class AppUser {
     this.razonSocial,
     this.nombreComercial,
     this.empresaRuc,
-    this.rolNombre,
     this.sedeNombre,
   });
 
   String get fullName => '$nombres $apellidos'.trim();
+
+  String get rolesText {
+    if (roleNames.isEmpty) return '-';
+    return roleNames.join(', ');
+  }
+
+  bool hasRoleId(int roleId) {
+    return roleIds.contains(roleId);
+  }
+
+  bool hasRoleName(String roleName) {
+    return roleNames.any(
+      (name) => name.toLowerCase().trim() == roleName.toLowerCase().trim(),
+    );
+  }
 }
