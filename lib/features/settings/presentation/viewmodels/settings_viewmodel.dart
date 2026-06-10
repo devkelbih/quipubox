@@ -1,5 +1,39 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/state/dispose_safe_notifier.dart';
 import '../../domain/usecases/get_theme_mode_usecase.dart';
 import '../../domain/usecases/save_theme_mode_usecase.dart';
-class SettingsViewModel extends DisposeSafeNotifier { final GetThemeModeUseCase getThemeModeUseCase; final SaveThemeModeUseCase saveThemeModeUseCase; SettingsViewModel({required this.getThemeModeUseCase, required this.saveThemeModeUseCase}) { themeMode = getThemeModeUseCase(); } ThemeMode themeMode = ThemeMode.system; bool get isDarkMode => themeMode == ThemeMode.dark; Future<void> setThemeMode(ThemeMode mode) async { themeMode = mode; notifyListeners(); await saveThemeModeUseCase(mode); } Future<void> toggleDarkMode() => setThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark); }
+
+class SettingsViewModel extends DisposeSafeNotifier {
+  final GetThemeModeUseCase getThemeModeUseCase;
+  final SaveThemeModeUseCase saveThemeModeUseCase;
+
+  SettingsViewModel({
+    required this.getThemeModeUseCase,
+    required this.saveThemeModeUseCase,
+  }) {
+    themeMode = getThemeModeUseCase();
+  }
+
+  ThemeMode themeMode = ThemeMode.system;
+
+  bool get isDarkMode => themeMode == ThemeMode.dark;
+
+  bool isEffectiveDarkMode(BuildContext context) {
+    if (themeMode == ThemeMode.dark) return true;
+    if (themeMode == ThemeMode.light) return false;
+
+    return MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    themeMode = mode;
+    notifyListeners();
+    await saveThemeModeUseCase(mode);
+  }
+
+  Future<void> toggleDarkMode(BuildContext context) {
+    final isDarkNow = isEffectiveDarkMode(context);
+    return setThemeMode(isDarkNow ? ThemeMode.light : ThemeMode.dark);
+  }
+}
