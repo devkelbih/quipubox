@@ -55,9 +55,9 @@ class AppDrawer extends StatelessWidget {
               avatarUrl: user?.avatarUrl,
               name: user?.fullName ?? 'Usuario',
               email: user?.email ?? '',
-              role: user?.rolesText ?? '-',
-              company: user?.razonSocial ?? '-',
-              site: user?.sedeNombre ?? '-',
+              role: user?.roleNames.join(', ') ?? '-',
+              company: user?.empresa.razonSocial ?? '-',
+              site: user?.sede.nombre ?? '-',
             ),
             Expanded(
               child: ListView(

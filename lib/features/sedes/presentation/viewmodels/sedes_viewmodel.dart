@@ -1,10 +1,8 @@
-import '../../../../core/network/network_checker.dart';
+import '../../../../core/exceptions/app_exception.dart';
 import '../../../../core/state/dispose_safe_notifier.dart';
-import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
-import '../../data/models/sede_request_model.dart';
 import '../../domain/entities/sede.dart';
+import '../../domain/usecases/change_sede_status.dart';
 import '../../domain/usecases/create_sede.dart';
-import '../../domain/usecases/delete_sede.dart';
 import '../../domain/usecases/get_sedes.dart';
 import '../../domain/usecases/update_sede.dart';
 
@@ -12,17 +10,13 @@ class SedeViewModel extends DisposeSafeNotifier {
   final GetSedesUseCase getItemsUseCase;
   final CreateSedeUseCase createUseCase;
   final UpdateSedeUseCase updateUseCase;
-  final DeleteSedeUseCase deleteUseCase;
-  final NetworkChecker networkChecker;
-  final AuthViewModel authViewModel;
+  final ChangeSedeStatusUseCase changeStatusUseCase;
 
   SedeViewModel({
     required this.getItemsUseCase,
     required this.createUseCase,
     required this.updateUseCase,
-    required this.deleteUseCase,
-    required this.networkChecker,
-    required this.authViewModel,
+    required this.changeStatusUseCase,
   });
 
   List<Sede> items = [];
@@ -32,8 +26,6 @@ class SedeViewModel extends DisposeSafeNotifier {
   bool isDeleting = false;
 
   String? errorMessage;
-
-  int? get _currentCompanyId => authViewModel.currentCompanyId;
 
   Future<void> load() async {
     isLoading = true;
@@ -50,75 +42,14 @@ class SedeViewModel extends DisposeSafeNotifier {
     }
   }
 
-  Future<bool> create({
-    required String nombre,
-    required String tipoSede,
-    String? direccion,
-    String? ciudad,
-    String? departamento,
-  }) {
-    final idEmpresa = _currentCompanyId;
-
-    if (idEmpresa == null) {
-      errorMessage = 'No se encontró la empresa del usuario.';
-      notifyListeners();
-      return Future.value(false);
-    }
-
-    return save(
-      request: SedeRequestModel(
-        idEmpresa: idEmpresa,
-        nombre: nombre,
-        tipoSede: tipoSede,
-        direccion: direccion,
-        ciudad: ciudad,
-        departamento: departamento,
-      ),
-    );
-  }
-
-  Future<bool> update({
-    required int id,
-    required String nombre,
-    required String tipoSede,
-    String? direccion,
-    String? ciudad,
-    String? departamento,
-  }) {
-    return save(
-      id: id,
-      request: SedeRequestModel(
-        nombre: nombre,
-        tipoSede: tipoSede,
-        direccion: direccion,
-        ciudad: ciudad,
-        departamento: departamento,
-      ),
-    );
-  }
-
-  Future<bool> save({
-    int? id,
-    required SedeRequestModel request,
-  }) async {
-    if (!await networkChecker.hasInternet()) {
-      errorMessage = 'No hay conexión a internet. No se puede guardar.';
-      notifyListeners();
-      return false;
-    }
-
+  Future<bool> create(Sede sede) async {
     isSaving = true;
     errorMessage = null;
     notifyListeners();
 
     try {
-      if (id == null) {
-        await createUseCase(request);
-      } else {
-        await updateUseCase(id, request: request);
-      }
-
-      await load();
+      final creado = await createUseCase(sede);
+      items.add(creado);
       return true;
     } on Object catch (e) {
       errorMessage = _clean(e);
@@ -129,20 +60,49 @@ class SedeViewModel extends DisposeSafeNotifier {
     }
   }
 
-  Future<bool> remove(int id) async {
-    if (!await networkChecker.hasInternet()) {
-      errorMessage = 'No hay conexión a internet. No se puede desactivar.';
-      notifyListeners();
-      return false;
-    }
+  Future<bool> update(Sede sede) async {
+    isSaving = true;
+    errorMessage = null;
+    notifyListeners();
 
+    try {
+      final actualizado = await updateUseCase(sede);
+      final index = items.indexWhere((e) => e.id == actualizado.id);
+
+      if (index != -1) {
+        items[index] = actualizado;
+      }
+
+      return true;
+    } on Object catch (e) {
+      errorMessage = _clean(e);
+      return false;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> changeStatus({
+    required int id,
+    required bool estado,
+  }) async {
     isDeleting = true;
     errorMessage = null;
     notifyListeners();
 
     try {
-      await deleteUseCase(id);
-      await load();
+      final updated = await changeStatusUseCase(
+        id: id,
+        estado: estado,
+      );
+
+      final index = items.indexWhere((e) => e.id == updated.id);
+
+      if (index != -1) {
+        items[index] = updated;
+      }
+
       return true;
     } on Object catch (e) {
       errorMessage = _clean(e);
@@ -154,9 +114,7 @@ class SedeViewModel extends DisposeSafeNotifier {
   }
 
   String _clean(Object e) {
-    return e
-        .toString()
-        .replaceFirst('Exception: ', '')
-        .replaceFirst('AppException: ', '');
+    if (e is AppException) return e.message;
+    return e.toString();
   }
 }

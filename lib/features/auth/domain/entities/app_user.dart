@@ -1,10 +1,13 @@
+import '../../../company/domain/entities/empresa.dart';
+import '../../../roles/domain/entities/role.dart';
+import '../../../sedes/domain/entities/sede.dart';
+
 class AppUser {
   final int id;
-  final int idEmpresa;
-  final int idSede;
 
-  final List<int> roleIds;
-  final List<String> roleNames;
+  final Empresa empresa;
+  final Sede sede;
+  final List<Role> roles;
 
   final String email;
   final String nombres;
@@ -15,19 +18,11 @@ class AppUser {
   final String? telefono;
   final String? avatarUrl;
 
-  final String? empresaNombre;
-  final String? razonSocial;
-  final String? nombreComercial;
-  final String? empresaRuc;
-
-  final String? sedeNombre;
-
   const AppUser({
     required this.id,
-    required this.idEmpresa,
-    required this.idSede,
-    required this.roleIds,
-    required this.roleNames,
+    required this.empresa,
+    required this.sede,
+    required this.roles,
     required this.email,
     required this.nombres,
     required this.apellidos,
@@ -35,27 +30,25 @@ class AppUser {
     required this.estado,
     this.telefono,
     this.avatarUrl,
-    this.empresaNombre,
-    this.razonSocial,
-    this.nombreComercial,
-    this.empresaRuc,
-    this.sedeNombre,
   });
 
   String get fullName => '$nombres $apellidos'.trim();
 
-  String get rolesText {
-    if (roleNames.isEmpty) return '-';
-    return roleNames.join(', ');
-  }
+  int get idEmpresa => empresa.id;
+
+  int get idSede => sede.id!;
+
+  List<int> get roleIds => roles.map((e) => e.id).toList();
+
+  List<String> get roleNames => roles.map((e) => e.nombre).toList();
 
   bool hasRoleId(int roleId) {
-    return roleIds.contains(roleId);
+    return roles.any((role) => role.id == roleId);
   }
 
   bool hasRoleName(String roleName) {
-    return roleNames.any(
-      (name) => name.toLowerCase().trim() == roleName.toLowerCase().trim(),
+    return roles.any(
+      (role) => role.nombre.toLowerCase().trim() == roleName.toLowerCase().trim(),
     );
   }
 }

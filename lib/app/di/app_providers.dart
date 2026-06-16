@@ -1,3 +1,8 @@
+import 'package:quipubox/core/network/connectivity_viewmodel.dart';
+import 'package:quipubox/core/session/current_session.dart';
+import 'package:quipubox/features/auth/presentation/session/auth_current_session.dart';
+import 'package:quipubox/features/sedes/domain/usecases/change_sede_status.dart';
+
 import '../../core/navigation/app_router.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/network_checker.dart';
@@ -66,7 +71,6 @@ import '../../features/sedes/data/datasources/sedes_remote_data_source.dart';
 import '../../features/sedes/data/repositories/sedes_repository_impl.dart';
 import '../../features/sedes/domain/repositories/sedes_repository.dart';
 import '../../features/sedes/domain/usecases/create_sede.dart';
-import '../../features/sedes/domain/usecases/delete_sede.dart';
 import '../../features/sedes/domain/usecases/get_sedes.dart';
 import '../../features/sedes/domain/usecases/update_sede.dart';
 import '../../features/sedes/presentation/viewmodels/sedes_viewmodel.dart';
@@ -110,12 +114,19 @@ class AppProviders {
     Provider<SharedPreferences>.value(value: preferences),
     Provider<ApiClient>(create: (_) => ApiClient()),
     Provider<NetworkChecker>(create: (_) => NetworkChecker()),
+    ChangeNotifierProvider<ConnectivityViewModel>(
+      create: (context) =>
+          ConnectivityViewModel(networkChecker: context.read<NetworkChecker>())
+            ..start(),
+    ),
     Provider<AuthRemoteDataSource>(
       create: (context) => AuthRemoteDataSource(context.read<ApiClient>()),
     ),
     Provider<AuthRepository>(
-      create: (context) =>
-          AuthRepositoryImpl(context.read<AuthRemoteDataSource>()),
+      create: (context) => AuthRepositoryImpl(
+        remoteDataSource: context.read<AuthRemoteDataSource>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
     ),
     Provider<GetCurrentSessionUseCase>(
       create: (context) =>
@@ -138,6 +149,10 @@ class AppProviders {
         logoutUseCase: context.read<LogoutUseCase>(),
         getProfileUseCase: context.read<GetProfileUseCase>(),
       ),
+    ),
+
+    Provider<CurrentSession>(
+      create: (context) => AuthCurrentSession(context.read<AuthViewModel>()),
     ),
     Provider<AppRouter>(
       create: (context) => AppRouter(context.read<AuthViewModel>()),
@@ -181,42 +196,36 @@ class AppProviders {
       create: (context) => SedeRemoteDataSource(context.read<ApiClient>()),
     ),
     Provider<SedeRepository>(
-      create: (context) =>
-          SedeRepositoryImpl(context.read<SedeRemoteDataSource>()),
+      create: (context) => SedeRepositoryImpl(
+        remoteDataSource: context.read<SedeRemoteDataSource>(),
+        networkChecker: context.read<NetworkChecker>(),
+      ),
     ),
     Provider<GetSedesUseCase>(
       create: (context) => GetSedesUseCase(context.read<SedeRepository>()),
     ),
     Provider<CreateSedeUseCase>(
-      create: (context) => CreateSedeUseCase(context.read<SedeRepository>()),
+      create: (context) => CreateSedeUseCase(
+        repository: context.read<SedeRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
     ),
     Provider<UpdateSedeUseCase>(
       create: (context) => UpdateSedeUseCase(context.read<SedeRepository>()),
     ),
-    Provider<DeleteSedeUseCase>(
-      create: (context) => DeleteSedeUseCase(context.read<SedeRepository>()),
-    ),
-    ChangeNotifierProxyProvider<AuthViewModel, SedeViewModel>(
-      create: (context) => SedeViewModel(
-        getItemsUseCase: context.read<GetSedesUseCase>(),
-        createUseCase: context.read<CreateSedeUseCase>(),
-        updateUseCase: context.read<UpdateSedeUseCase>(),
-        deleteUseCase: context.read<DeleteSedeUseCase>(),
-        networkChecker: context.read<NetworkChecker>(),
-        authViewModel: context.read<AuthViewModel>(),
-      ),
-      update: (context, authViewModel, sedeViewModel) {
-        return sedeViewModel ??
-            SedeViewModel(
-              getItemsUseCase: context.read<GetSedesUseCase>(),
-              createUseCase: context.read<CreateSedeUseCase>(),
-              updateUseCase: context.read<UpdateSedeUseCase>(),
-              deleteUseCase: context.read<DeleteSedeUseCase>(),
-              networkChecker: context.read<NetworkChecker>(),
-              authViewModel: authViewModel,
-            );
-      },
-    ),
+    Provider<ChangeSedeStatusUseCase>(
+  create: (context) => ChangeSedeStatusUseCase(
+    context.read<SedeRepository>(),
+  ),
+),
+    ChangeNotifierProvider<SedeViewModel>(
+  create: (context) => SedeViewModel(
+    getItemsUseCase: context.read<GetSedesUseCase>(),
+    createUseCase: context.read<CreateSedeUseCase>(),
+    updateUseCase: context.read<UpdateSedeUseCase>(),
+    changeStatusUseCase: context.read<ChangeSedeStatusUseCase>(),
+  ),
+),
     Provider<LugarOperativoRemoteDataSource>(
       create: (context) =>
           LugarOperativoRemoteDataSource(context.read<ApiClient>()),

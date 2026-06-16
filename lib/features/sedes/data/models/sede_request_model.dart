@@ -1,3 +1,7 @@
+import 'package:quipubox/features/sedes/domain/enums/tipo_sede.dart';
+
+import '../../domain/entities/sede.dart';
+
 class SedeRequestModel {
   final int? idEmpresa;
   final String nombre;
@@ -5,6 +9,7 @@ class SedeRequestModel {
   final String? direccion;
   final String? ciudad;
   final String? departamento;
+
   const SedeRequestModel({
     this.idEmpresa,
     required this.nombre,
@@ -13,23 +18,38 @@ class SedeRequestModel {
     this.ciudad,
     this.departamento,
   });
+
+  factory SedeRequestModel.fromEntity(Sede sede) {
+    return SedeRequestModel(
+      idEmpresa: sede.idEmpresa,
+      nombre: sede.nombre,
+      tipoSede: sede.tipoSede.value,
+      direccion: sede.direccion,
+      ciudad: sede.ciudad,
+      departamento: sede.departamento,
+    );
+  }
+
   Map<String, dynamic> toCreateJson() => {
-    if (idEmpresa != null) 'id_empresa': idEmpresa,
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-    if (tipoSede.trim().isNotEmpty) 'tipo_sede': tipoSede.trim(),
-    if (direccion != null && direccion!.trim().isNotEmpty)
-      'direccion': direccion!.trim(),
-    if (ciudad != null && ciudad!.trim().isNotEmpty) 'ciudad': ciudad!.trim(),
-    if (departamento != null && departamento!.trim().isNotEmpty)
-      'departamento': departamento!.trim(),
-  };
+        if (idEmpresa != null) 'id_empresa': idEmpresa,
+        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+        if (tipoSede.trim().isNotEmpty) 'tipo_sede': tipoSede.trim(),
+        if (direccion != null && direccion!.trim().isNotEmpty)
+          'direccion': direccion!.trim(),
+        if (ciudad != null && ciudad!.trim().isNotEmpty)
+          'ciudad': ciudad!.trim(),
+        if (departamento != null && departamento!.trim().isNotEmpty)
+          'departamento': departamento!.trim(),
+      };
+
   Map<String, dynamic> toUpdateJson() => {
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-    if (tipoSede.trim().isNotEmpty) 'tipo_sede': tipoSede.trim(),
-    if (direccion != null && direccion!.trim().isNotEmpty)
-      'direccion': direccion!.trim(),
-    if (ciudad != null && ciudad!.trim().isNotEmpty) 'ciudad': ciudad!.trim(),
-    if (departamento != null && departamento!.trim().isNotEmpty)
-      'departamento': departamento!.trim(),
-  };
+        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+        if (tipoSede.trim().isNotEmpty) 'tipo_sede': tipoSede.trim(),
+        if (direccion != null && direccion!.trim().isNotEmpty)
+          'direccion': direccion!.trim(),
+        if (ciudad != null && ciudad!.trim().isNotEmpty)
+          'ciudad': ciudad!.trim(),
+        if (departamento != null && departamento!.trim().isNotEmpty)
+          'departamento': departamento!.trim(),
+      };
 }

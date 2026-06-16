@@ -67,8 +67,8 @@ class _SedeListScreenState extends State<SedeListScreen> {
                           child: _SedeCard(
                             item: item,
                             onEdit: () => _openForm(context, item: item),
-                            onDeactivate: () =>
-                                _confirmDeactivate(context, item),
+                            onChangeStatus: () =>
+                                _confirmChangeStatus(context, item),
                           ),
                         ),
                       ),
@@ -101,24 +101,39 @@ class _SedeListScreenState extends State<SedeListScreen> {
     );
   }
 
-  Future<void> _confirmDeactivate(BuildContext context, Sede item) async {
+  Future<void> _confirmChangeStatus(BuildContext context, Sede item) async {
+    final newStatus = !item.estado;
+
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
       showDragHandle: true,
-      builder: (_) => _DeactivateSheet(item: item),
+      builder: (_) => _ChangeStatusSheet(item: item, newStatus: newStatus),
     );
 
     if (confirmed != true || !context.mounted) return;
 
+    final id = item.id;
+
+    if (id == null) {
+      AppToast.show('No se encontró el ID de la sede.', type: ToastType.error);
+      return;
+    }
+
     final viewModel = context.read<SedeViewModel>();
-    final ok = await viewModel.remove(item.id);
+
+    final ok = await viewModel.changeStatus(id: id, estado: newStatus);
 
     if (!context.mounted) return;
 
     AppToast.show(
       ok
-          ? 'Sede desactivada correctamente.'
-          : viewModel.errorMessage ?? 'No se pudo desactivar.',
+          ? newStatus
+                ? 'Sede activada correctamente.'
+                : 'Sede desactivada correctamente.'
+          : viewModel.errorMessage ??
+                (newStatus
+                    ? 'No se pudo activar la sede.'
+                    : 'No se pudo desactivar la sede.'),
       type: ok ? ToastType.success : ToastType.error,
     );
   }
@@ -188,10 +203,7 @@ class _SummaryItem extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
           ),
           Text(label),
         ],
@@ -216,12 +228,12 @@ class _SummaryDivider extends StatelessWidget {
 class _SedeCard extends StatelessWidget {
   final Sede item;
   final VoidCallback onEdit;
-  final VoidCallback onDeactivate;
+  final VoidCallback onChangeStatus;
 
   const _SedeCard({
     required this.item,
     required this.onEdit,
-    required this.onDeactivate,
+    required this.onChangeStatus,
   });
 
   @override
@@ -322,9 +334,13 @@ class _SedeCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: FilledButton.tonalIcon(
-                    onPressed: item.estado ? onDeactivate : null,
-                    icon: const Icon(Icons.block_rounded),
-                    label: const Text('Desactivar'),
+                    onPressed: onChangeStatus,
+                    icon: Icon(
+                      item.estado
+                          ? Icons.block_rounded
+                          : Icons.check_circle_rounded,
+                    ),
+                    label: Text(item.estado ? 'Desactivar' : 'Activar'),
                   ),
                 ),
               ],
@@ -422,10 +438,7 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: colorScheme.onSurface, fontSize: 14),
               children: [
                 TextSpan(
                   text: '$label: ',
@@ -451,10 +464,7 @@ class _FormSheet extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const _FormSheet({
-    required this.title,
-    required this.child,
-  });
+  const _FormSheet({required this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -473,9 +483,7 @@ class _FormSheet extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(28),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -525,15 +533,38 @@ class _FormSheet extends StatelessWidget {
     );
   }
 }
-
-class _DeactivateSheet extends StatelessWidget {
+class _ChangeStatusSheet extends StatelessWidget {
   final Sede item;
+  final bool newStatus;
 
-  const _DeactivateSheet({required this.item});
+  const _ChangeStatusSheet({
+    required this.item,
+    required this.newStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    final title = newStatus ? 'Activar sede' : 'Desactivar sede';
+
+    final message = newStatus
+        ? 'La sede "${item.nombre}" volverá a estar disponible para nuevas operaciones.'
+        : 'La sede "${item.nombre}" dejará de estar disponible para nuevas operaciones.';
+
+    final icon = newStatus
+        ? Icons.check_circle_rounded
+        : Icons.block_rounded;
+
+    final backgroundColor = newStatus
+        ? colorScheme.primaryContainer
+        : colorScheme.errorContainer;
+
+    final iconColor = newStatus
+        ? colorScheme.onPrimaryContainer
+        : colorScheme.onErrorContainer;
+
+    final buttonText = newStatus ? 'Activar' : 'Desactivar';
 
     return SafeArea(
       child: Padding(
@@ -543,25 +574,27 @@ class _DeactivateSheet extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 28,
-              backgroundColor: colorScheme.errorContainer,
+              backgroundColor: backgroundColor,
               child: Icon(
-                Icons.block_rounded,
-                color: colorScheme.onErrorContainer,
+                icon,
+                color: iconColor,
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
-              'Desactivar sede',
-              style: TextStyle(
+            Text(
+              title,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'La sede "${item.nombre}" dejará de estar disponible para nuevas operaciones.',
+              message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 18),
             Row(
@@ -576,7 +609,7 @@ class _DeactivateSheet extends StatelessWidget {
                 Expanded(
                   child: FilledButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: const Text('Desactivar'),
+                    child: Text(buttonText),
                   ),
                 ),
               ],

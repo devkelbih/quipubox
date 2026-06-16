@@ -17,5 +17,13 @@ class SedeRemoteDataSource {
         await apiClient.put('/sedes/$id', body: request.toUpdateJson())
             as Map<String, dynamic>,
       );
-  Future<void> delete(int id) async => apiClient.delete('/sedes/$id');
+  Future<SedeModel> changeStatus({
+    required int id,
+    required bool estado,
+  }) async {
+    return SedeModel.fromJson(
+      await apiClient.patch('/sedes/$id/estado', body: {'estado': estado})
+          as Map<String, dynamic>,
+    );
+  }
 }

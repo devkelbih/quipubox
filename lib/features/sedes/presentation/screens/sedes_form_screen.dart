@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/app_toast.dart';
 import '../../domain/entities/sede.dart';
 import '../../domain/enums/tipo_sede.dart';
@@ -58,6 +59,9 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SedeViewModel>();
+    final isOnline = context.watch<ConnectivityViewModel>().isOnline;
+
+    final canSubmit = !vm.isSaving && isOnline;
 
     return Form(
       key: _formKey,
@@ -66,6 +70,7 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
         children: [
           TextFormField(
             controller: _nombreController,
+            enabled: !vm.isSaving,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
               labelText: 'Nombre de la sede',
@@ -104,6 +109,7 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
 
           TextFormField(
             controller: _ciudadController,
+            enabled: !vm.isSaving,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
               labelText: 'Ciudad',
@@ -115,6 +121,7 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
 
           TextFormField(
             controller: _departamentoController,
+            enabled: !vm.isSaving,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
               labelText: 'Departamento',
@@ -126,6 +133,7 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
 
           TextFormField(
             controller: _direccionController,
+            enabled: !vm.isSaving,
             textCapitalization: TextCapitalization.sentences,
             maxLines: 2,
             decoration: const InputDecoration(
@@ -137,7 +145,7 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
           const SizedBox(height: 22),
 
           FilledButton.icon(
-            onPressed: vm.isSaving ? null : _submit,
+            onPressed: canSubmit ? _submit : null,
             icon: vm.isSaving
                 ? const SizedBox(
                     width: 18,
@@ -147,6 +155,18 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
                 : Icon(_isEditing ? Icons.save_rounded : Icons.add_rounded),
             label: Text(_isEditing ? 'Guardar cambios' : 'Registrar sede'),
           ),
+
+          if (!isOnline) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Se requiere conexión a internet para guardar.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -158,22 +178,20 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
     final vm = context.read<SedeViewModel>();
     final item = widget.item;
 
+    final sede = Sede(
+      id: item?.id,
+      idEmpresa: item?.idEmpresa,
+      estado: item?.estado ?? true,
+      nombre: _nombreController.text.trim(),
+      tipoSede: _tipoSede,
+      direccion: _nullIfEmpty(_direccionController.text),
+      ciudad: _nullIfEmpty(_ciudadController.text),
+      departamento: _nullIfEmpty(_departamentoController.text),
+    );
+
     final ok = _isEditing
-        ? await vm.update(
-            id: item!.id,
-            nombre: _nombreController.text.trim(),
-            tipoSede: _tipoSede.value,
-            direccion: _nullIfEmpty(_direccionController.text),
-            ciudad: _nullIfEmpty(_ciudadController.text),
-            departamento: _nullIfEmpty(_departamentoController.text),
-          )
-        : await vm.create(
-            nombre: _nombreController.text.trim(),
-            tipoSede: _tipoSede.value,
-            direccion: _nullIfEmpty(_direccionController.text),
-            ciudad: _nullIfEmpty(_ciudadController.text),
-            departamento: _nullIfEmpty(_departamentoController.text),
-          );
+        ? await vm.update(sede)
+        : await vm.create(sede);
 
     if (!mounted) return;
 

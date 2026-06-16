@@ -17,12 +17,10 @@ class CompanyProfileScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.business_rounded),
               title: Text(
-                user?.empresaNombre ?? 'Empresa',
+                user?.empresa.nombreComercial ?? 'Empresa',
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
-              subtitle: Text(
-                'ID empresa: ${user?.idEmpresa ?? 1}\nSede: ${user?.sedeNombre ?? '-'}\nRol: ${user?.rolesText ?? '-'}',
-              ),
+              
             ),
           ),
         ],

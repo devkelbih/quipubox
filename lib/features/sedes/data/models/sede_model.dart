@@ -15,8 +15,8 @@ class SedeModel extends Sede {
 
   factory SedeModel.fromJson(Map<String, dynamic> json) {
     return SedeModel(
-      id: json['id_sede'] as int? ?? 0,
-      idEmpresa: json['id_empresa'] as int? ?? 1,
+      id: json['id_sede'] as int? ?? json['id'] as int?,
+      idEmpresa: json['id_empresa'] as int?,
       estado: json['estado'] == true,
       nombre: json['nombre']?.toString() ?? '',
       tipoSede: TipoSedeX.fromValue(json['tipo_sede']?.toString() ?? ''),
@@ -26,28 +26,18 @@ class SedeModel extends Sede {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id_empresa': idEmpresa,
-      'nombre': nombre,
-      'tipo_sede': tipoSede.value,
-      'direccion': direccion,
-      'ciudad': ciudad,
-      'departamento': departamento,
-      'estado': estado,
-    };
-  }
-
   static List<SedeModel> listFrom(dynamic response) {
     if (response is List) {
       return response
-          .map((e) => SedeModel.fromJson(e as Map<String, dynamic>))
+          .whereType<Map>()
+          .map((e) => SedeModel.fromJson(Map<String, dynamic>.from(e)))
           .toList();
     }
 
     if (response is Map<String, dynamic> && response['data'] is List) {
       return (response['data'] as List)
-          .map((e) => SedeModel.fromJson(e as Map<String, dynamic>))
+          .whereType<Map>()
+          .map((e) => SedeModel.fromJson(Map<String, dynamic>.from(e)))
           .toList();
     }
 

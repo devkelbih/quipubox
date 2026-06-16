@@ -12,16 +12,15 @@ import '../exceptions/app_exception.dart';
 /// Responsabilidades:
 /// - Construir URLs.
 /// - Agregar headers comunes.
-/// - Agregar automáticamente el JWT de Supabase.
+/// - Refrescar la sesión de Supabase antes de cada request.
+/// - Agregar automáticamente el JWT vigente.
 /// - Ejecutar solicitudes HTTP.
 /// - Parsear respuestas JSON.
-/// - Manejar errores.
 /// - Convertir errores técnicos en AppException.
 ///
 /// Todos los módulos consumen este cliente.
 class ApiClient {
-  ApiClient({http.Client? client})
-    : _client = client ?? http.Client();
+  ApiClient({http.Client? client}) : _client = client ?? http.Client();
 
   final http.Client _client;
 
@@ -32,52 +31,89 @@ class ApiClient {
   Future<dynamic> get(
     String path, {
     Map<String, String>? query,
-  }) => _send(
-    'GET',
-    path,
-    query: query,
-  );
+  }) {
+    return _send(
+      'GET',
+      path,
+      query: query,
+    );
+  }
 
   /// POST /recurso
   Future<dynamic> post(
     String path, {
     Map<String, dynamic>? body,
-  }) => _send(
-    'POST',
-    path,
-    body: body,
-  );
+  }) {
+    return _send(
+      'POST',
+      path,
+      body: body,
+    );
+  }
 
   /// PUT /recurso/id
   Future<dynamic> put(
     String path, {
     Map<String, dynamic>? body,
-  }) => _send(
-    'PUT',
-    path,
-    body: body,
-  );
+  }) {
+    return _send(
+      'PUT',
+      path,
+      body: body,
+    );
+  }
 
   /// PATCH /recurso/id
   Future<dynamic> patch(
     String path, {
     Map<String, dynamic>? body,
-  }) => _send(
-    'PATCH',
-    path,
-    body: body,
-  );
+  }) {
+    return _send(
+      'PATCH',
+      path,
+      body: body,
+    );
+  }
 
   /// DELETE /recurso/id
-  Future<dynamic> delete(String path) => _send(
-    'DELETE',
-    path,
-  );
+  Future<dynamic> delete(String path) {
+    return _send(
+      'DELETE',
+      path,
+    );
+  }
+
+  /// Obtiene un access token válido de Supabase.
+  ///
+  /// Supabase maneja:
+  /// - access_token: token corto que se envía al backend.
+  /// - refresh_token: token usado para renovar la sesión.
+  ///
+  /// currentSession solo lee la sesión actual. Si el access_token expiró,
+  /// puede devolver un token viejo.
+  ///
+  /// Por eso, antes de llamar al backend, intentamos refrescar la sesión.
+  /// Si el refresh falla, se devuelve el token actual como último intento.
+  Future<String?> _getValidAccessToken() async {
+    final supabase = Supabase.instance.client;
+    final currentSession = supabase.auth.currentSession;
+
+    if (currentSession == null) {
+      return null;
+    }
+
+    try {
+      final refreshed = await supabase.auth.refreshSession();
+      return refreshed.session?.accessToken ?? currentSession.accessToken;
+    } catch (_) {
+      return currentSession.accessToken;
+    }
+  }
 
   /// Método interno que ejecuta todas las solicitudes.
   ///
   /// Flujo:
-  /// 1. Obtiene JWT de Supabase.
+  /// 1. Obtiene un JWT vigente desde Supabase.
   /// 2. Construye URL completa.
   /// 3. Construye headers.
   /// 4. Convierte body a JSON.
@@ -89,80 +125,38 @@ class ApiClient {
     Map<String, String>? query,
     Map<String, dynamic>? body,
   }) async {
+    final token = await _getValidAccessToken();
 
-    /// JWT actual del usuario autenticado.
-    ///
-    /// Este token es enviado automáticamente
-    /// al backend mediante Authorization Bearer.
-    final token =
-        Supabase.instance.client.auth.currentSession?.accessToken;
-
-    /// Construcción de URL.
-    ///
-    /// Ejemplo:
-    ///
-    /// baseUrl:
-    /// https://quipubox-api.vercel.app
-    ///
-    /// path:
-    /// /sedes
-    ///
-    /// Resultado:
-    /// https://quipubox-api.vercel.app/sedes
     final uri = Uri.parse(
       '${AppConfig.baseUrl}$path',
     ).replace(
       queryParameters: query,
     );
 
-    /// Headers comunes para toda la aplicación.
     final headers = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-
-      /// Si existe sesión, agrega JWT.
-      if (token != null && token.isNotEmpty)
-        'Authorization': 'Bearer $token',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
 
     try {
+      final encodedBody = body == null ? null : jsonEncode(_withoutNulls(body));
 
-      /// Convierte Map -> JSON.
-      ///
-      /// También elimina valores null.
-      final encoded =
-          body == null
-              ? null
-              : jsonEncode(
-                  _withoutNulls(body),
-                );
-
-      /// Ejecuta la solicitud.
       final response = await _execute(
         method,
         uri,
         headers,
-        encoded,
+        encodedBody,
       ).timeout(_timeout);
 
-      /// Procesa respuesta.
       return _parse(response);
-
     } on TimeoutException {
-
-      /// Error por tiempo excedido.
       throw const AppException(
         'La solicitud tardó demasiado. Revisa tu conexión e intenta nuevamente.',
       );
-
     } on AppException {
-
-      /// Si ya es AppException, se reenvía.
       rethrow;
-
     } on Object catch (error) {
-
-      /// Error inesperado.
       throw AppException(
         'No se pudo conectar con el servidor. $error',
       );
@@ -176,9 +170,7 @@ class ApiClient {
     Map<String, String> headers,
     String? body,
   ) {
-
     switch (method) {
-
       case 'GET':
         return _client.get(
           uri,
@@ -221,41 +213,17 @@ class ApiClient {
 
   /// Interpreta la respuesta del backend.
   dynamic _parse(http.Response response) {
-
-    /// Body crudo.
     final raw = response.body.trim();
 
-    /// JSON convertido a objeto Dart.
-    final decoded =
-        raw.isEmpty
-            ? null
-            : jsonDecode(raw);
+    final decoded = raw.isEmpty ? null : jsonDecode(raw);
 
-    /// Respuesta exitosa.
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       return decoded;
     }
 
-    /// Manejo de errores enviados por NestJS.
-    ///
-    /// Ejemplo:
-    ///
-    /// {
-    ///   "message": "Usuario no encontrado"
-    /// }
     if (decoded is Map<String, dynamic>) {
-
       final message = decoded['message'];
 
-      /// Errores de validación.
-      ///
-      /// {
-      ///   "message": [
-      ///      "nombre no puede estar vacío",
-      ///      "email inválido"
-      ///   ]
-      /// }
       if (message is List) {
         throw AppException(
           message.join('\n'),
@@ -264,13 +232,11 @@ class ApiClient {
       }
 
       throw AppException(
-        message?.toString() ??
-            'Error del servidor.',
+        message?.toString() ?? 'Error del servidor.',
         statusCode: response.statusCode,
       );
     }
 
-    /// Error genérico.
     throw AppException(
       'Error HTTP ${response.statusCode}.',
       statusCode: response.statusCode,
@@ -280,16 +246,15 @@ class ApiClient {
   /// Elimina propiedades null antes de enviar JSON.
   ///
   /// Ejemplo:
-  ///
+  /// Entrada:
   /// {
-  ///   nombre: "Cañete",
-  ///   direccion: null
+  ///   "nombre": "Cañete",
+  ///   "direccion": null
   /// }
   ///
-  /// Resultado:
-  ///
+  /// Salida:
   /// {
-  ///   nombre: "Cañete"
+  ///   "nombre": "Cañete"
   /// }
   Map<String, dynamic> _withoutNulls(
     Map<String, dynamic> input,
