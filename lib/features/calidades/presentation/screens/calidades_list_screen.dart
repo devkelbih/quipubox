@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/ui/app_toast.dart';
-import '../../../../core/ui/widgets/app_scaffold.dart';
-import '../../../../core/ui/widgets/empty_state.dart';
+import '../../../../core/ui/feedback/app_toast.dart';
+import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/calidad.dart';
 import '../viewmodels/calidades_viewmodel.dart';
 import 'calidades_form_screen.dart';

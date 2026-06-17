@@ -1,4 +1,4 @@
-import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../../../core/state/safe_change_notifier.dart';
 import '../../domain/entities/role.dart';
 import '../../domain/usecases/get_roles.dart';
 

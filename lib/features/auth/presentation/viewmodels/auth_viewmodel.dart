@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/exceptions/app_exception.dart';
-import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../../../core/state/safe_change_notifier.dart';
 import '../../domain/entities/app_user.dart';
 import '../../domain/usecases/get_current_session_usecase.dart';
 import '../../domain/usecases/get_profile_usecase.dart';

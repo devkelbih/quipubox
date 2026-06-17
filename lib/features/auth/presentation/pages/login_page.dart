@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
-import '../../../../core/ui/app_toast.dart';
+import '../../../../core/ui/feedback/app_toast.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
 class LoginPage extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/ui/app_toast.dart';
+import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../data/models/cliente_request_model.dart';
 import '../../domain/entities/cliente.dart';

@@ -1,5 +1,5 @@
 import '../../../../core/network/network_checker.dart';
-import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../../../core/state/safe_change_notifier.dart';
 import '../../data/models/lugar_operativo_request_model.dart';
 import '../../domain/entities/lugar_operativo.dart';
 import '../../domain/usecases/create_lugar_operativo.dart';

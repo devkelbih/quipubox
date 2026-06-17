@@ -1,5 +1,5 @@
 import '../../../../core/network/network_checker.dart';
-import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../../../core/state/safe_change_notifier.dart';
 import '../../data/models/fruta_request_model.dart';
 import '../../domain/entities/fruta.dart';
 import '../../domain/usecases/create_fruta.dart';

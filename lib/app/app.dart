@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/network/connectivity_viewmodel.dart';
-import 'package:quipubox/core/ui/app_toast.dart';
+import 'package:quipubox/core/ui/feedback/app_toast.dart';
 
 import '../core/navigation/app_router.dart';
 import '../core/navigation/navigation_keys.dart';

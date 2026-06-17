@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/ui/app_toast.dart';
-import '../../../../core/ui/widgets/app_scaffold.dart';
-import '../../../../core/ui/widgets/empty_state.dart';
+import '../../../../core/ui/feedback/app_toast.dart';
+import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/camion.dart';
 import '../viewmodels/camiones_viewmodel.dart';
 import 'camiones_form_screen.dart';

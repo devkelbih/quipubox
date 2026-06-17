@@ -1,5 +1,5 @@
 import '../../../../core/network/network_checker.dart';
-import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../../../core/state/safe_change_notifier.dart';
 import '../../data/models/tipos_jaba_request_model.dart';
 import '../../domain/entities/tipos_jaba.dart';
 import '../../domain/usecases/create_tipos_jaba.dart';

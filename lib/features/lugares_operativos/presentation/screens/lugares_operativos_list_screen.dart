@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/ui/app_toast.dart';
-import '../../../../core/ui/widgets/app_scaffold.dart';
-import '../../../../core/ui/widgets/empty_state.dart';
+import '../../../../core/ui/feedback/app_toast.dart';
+import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/constants/lugar_operativo_tipos.dart';
 import '../../domain/entities/lugar_operativo.dart';
 import '../viewmodels/lugares_operativos_viewmodel.dart';

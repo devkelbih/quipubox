@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../navigation/app_routes.dart';
-import 'drawer/app_drawer.dart';
+import '../drawer/app_drawer.dart';
 
 class AppScaffold extends StatelessWidget {
   final String title;

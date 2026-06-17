@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quipubox/core/ui/widgets/app_form_sheet.dart';
-import 'package:quipubox/core/ui/widgets/change_status_dialog.dart';
+import 'package:quipubox/core/ui/sheets/app_form_sheet.dart';
+import 'package:quipubox/core/ui/feedback/change_status_dialog.dart';
 import 'package:quipubox/features/sedes/presentation/widgets/sede_card.dart';
 
-import '../../../../core/ui/app_toast.dart';
-import '../../../../core/ui/widgets/app_scaffold.dart';
-import '../../../../core/ui/widgets/empty_state.dart';
-import '../../../../core/ui/widgets/status_summary_filter.dart';
+import '../../../../core/ui/feedback/app_toast.dart';
+import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../../core/ui/states/empty_state.dart';
+import '../../../../core/ui/filters/status_summary_filter.dart';
 import '../../domain/entities/sede.dart';
 import '../viewmodels/sedes_viewmodel.dart';
 import 'sedes_form_screen.dart';

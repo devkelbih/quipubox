@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../state/dispose_safe_notifier.dart';
+import '../state/safe_change_notifier.dart';
 import 'network_checker.dart';
 
 class ConnectivityViewModel extends DisposeSafeNotifier {

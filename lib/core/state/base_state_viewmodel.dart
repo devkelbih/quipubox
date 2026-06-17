@@ -1,5 +1,5 @@
 import '../mappers/error_message_mapper.dart';
-import 'dispose_safe_notifier.dart';
+import 'safe_change_notifier.dart';
 
 enum ViewModelActionState {
   loading,

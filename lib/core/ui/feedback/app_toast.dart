@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../navigation/navigation_keys.dart';
+import '../../navigation/navigation_keys.dart';
 
 enum ToastType { success, error, warning, info }
 
