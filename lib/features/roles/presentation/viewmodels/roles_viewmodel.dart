@@ -2,7 +2,7 @@ import '../../../../core/state/safe_change_notifier.dart';
 import '../../domain/entities/role.dart';
 import '../../domain/usecases/get_roles.dart';
 
-class RolesViewModel extends DisposeSafeNotifier {
+class RolesViewModel extends SafeChangeNotifier {
   final GetRolesUseCase getRolesUseCase;
   RolesViewModel(this.getRolesUseCase);
   List<Role> items = [];

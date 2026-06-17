@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class DisposeSafeNotifier extends ChangeNotifier {
+class SafeChangeNotifier extends ChangeNotifier {
   bool _disposed = false;
   @override
   void notifyListeners() {

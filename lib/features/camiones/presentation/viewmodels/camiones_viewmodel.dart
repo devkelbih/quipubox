@@ -1,17 +1,81 @@
-import '../../../../core/network/network_checker.dart';
-import '../../../../core/state/safe_change_notifier.dart';
-import '../../data/models/camion_request_model.dart';
+import 'package:quipubox/core/state/base_state_viewmodel.dart';
+import 'package:quipubox/features/camiones/domain/usecases/change_camion_status.dart';
 import '../../domain/entities/camion.dart';
 import '../../domain/usecases/create_camion.dart';
-import '../../domain/usecases/delete_camion.dart';
 import '../../domain/usecases/get_camiones.dart';
 import '../../domain/usecases/update_camion.dart';
-class CamionViewModel extends DisposeSafeNotifier {
-  final GetCamionesUseCase getItemsUseCase; final CreateCamionUseCase createUseCase; final UpdateCamionUseCase updateUseCase; final DeleteCamionUseCase deleteUseCase; final NetworkChecker networkChecker;
-  CamionViewModel({required this.getItemsUseCase, required this.createUseCase, required this.updateUseCase, required this.deleteUseCase, required this.networkChecker});
-  List<Camion> items = []; bool isLoading = false; bool isSaving = false; bool isDeleting = false; String? errorMessage;
-  Future<void> load() async { isLoading = true; errorMessage = null; notifyListeners(); try { items = await getItemsUseCase(); } on Object catch (e) { errorMessage = _clean(e); } finally { isLoading = false; notifyListeners(); } }
-  Future<bool> save({int? id, required CamionRequestModel request}) async { if (!await networkChecker.hasInternet()) { errorMessage = 'No hay conexión a internet. No se puede guardar.'; notifyListeners(); return false; } isSaving = true; errorMessage = null; notifyListeners(); try { if (id == null) { await createUseCase(request); } else { await updateUseCase(id, request: request); } await load(); return true; } on Object catch (e) { errorMessage = _clean(e); return false; } finally { isSaving = false; notifyListeners(); } }
-  Future<bool> remove(int id) async { if (!await networkChecker.hasInternet()) { errorMessage = 'No hay conexión a internet. No se puede desactivar.'; notifyListeners(); return false; } isDeleting = true; errorMessage = null; notifyListeners(); try { await deleteUseCase(id); await load(); return true; } on Object catch (e) { errorMessage = _clean(e); return false; } finally { isDeleting = false; notifyListeners(); } }
-  String _clean(Object e) => e.toString().replaceFirst('Exception: ', '').replaceFirst('AppException: ', '');
+
+class CamionViewModel extends BaseStateViewModel {
+  final GetCamionesUseCase getItemsUseCase;
+  final CreateCamionUseCase createUseCase;
+  final UpdateCamionUseCase updateUseCase;
+  final ChangeCamionStatusUseCase changeStatusUseCase;
+  CamionViewModel({
+    required this.getItemsUseCase,
+    required this.createUseCase,
+    required this.updateUseCase,
+    required this.changeStatusUseCase,
+  });
+  List<Camion> items = [];
+
+  Future<void> load() async {
+    final result = await run<List<Camion>>(
+      state: ViewModelActionState.loading,
+      action: getItemsUseCase.call,
+    );
+
+    if (result != null) {
+      items = result;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> create(Camion camion) async {
+    final result = await run<Camion>(
+      state: ViewModelActionState.saving,
+      action: () => createUseCase(camion),
+    );
+
+    if (result == null) return false;
+
+    items.add(result);
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> update(Camion camion) async {
+    final result = await run<Camion>(
+      state: ViewModelActionState.saving,
+      action: () => updateUseCase(camion),
+    );
+
+    if (result == null) return false;
+
+    final index = items.indexWhere((e) => e.id == result.id);
+
+    if (index != -1) {
+      items[index] = result;
+    }
+
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> changeStatus({required int id, required bool estado}) async {
+    final result = await run<Camion>(
+      state: ViewModelActionState.changingStatus,
+      action: () => changeStatusUseCase(id: id, estado: estado),
+    );
+
+    if (result == null) return false;
+
+    final index = items.indexWhere((e) => e.id == result.id);
+
+    if (index != -1) {
+      items[index] = result;
+    }
+
+    notifyListeners();
+    return true;
+  }
 }

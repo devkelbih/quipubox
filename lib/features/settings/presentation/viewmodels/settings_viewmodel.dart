@@ -4,7 +4,7 @@ import '../../../../core/state/safe_change_notifier.dart';
 import '../../domain/usecases/get_theme_mode_usecase.dart';
 import '../../domain/usecases/save_theme_mode_usecase.dart';
 
-class SettingsViewModel extends DisposeSafeNotifier {
+class SettingsViewModel extends SafeChangeNotifier {
   final GetThemeModeUseCase getThemeModeUseCase;
   final SaveThemeModeUseCase saveThemeModeUseCase;
 

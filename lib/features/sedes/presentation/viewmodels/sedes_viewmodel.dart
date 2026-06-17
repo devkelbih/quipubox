@@ -23,7 +23,7 @@ class SedeViewModel extends BaseStateViewModel {
   Future<void> load() async {
     final result = await run<List<Sede>>(
       state: ViewModelActionState.loading,
-      action: getItemsUseCase,
+      action: getItemsUseCase.call,
     );
 
     if (result != null) {
@@ -68,7 +68,7 @@ class SedeViewModel extends BaseStateViewModel {
     required bool estado,
   }) async {
     final result = await run<Sede>(
-      state: ViewModelActionState.deleting,
+      state: ViewModelActionState.changingStatus,
       action: () => changeStatusUseCase(
         id: id,
         estado: estado,

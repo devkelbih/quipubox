@@ -3,7 +3,7 @@ import 'dart:async';
 import '../state/safe_change_notifier.dart';
 import 'network_checker.dart';
 
-class ConnectivityViewModel extends DisposeSafeNotifier {
+class ConnectivityViewModel extends SafeChangeNotifier {
   final NetworkChecker networkChecker;
 
   ConnectivityViewModel({

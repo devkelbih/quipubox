@@ -7,7 +7,7 @@ import '../../domain/usecases/delete_usuario.dart';
 import '../../domain/usecases/get_usuarios.dart';
 import '../../domain/usecases/update_usuario.dart';
 
-class UsuarioViewModel extends DisposeSafeNotifier {
+class UsuarioViewModel extends SafeChangeNotifier {
   final GetUsuariosUseCase getItemsUseCase;
   final CreateUsuarioUseCase createUseCase;
   final UpdateUsuarioUseCase updateUseCase;

@@ -7,7 +7,7 @@ import '../../domain/usecases/delete_lugar_operativo.dart';
 import '../../domain/usecases/get_lugares_operativos.dart';
 import '../../domain/usecases/update_lugar_operativo.dart';
 
-class LugarOperativoViewModel extends DisposeSafeNotifier {
+class LugarOperativoViewModel extends SafeChangeNotifier {
   final GetLugaresOperativosUseCase getItemsUseCase;
   final CreateLugarOperativoUseCase createUseCase;
   final UpdateLugarOperativoUseCase updateUseCase;

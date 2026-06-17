@@ -11,7 +11,7 @@ import '../../domain/usecases/get_profile_usecase.dart';
 import '../../domain/usecases/login_with_google_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 
-class AuthViewModel extends DisposeSafeNotifier {
+class AuthViewModel extends SafeChangeNotifier {
   final GetCurrentSessionUseCase getCurrentSessionUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
   final LogoutUseCase logoutUseCase;
@@ -93,34 +93,34 @@ class AuthViewModel extends DisposeSafeNotifier {
   void _listenAuthChanges() {
     _authSubscription?.cancel();
 
-    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen(
-      (data) async {
-        if (_handlingAuthChange) return;
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      data,
+    ) async {
+      if (_handlingAuthChange) return;
 
-        _handlingAuthChange = true;
+      _handlingAuthChange = true;
 
-        try {
-          if (data.session == null) {
-            user = null;
-            errorMessage = null;
-            _finishLoading();
-            return;
-          }
-
-          final ok = await loadProfile();
-
-          if (!ok && hasSupabaseSession) {
-            await _safeSignOut();
-          }
-        } catch (error) {
+      try {
+        if (data.session == null) {
           user = null;
-          errorMessage = _clean(error);
+          errorMessage = null;
           _finishLoading();
-        } finally {
-          _handlingAuthChange = false;
+          return;
         }
-      },
-    );
+
+        final ok = await loadProfile();
+
+        if (!ok && hasSupabaseSession) {
+          await _safeSignOut();
+        }
+      } catch (error) {
+        user = null;
+        errorMessage = _clean(error);
+        _finishLoading();
+      } finally {
+        _handlingAuthChange = false;
+      }
+    });
   }
 
   Future<bool> loadProfile() async {
@@ -129,9 +129,7 @@ class AuthViewModel extends DisposeSafeNotifier {
     notifyListeners();
 
     try {
-      user = await getProfileUseCase().timeout(
-        const Duration(seconds: 20),
-      );
+      user = await getProfileUseCase().timeout(const Duration(seconds: 20));
 
       return true;
     } on TimeoutException {

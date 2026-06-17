@@ -1,25 +1,23 @@
 import '../mappers/error_message_mapper.dart';
 import 'safe_change_notifier.dart';
 
-enum ViewModelActionState {
-  loading,
-  saving,
-  deleting,
-}
+enum ViewModelActionState { loading, saving, changingStatus, deleting }
 
-class BaseStateViewModel extends DisposeSafeNotifier {
+class BaseStateViewModel extends SafeChangeNotifier {
   bool isLoading = false;
   bool isSaving = false;
+  bool isChangingStatus = false;
   bool isDeleting = false;
 
   String? errorMessage;
 
-  bool get isBusy => isLoading || isSaving || isDeleting;
+  bool get isBusy => isLoading || isSaving || isChangingStatus || isDeleting;
 
   bool isRunning(ViewModelActionState state) {
     return switch (state) {
       ViewModelActionState.loading => isLoading,
       ViewModelActionState.saving => isSaving,
+      ViewModelActionState.changingStatus => isChangingStatus,
       ViewModelActionState.deleting => isDeleting,
     };
   }
@@ -79,6 +77,8 @@ class BaseStateViewModel extends DisposeSafeNotifier {
         isLoading = value;
       case ViewModelActionState.saving:
         isSaving = value;
+      case ViewModelActionState.changingStatus:
+        isChangingStatus = value;
       case ViewModelActionState.deleting:
         isDeleting = value;
     }
