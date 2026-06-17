@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/ui/app_toast.dart';
 import '../../../../core/ui/widgets/app_scaffold.dart';
 import '../../../../core/ui/widgets/empty_state.dart';
+import '../../../../core/ui/widgets/status_summary_filter.dart';
 import '../../domain/entities/sede.dart';
 import '../../domain/enums/tipo_sede.dart';
 import '../viewmodels/sedes_viewmodel.dart';
@@ -17,6 +18,8 @@ class SedeListScreen extends StatefulWidget {
 }
 
 class _SedeListScreenState extends State<SedeListScreen> {
+  StatusSummaryValue _statusFilter = StatusSummaryValue.all;
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +31,15 @@ class _SedeListScreenState extends State<SedeListScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SedeViewModel>();
+
+    final activeCount = vm.items.where((e) => e.estado).length;
+    final inactiveCount = vm.items.length - activeCount;
+
+    final filteredItems = switch (_statusFilter) {
+      StatusSummaryValue.all => vm.items,
+      StatusSummaryValue.active => vm.items.where((e) => e.estado).toList(),
+      StatusSummaryValue.inactive => vm.items.where((e) => !e.estado).toList(),
+    };
 
     return AppScaffold(
       title: 'Sedes',
@@ -59,9 +71,17 @@ class _SedeListScreenState extends State<SedeListScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                     children: [
-                      _SedeSummary(items: vm.items),
+                      StatusSummaryFilter(
+                        total: vm.items.length,
+                        active: activeCount,
+                        inactive: inactiveCount,
+                        selected: _statusFilter,
+                        onChanged: (value) {
+                          setState(() => _statusFilter = value);
+                        },
+                      ),
                       const SizedBox(height: 14),
-                      ...vm.items.map(
+                      ...filteredItems.map(
                         (item) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _SedeCard(
@@ -139,91 +159,6 @@ class _SedeListScreenState extends State<SedeListScreen> {
   }
 }
 
-class _SedeSummary extends StatelessWidget {
-  final List<Sede> items;
-
-  const _SedeSummary({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final active = items.where((e) => e.estado).length;
-    final inactive = items.length - active;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withValues(alpha: 0.50),
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        children: [
-          _SummaryItem(
-            value: items.length.toString(),
-            label: 'Total',
-            icon: Icons.apartment_rounded,
-          ),
-          const _SummaryDivider(),
-          _SummaryItem(
-            value: active.toString(),
-            label: 'Activas',
-            icon: Icons.check_circle_rounded,
-          ),
-          const _SummaryDivider(),
-          _SummaryItem(
-            value: inactive.toString(),
-            label: 'Inactivas',
-            icon: Icons.block_rounded,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryItem extends StatelessWidget {
-  final String value;
-  final String label;
-  final IconData icon;
-
-  const _SummaryItem({
-    required this.value,
-    required this.label,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: colorScheme.primary),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-          ),
-          Text(label),
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryDivider extends StatelessWidget {
-  const _SummaryDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 48,
-      color: Theme.of(context).colorScheme.outlineVariant,
-    );
-  }
-}
 
 class _SedeCard extends StatelessWidget {
   final Sede item;
