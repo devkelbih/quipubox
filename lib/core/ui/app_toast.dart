@@ -12,8 +12,6 @@ class AppToast {
   static OverlayEntry? _activeEntry;
   static Timer? _timer;
 
-  /// Muestra mensajes usando el Overlay del navegador raíz.
-  /// Esto permite que el mensaje quede por encima de diálogos, bottom sheets y rutas.
   static void show(String message, {ToastType type = ToastType.info}) {
     final overlay = NavigationKeys.rootNavigatorKey.currentState?.overlay;
     if (overlay == null) return;
@@ -37,73 +35,157 @@ class AppToast {
   }
 }
 
-class _ToastOverlay extends StatelessWidget {
+class _ToastOverlay extends StatefulWidget {
   final String message;
   final ToastType type;
 
-  const _ToastOverlay({required this.message, required this.type});
+  const _ToastOverlay({
+    required this.message,
+    required this.type,
+  });
+
+  @override
+  State<_ToastOverlay> createState() => _ToastOverlayState();
+}
+
+class _ToastOverlayState extends State<_ToastOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+
+    _opacity = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    );
+
+    _slide = Tween<Offset>(
+      begin: const Offset(0, -0.25),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final top = MediaQuery.of(context).padding.top + 14;
-    final color = switch (type) {
-      ToastType.success => const Color(0xFF16803C),
-      ToastType.error => const Color(0xFFC62828),
-      ToastType.warning => const Color(0xFFB26A00),
-      ToastType.info => const Color(0xFF1E5AA8),
-    };
-    final icon = switch (type) {
-      ToastType.success => Icons.check_circle_outline_rounded,
-      ToastType.error => Icons.error_outline_rounded,
-      ToastType.warning => Icons.warning_amber_rounded,
-      ToastType.info => Icons.info_outline_rounded,
-    };
+    final colorScheme = Theme.of(context).colorScheme;
+    final style = _ToastStyle.fromType(widget.type, colorScheme);
 
     return Positioned(
       top: top,
       left: 16,
       right: 16,
-      child: IgnorePointer(
-        ignoring: true,
-        child: Material(
-          color: Colors.transparent,
+      child: Material(
+        color: Colors.transparent,
+        child: SafeArea(
+          bottom: false,
           child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 24,
-                      offset: Offset(0, 10),
-                      color: Color(0x33000000),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(icon, color: Colors.white),
-                      const SizedBox(width: 12),
-                      Flexible(
-                        child: Text(
-                          message,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            decoration: TextDecoration.none,
-                            fontSize: 14,
-                          ),
+            child: SlideTransition(
+              position: _slide,
+              child: FadeTransition(
+                opacity: _opacity,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.75,
                         ),
                       ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          blurRadius: 22,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 5,
+                            decoration: BoxDecoration(
+                              color: style.color,
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(18),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 34,
+                                    height: 34,
+                                    decoration: BoxDecoration(
+                                      color: style.color.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      style.icon,
+                                      size: 20,
+                                      color: style.color,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      widget.message,
+                                      style: TextStyle(
+                                        color: colorScheme.onSurface,
+                                        fontWeight: FontWeight.w800,
+                                        decoration: TextDecoration.none,
+                                        fontSize: 14,
+                                        height: 1.25,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    tooltip: 'Cerrar',
+                                    onPressed: AppToast.dismiss,
+                                    icon: Icon(
+                                      Icons.close_rounded,
+                                      size: 20,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -112,5 +194,36 @@ class _ToastOverlay extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ToastStyle {
+  final Color color;
+  final IconData icon;
+
+  const _ToastStyle({
+    required this.color,
+    required this.icon,
+  });
+
+  factory _ToastStyle.fromType(ToastType type, ColorScheme colorScheme) {
+    return switch (type) {
+      ToastType.success => _ToastStyle(
+          color: const Color(0xFF16A34A),
+          icon: Icons.check_circle_rounded,
+        ),
+      ToastType.error => _ToastStyle(
+          color: colorScheme.error,
+          icon: Icons.error_rounded,
+        ),
+      ToastType.warning => _ToastStyle(
+          color: const Color(0xFFF59E0B),
+          icon: Icons.warning_amber_rounded,
+        ),
+      ToastType.info => _ToastStyle(
+          color: colorScheme.primary,
+          icon: Icons.info_rounded,
+        ),
+    };
   }
 }

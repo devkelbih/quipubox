@@ -20,11 +20,8 @@ class StatusSummaryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
 
-    return Material(
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
-      borderRadius: BorderRadius.circular(20),
+    return Card(
       child: Padding(
         padding: const EdgeInsets.all(6),
         child: Row(
@@ -75,6 +72,7 @@ class _StatusSummaryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final color = selected ? colorScheme.primary : colorScheme.onSurfaceVariant;
 
     return Expanded(
       child: InkWell(
@@ -83,35 +81,20 @@ class _StatusSummaryItem extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
           decoration: BoxDecoration(
-            color: selected ? colorScheme.surface : Colors.transparent,
+            color: selected
+                ? colorScheme.primary.withValues(alpha: 0.10)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: colorScheme.shadow.withValues(alpha: 0.08),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                size: 19,
-                color: selected
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 3),
+              Icon(icon, size: 20, color: color),
+              const SizedBox(height: 4),
               Text(
                 value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   height: 1,
                   fontSize: 18,
@@ -119,18 +102,16 @@ class _StatusSummaryItem extends StatelessWidget {
                   color: selected ? colorScheme.primary : colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 3),
               Text(
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
                   height: 1,
-                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                  color: selected
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: color,
                 ),
               ),
             ],

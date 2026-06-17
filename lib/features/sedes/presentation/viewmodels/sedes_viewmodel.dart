@@ -1,12 +1,11 @@
-import '../../../../core/exceptions/app_exception.dart';
-import '../../../../core/state/dispose_safe_notifier.dart';
+import '../../../../core/state/base_state_viewmodel.dart';
 import '../../domain/entities/sede.dart';
 import '../../domain/usecases/change_sede_status.dart';
 import '../../domain/usecases/create_sede.dart';
 import '../../domain/usecases/get_sedes.dart';
 import '../../domain/usecases/update_sede.dart';
 
-class SedeViewModel extends DisposeSafeNotifier {
+class SedeViewModel extends BaseStateViewModel {
   final GetSedesUseCase getItemsUseCase;
   final CreateSedeUseCase createUseCase;
   final UpdateSedeUseCase updateUseCase;
@@ -21,100 +20,70 @@ class SedeViewModel extends DisposeSafeNotifier {
 
   List<Sede> items = [];
 
-  bool isLoading = false;
-  bool isSaving = false;
-  bool isDeleting = false;
-
-  String? errorMessage;
-
   Future<void> load() async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
+    final result = await run<List<Sede>>(
+      state: ViewModelActionState.loading,
+      action: getItemsUseCase,
+    );
 
-    try {
-      items = await getItemsUseCase();
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-    } finally {
-      isLoading = false;
+    if (result != null) {
+      items = result;
       notifyListeners();
     }
   }
 
   Future<bool> create(Sede sede) async {
-    isSaving = true;
-    errorMessage = null;
-    notifyListeners();
+    final result = await run<Sede>(
+      state: ViewModelActionState.saving,
+      action: () => createUseCase(sede),
+    );
 
-    try {
-      final creado = await createUseCase(sede);
-      items.add(creado);
-      return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isSaving = false;
-      notifyListeners();
-    }
+    if (result == null) return false;
+
+    items.add(result);
+    notifyListeners();
+    return true;
   }
 
   Future<bool> update(Sede sede) async {
-    isSaving = true;
-    errorMessage = null;
-    notifyListeners();
+    final result = await run<Sede>(
+      state: ViewModelActionState.saving,
+      action: () => updateUseCase(sede),
+    );
 
-    try {
-      final actualizado = await updateUseCase(sede);
-      final index = items.indexWhere((e) => e.id == actualizado.id);
+    if (result == null) return false;
 
-      if (index != -1) {
-        items[index] = actualizado;
-      }
+    final index = items.indexWhere((e) => e.id == result.id);
 
-      return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isSaving = false;
-      notifyListeners();
+    if (index != -1) {
+      items[index] = result;
     }
+
+    notifyListeners();
+    return true;
   }
 
   Future<bool> changeStatus({
     required int id,
     required bool estado,
   }) async {
-    isDeleting = true;
-    errorMessage = null;
-    notifyListeners();
-
-    try {
-      final updated = await changeStatusUseCase(
+    final result = await run<Sede>(
+      state: ViewModelActionState.deleting,
+      action: () => changeStatusUseCase(
         id: id,
         estado: estado,
-      );
+      ),
+    );
 
-      final index = items.indexWhere((e) => e.id == updated.id);
+    if (result == null) return false;
 
-      if (index != -1) {
-        items[index] = updated;
-      }
+    final index = items.indexWhere((e) => e.id == result.id);
 
-      return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isDeleting = false;
-      notifyListeners();
+    if (index != -1) {
+      items[index] = result;
     }
-  }
 
-  String _clean(Object e) {
-    if (e is AppException) return e.message;
-    return e.toString();
+    notifyListeners();
+    return true;
   }
 }

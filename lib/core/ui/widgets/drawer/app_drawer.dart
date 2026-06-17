@@ -11,26 +11,68 @@ import 'app_drawer_header.dart';
 import 'app_drawer_items.dart';
 import 'app_drawer_module.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
 
-  void _open(BuildContext context, String route) {
-    Navigator.of(context).pop();
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  bool _isNavigating = false;
+  Future<void> _open(BuildContext context, String route) async {
+    if (_isNavigating) return;
 
     final currentRoute = GoRouterState.of(context).matchedLocation;
-    if (currentRoute == route) return;
 
-    if (route == AppRoutes.home) {
-      context.go(AppRoutes.home);
+    _isNavigating = true;
+
+    Navigator.of(context).pop();
+
+    await Future<void>.delayed(const Duration(milliseconds: 180));
+
+    if (!context.mounted) return;
+
+    if (currentRoute == route) {
+      _isNavigating = false;
       return;
     }
 
-    context.push(route);
+    if (route == AppRoutes.home) {
+      context.go(AppRoutes.home);
+    } else {
+      context.push(route);
+    }
+
+    if (mounted) {
+      _isNavigating = false;
+    }
   }
 
   void _notAvailable(BuildContext context) {
+    if (_isNavigating) return;
+
+    _isNavigating = true;
+
     Navigator.of(context).pop();
     AppToast.show('Módulo aún no disponible', type: ToastType.warning);
+
+    Future<void>.delayed(const Duration(milliseconds: 250), () {
+      if (mounted) _isNavigating = false;
+    });
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    if (_isNavigating) return;
+
+    _isNavigating = true;
+
+    Navigator.of(context).pop();
+    await context.read<AuthViewModel>().logout();
+
+    if (mounted) {
+      _isNavigating = false;
+    }
   }
 
   @override
@@ -213,10 +255,7 @@ class AppDrawer extends StatelessWidget {
               isDarkMode: settings.isEffectiveDarkMode(context),
               onToggleTheme: () =>
                   context.read<SettingsViewModel>().toggleDarkMode(context),
-              onLogout: () async {
-                Navigator.of(context).pop();
-                await context.read<AuthViewModel>().logout();
-              },
+              onLogout: () => _logout(context),
             ),
           ],
         ),

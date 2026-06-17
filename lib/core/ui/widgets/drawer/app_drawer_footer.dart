@@ -42,6 +42,27 @@ class AppDrawerFooter extends StatelessWidget {
                 value: isDarkMode,
                 onChanged: (_) => onToggleTheme(),
                 contentPadding: const EdgeInsets.fromLTRB(14, 4, 12, 4),
+
+                // Color de la cápsula de fondo (Track)
+                trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return theme.colorScheme.primary; // Azul cuando está activo
+                  }
+                  return theme
+                      .colorScheme
+                      .outlineVariant; // Tu gris más claro cuando está apagado
+                }),
+                // Color del borde de la cápsula
+                trackOutlineColor: WidgetStateProperty.resolveWith<Color>((
+                  states,
+                ) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Colors.transparent;
+                  }
+                  return theme
+                      .colorScheme
+                      .primary; // Define la silueta cuando está apagado
+                }),
                 secondary: Container(
                   width: 40,
                   height: 40,
@@ -74,16 +95,11 @@ class AppDrawerFooter extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFD32F2F),
                   backgroundColor: const Color(0xFFFFEDEE),
-                  side: const BorderSide(
-                    color: Color(0xFFFFCDD2),
-                    width: 1.1,
-                  ),
+                  side: const BorderSide(color: Color(0xFFFFCDD2), width: 1.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  textStyle: const TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
             ),

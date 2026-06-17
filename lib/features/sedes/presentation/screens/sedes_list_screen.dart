@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quipubox/core/ui/widgets/app_form_sheet.dart';
+import 'package:quipubox/core/ui/widgets/change_status_dialog.dart';
+import 'package:quipubox/features/sedes/presentation/widgets/sede_card.dart';
 
 import '../../../../core/ui/app_toast.dart';
 import '../../../../core/ui/widgets/app_scaffold.dart';
 import '../../../../core/ui/widgets/empty_state.dart';
 import '../../../../core/ui/widgets/status_summary_filter.dart';
 import '../../domain/entities/sede.dart';
-import '../../domain/enums/tipo_sede.dart';
 import '../viewmodels/sedes_viewmodel.dart';
 import 'sedes_form_screen.dart';
 
@@ -84,7 +86,7 @@ class _SedeListScreenState extends State<SedeListScreen> {
                       ...filteredItems.map(
                         (item) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: _SedeCard(
+                          child: SedeCard(
                             item: item,
                             onEdit: () => _openForm(context, item: item),
                             onChangeStatus: () =>
@@ -112,7 +114,7 @@ class _SedeListScreenState extends State<SedeListScreen> {
       builder: (_) {
         return ChangeNotifierProvider.value(
           value: context.read<SedeViewModel>(),
-          child: _FormSheet(
+          child: AppFormSheet(
             title: item == null ? 'Nueva sede' : 'Editar sede',
             child: SedeFormScreen(item: item),
           ),
@@ -124,10 +126,19 @@ class _SedeListScreenState extends State<SedeListScreen> {
   Future<void> _confirmChangeStatus(BuildContext context, Sede item) async {
     final newStatus = !item.estado;
 
-    final confirmed = await showModalBottomSheet<bool>(
+    final confirmed = await showDialog<bool>(
       context: context,
-      showDragHandle: true,
-      builder: (_) => _ChangeStatusSheet(item: item, newStatus: newStatus),
+      barrierDismissible: false,
+      builder: (_) {
+        return ChangeStatusDialog(
+          newStatus: newStatus,
+          title: newStatus ? 'Activar sede' : 'Desactivar sede',
+          message: newStatus
+              ? 'La sede "${item.nombre}" volverá a estar disponible para nuevas operaciones.'
+              : 'La sede "${item.nombre}" dejará de estar disponible para nuevas operaciones.',
+          confirmText: newStatus ? 'Activar' : 'Desactivar',
+        );
+      },
     );
 
     if (confirmed != true || !context.mounted) return;
@@ -155,403 +166,6 @@ class _SedeListScreenState extends State<SedeListScreen> {
                     ? 'No se pudo activar la sede.'
                     : 'No se pudo desactivar la sede.'),
       type: ok ? ToastType.success : ToastType.error,
-    );
-  }
-}
-
-
-class _SedeCard extends StatelessWidget {
-  final Sede item;
-  final VoidCallback onEdit;
-  final VoidCallback onChangeStatus;
-
-  const _SedeCard({
-    required this.item,
-    required this.onEdit,
-    required this.onChangeStatus,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final location = _locationText(item);
-
-    return Card(
-      elevation: 0,
-      color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: item.estado
-                        ? colorScheme.primaryContainer
-                        : colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Icon(
-                    _iconByType(item.tipoSede),
-                    color: item.estado
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.onErrorContainer,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.nombre.isEmpty
-                                  ? 'Sede #${item.id}'
-                                  : item.nombre,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                          _StatusBadge(active: item.estado),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        item.tipoSede.label,
-                        style: TextStyle(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (location != null)
-              _InfoRow(
-                icon: Icons.map_rounded,
-                label: 'Ubicación',
-                value: location,
-              ),
-            if (_hasText(item.direccion)) ...[
-              const SizedBox(height: 10),
-              _InfoRow(
-                icon: Icons.place_rounded,
-                label: 'Dirección',
-                value: item.direccion!,
-              ),
-            ],
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit_rounded),
-                    label: const Text('Editar'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton.tonalIcon(
-                    onPressed: onChangeStatus,
-                    icon: Icon(
-                      item.estado
-                          ? Icons.block_rounded
-                          : Icons.check_circle_rounded,
-                    ),
-                    label: Text(item.estado ? 'Desactivar' : 'Activar'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  static String? _locationText(Sede item) {
-    final ciudad = item.ciudad?.trim();
-    final departamento = item.departamento?.trim();
-
-    if (_hasText(ciudad) && _hasText(departamento)) {
-      if (ciudad!.toLowerCase() == departamento!.toLowerCase()) {
-        return ciudad;
-      }
-      return '$ciudad, $departamento';
-    }
-
-    if (_hasText(ciudad)) return ciudad;
-    if (_hasText(departamento)) return departamento;
-
-    return null;
-  }
-
-  static IconData _iconByType(TipoSede value) {
-    switch (value) {
-      case TipoSede.origen:
-        return Icons.upload_rounded;
-      case TipoSede.destino:
-        return Icons.download_rounded;
-      case TipoSede.ambos:
-        return Icons.sync_alt_rounded;
-    }
-  }
-
-  static bool _hasText(String? value) {
-    return value != null && value.trim().isNotEmpty;
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  final bool active;
-
-  const _StatusBadge({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: active
-            ? colorScheme.primaryContainer
-            : colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        active ? 'Activo' : 'Inactivo',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: active
-              ? colorScheme.onPrimaryContainer
-              : colorScheme.onErrorContainer,
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
-        const SizedBox(width: 10),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: TextStyle(color: colorScheme.onSurface, fontSize: 14),
-              children: [
-                TextSpan(
-                  text: '$label: ',
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                TextSpan(
-                  text: value,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FormSheet extends StatelessWidget {
-  final String title;
-  final Widget child;
-
-  const _FormSheet({required this.title, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(bottom: bottom),
-      child: SizedBox(
-        width: double.infinity,
-        child: Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.94,
-          ),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              Center(
-                child: Container(
-                  width: 44,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 12, 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded),
-                    ),
-                  ],
-                ),
-              ),
-              Flexible(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: child,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-class _ChangeStatusSheet extends StatelessWidget {
-  final Sede item;
-  final bool newStatus;
-
-  const _ChangeStatusSheet({
-    required this.item,
-    required this.newStatus,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final title = newStatus ? 'Activar sede' : 'Desactivar sede';
-
-    final message = newStatus
-        ? 'La sede "${item.nombre}" volverá a estar disponible para nuevas operaciones.'
-        : 'La sede "${item.nombre}" dejará de estar disponible para nuevas operaciones.';
-
-    final icon = newStatus
-        ? Icons.check_circle_rounded
-        : Icons.block_rounded;
-
-    final backgroundColor = newStatus
-        ? colorScheme.primaryContainer
-        : colorScheme.errorContainer;
-
-    final iconColor = newStatus
-        ? colorScheme.onPrimaryContainer
-        : colorScheme.onErrorContainer;
-
-    final buttonText = newStatus ? 'Activar' : 'Desactivar';
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: backgroundColor,
-              child: Icon(
-                icon,
-                color: iconColor,
-              ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text('Cancelar'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: Text(buttonText),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
