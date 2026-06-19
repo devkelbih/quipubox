@@ -1,5 +1,3 @@
-
-
 import 'package:quipubox/features/tipos_jaba/domain/entities/tipos_jaba.dart';
 import 'package:quipubox/features/tipos_jaba/domain/repositories/tipos_jaba_repository.dart';
 

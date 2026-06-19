@@ -28,59 +28,28 @@ class ApiClient {
   static const _timeout = Duration(seconds: 20);
 
   /// GET /recurso
-  Future<dynamic> get(
-    String path, {
-    Map<String, String>? query,
-  }) {
-    return _send(
-      'GET',
-      path,
-      query: query,
-    );
+  Future<dynamic> get(String path, {Map<String, String>? query}) {
+    return _send('GET', path, query: query);
   }
 
   /// POST /recurso
-  Future<dynamic> post(
-    String path, {
-    Map<String, dynamic>? body,
-  }) {
-    return _send(
-      'POST',
-      path,
-      body: body,
-    );
+  Future<dynamic> post(String path, {Map<String, dynamic>? body}) {
+    return _send('POST', path, body: body);
   }
 
   /// PUT /recurso/id
-  Future<dynamic> put(
-    String path, {
-    Map<String, dynamic>? body,
-  }) {
-    return _send(
-      'PUT',
-      path,
-      body: body,
-    );
+  Future<dynamic> put(String path, {Map<String, dynamic>? body}) {
+    return _send('PUT', path, body: body);
   }
 
   /// PATCH /recurso/id
-  Future<dynamic> patch(
-    String path, {
-    Map<String, dynamic>? body,
-  }) {
-    return _send(
-      'PATCH',
-      path,
-      body: body,
-    );
+  Future<dynamic> patch(String path, {Map<String, dynamic>? body}) {
+    return _send('PATCH', path, body: body);
   }
 
   /// DELETE /recurso/id
   Future<dynamic> delete(String path) {
-    return _send(
-      'DELETE',
-      path,
-    );
+    return _send('DELETE', path);
   }
 
   /// Obtiene un access token válido de Supabase.
@@ -125,21 +94,19 @@ class ApiClient {
     Map<String, String>? query,
     Map<String, dynamic>? body,
   }) async {
-    final token = await _getValidAccessToken();
-
-    final uri = Uri.parse(
-      '${AppConfig.baseUrl}$path',
-    ).replace(
-      queryParameters: query,
-    );
-
-    final headers = <String, String>{
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
-
     try {
+      final token = await _getValidAccessToken();
+
+      final uri = Uri.parse(
+        '${AppConfig.baseUrl}$path',
+      ).replace(queryParameters: query);
+
+      final headers = <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      };
+
       final encodedBody = body == null ? null : jsonEncode(_withoutNulls(body));
 
       final response = await _execute(
@@ -158,6 +125,7 @@ class ApiClient {
       rethrow;
     } on Object catch (error) {
       throw AppException(
+        //'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.',
         'No se pudo conectar con el servidor. $error',
       );
     }
@@ -172,42 +140,22 @@ class ApiClient {
   ) {
     switch (method) {
       case 'GET':
-        return _client.get(
-          uri,
-          headers: headers,
-        );
+        return _client.get(uri, headers: headers);
 
       case 'POST':
-        return _client.post(
-          uri,
-          headers: headers,
-          body: body,
-        );
+        return _client.post(uri, headers: headers, body: body);
 
       case 'PUT':
-        return _client.put(
-          uri,
-          headers: headers,
-          body: body,
-        );
+        return _client.put(uri, headers: headers, body: body);
 
       case 'PATCH':
-        return _client.patch(
-          uri,
-          headers: headers,
-          body: body,
-        );
+        return _client.patch(uri, headers: headers, body: body);
 
       case 'DELETE':
-        return _client.delete(
-          uri,
-          headers: headers,
-        );
+        return _client.delete(uri, headers: headers);
 
       default:
-        throw AppException(
-          'Método HTTP no soportado: $method',
-        );
+        throw AppException('Método HTTP no soportado: $method');
     }
   }
 
@@ -225,10 +173,7 @@ class ApiClient {
       final message = decoded['message'];
 
       if (message is List) {
-        throw AppException(
-          message.join('\n'),
-          statusCode: response.statusCode,
-        );
+        throw AppException(message.join('\n'), statusCode: response.statusCode);
       }
 
       throw AppException(
@@ -256,9 +201,7 @@ class ApiClient {
   /// {
   ///   "nombre": "Cañete"
   /// }
-  Map<String, dynamic> _withoutNulls(
-    Map<String, dynamic> input,
-  ) {
+  Map<String, dynamic> _withoutNulls(Map<String, dynamic> input) {
     final output = <String, dynamic>{};
 
     input.forEach((key, value) {

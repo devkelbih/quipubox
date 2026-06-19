@@ -20,8 +20,6 @@ class CreateTipoJabaUseCase {
       throw const AppException('No se encontró la empresa del usuario.');
     }
 
-    return repository.create(
-      tipoJaba.copyWith(idEmpresa: idEmpresa),
-    );
+    return repository.create(tipoJaba.copyWith(idEmpresa: idEmpresa));
   }
 }

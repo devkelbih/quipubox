@@ -12,7 +12,6 @@ import 'package:quipubox/features/variedades/domain/repositories/variedad_reposi
 import 'package:quipubox/features/variedades/domain/usecases/get_variedades_by_fruta.dart';
 
 import '../../../core/network/api_client.dart';
-import '../../../core/network/network_checker.dart';
 import '../../../core/session/current_session.dart';
 
 import '../../../features/frutas/domain/usecases/change_fruta_status.dart';
@@ -63,7 +62,6 @@ class CatalogosModule {
     Provider<FrutaRepository>(
       create: (context) => FrutaRepositoryImpl(
         remoteDataSource: context.read<FrutaRemoteDataSource>(),
-        networkChecker: context.read<NetworkChecker>(),
       ),
     ),
 
@@ -97,54 +95,53 @@ class CatalogosModule {
     ),
 
     // Variedades
-Provider<VariedadRemoteDataSource>(
-  create: (context) => VariedadRemoteDataSource(context.read<ApiClient>()),
-),
+    Provider<VariedadRemoteDataSource>(
+      create: (context) => VariedadRemoteDataSource(context.read<ApiClient>()),
+    ),
 
-Provider<VariedadRepository>(
-  create: (context) => VariedadRepositoryImpl(
-    remoteDataSource: context.read<VariedadRemoteDataSource>(),
-    networkChecker: context.read<NetworkChecker>(),
-  ),
-),
+    Provider<VariedadRepository>(
+      create: (context) => VariedadRepositoryImpl(
+        remoteDataSource: context.read<VariedadRemoteDataSource>(),
+      ),
+    ),
 
-Provider<GetVariedadesUseCase>(
-  create: (context) =>
-      GetVariedadesUseCase(context.read<VariedadRepository>()),
-),
+    Provider<GetVariedadesUseCase>(
+      create: (context) =>
+          GetVariedadesUseCase(context.read<VariedadRepository>()),
+    ),
 
-Provider<GetVariedadesByFrutaUseCase>(
-  create: (context) =>
-      GetVariedadesByFrutaUseCase(context.read<VariedadRepository>()),
-),
+    Provider<GetVariedadesByFrutaUseCase>(
+      create: (context) =>
+          GetVariedadesByFrutaUseCase(context.read<VariedadRepository>()),
+    ),
 
-Provider<CreateVariedadUseCase>(
-  create: (context) => CreateVariedadUseCase(
-    repository: context.read<VariedadRepository>(),
-    currentSession: context.read<CurrentSession>(),
-  ),
-),
+    Provider<CreateVariedadUseCase>(
+      create: (context) => CreateVariedadUseCase(
+        repository: context.read<VariedadRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
+    ),
 
-Provider<UpdateVariedadUseCase>(
-  create: (context) =>
-      UpdateVariedadUseCase(context.read<VariedadRepository>()),
-),
+    Provider<UpdateVariedadUseCase>(
+      create: (context) =>
+          UpdateVariedadUseCase(context.read<VariedadRepository>()),
+    ),
 
-Provider<ChangeVariedadStatusUseCase>(
-  create: (context) =>
-      ChangeVariedadStatusUseCase(context.read<VariedadRepository>()),
-),
+    Provider<ChangeVariedadStatusUseCase>(
+      create: (context) =>
+          ChangeVariedadStatusUseCase(context.read<VariedadRepository>()),
+    ),
 
-ChangeNotifierProvider<VariedadViewModel>(
-  create: (context) => VariedadViewModel(
-    getItemsUseCase: context.read<GetVariedadesUseCase>(),
-    getByFrutaUseCase: context.read<GetVariedadesByFrutaUseCase>(),
-    getFrutasUseCase: context.read<GetFrutasUseCase>(),
-    createUseCase: context.read<CreateVariedadUseCase>(),
-    updateUseCase: context.read<UpdateVariedadUseCase>(),
-    changeStatusUseCase: context.read<ChangeVariedadStatusUseCase>(),
-  ),
-),
+    ChangeNotifierProvider<VariedadViewModel>(
+      create: (context) => VariedadViewModel(
+        getItemsUseCase: context.read<GetVariedadesUseCase>(),
+        getByFrutaUseCase: context.read<GetVariedadesByFrutaUseCase>(),
+        getFrutasUseCase: context.read<GetFrutasUseCase>(),
+        createUseCase: context.read<CreateVariedadUseCase>(),
+        updateUseCase: context.read<UpdateVariedadUseCase>(),
+        changeStatusUseCase: context.read<ChangeVariedadStatusUseCase>(),
+      ),
+    ),
 
     // Calidades
     Provider<CalidadRemoteDataSource>(
@@ -154,7 +151,6 @@ ChangeNotifierProvider<VariedadViewModel>(
     Provider<CalidadRepository>(
       create: (context) => CalidadRepositoryImpl(
         remoteDataSource: context.read<CalidadRemoteDataSource>(),
-        networkChecker: context.read<NetworkChecker>(),
       ),
     ),
 
@@ -197,7 +193,6 @@ ChangeNotifierProvider<VariedadViewModel>(
     Provider<TipoJabaRepository>(
       create: (context) => TipoJabaRepositoryImpl(
         remoteDataSource: context.read<TipoJabaRemoteDataSource>(),
-        networkChecker: context.read<NetworkChecker>(),
       ),
     ),
 
@@ -240,7 +235,6 @@ ChangeNotifierProvider<VariedadViewModel>(
     Provider<CamionRepository>(
       create: (context) => CamionRepositoryImpl(
         remoteDataSource: context.read<CamionRemoteDataSource>(),
-        networkChecker: context.read<NetworkChecker>(),
       ),
     ),
 

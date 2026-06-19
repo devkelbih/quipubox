@@ -22,8 +22,8 @@ class TipoJabaRemoteDataSource {
     await apiClient.put('/tipos-jaba/$id', body: request.toUpdateJson())
         as Map<String, dynamic>,
   );
-  
-    Future<TipoJabaModel> changeStatus({
+
+  Future<TipoJabaModel> changeStatus({
     required int id,
     required bool estado,
   }) async {

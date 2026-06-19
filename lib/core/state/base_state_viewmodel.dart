@@ -129,8 +129,8 @@ class BaseStateViewModel extends SafeChangeNotifier {
   /// Variante simplificada para operaciones
   /// que únicamente necesitan indicar éxito o fracaso.
   ///
-  /// Convierte una operación Future<void>
-  /// en un Future<bool>.
+  /// Convierte una operación Future< void>
+  /// en un Future< bool>.
   Future<bool> runBool({
     required Future<void> Function() action,
     required ViewModelActionState state,

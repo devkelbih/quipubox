@@ -10,10 +10,7 @@ import '../viewmodels/tipos_jaba_viewmodel.dart';
 class TipoJabaFormScreen extends StatefulWidget {
   final TipoJaba? item;
 
-  const TipoJabaFormScreen({
-    super.key,
-    this.item,
-  });
+  const TipoJabaFormScreen({super.key, this.item});
 
   @override
   State<TipoJabaFormScreen> createState() => _TipoJabaFormScreenState();
@@ -169,8 +166,8 @@ class _TipoJabaFormScreenState extends State<TipoJabaFormScreen> {
     AppToast.show(
       ok
           ? _isEditing
-              ? 'Tipo de jaba actualizado correctamente.'
-              : 'Tipo de jaba registrado correctamente.'
+                ? 'Tipo de jaba actualizado correctamente.'
+                : 'Tipo de jaba registrado correctamente.'
           : vm.errorMessage ?? 'No se pudo guardar el tipo de jaba.',
       type: ok ? ToastType.success : ToastType.error,
     );

@@ -126,10 +126,7 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
     );
   }
 
-  Future<void> _confirmChangeStatus(
-    BuildContext context,
-    TipoJaba item,
-  ) async {
+  Future<void> _confirmChangeStatus(BuildContext context, TipoJaba item) async {
     final newStatus = !item.estado;
 
     final confirmed = await showDialog<bool>(
@@ -168,12 +165,12 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
     AppToast.show(
       ok
           ? newStatus
-              ? 'Tipo de jaba activado correctamente.'
-              : 'Tipo de jaba desactivado correctamente.'
+                ? 'Tipo de jaba activado correctamente.'
+                : 'Tipo de jaba desactivado correctamente.'
           : viewModel.errorMessage ??
-              (newStatus
-                  ? 'No se pudo activar el tipo de jaba.'
-                  : 'No se pudo desactivar el tipo de jaba.'),
+                (newStatus
+                    ? 'No se pudo activar el tipo de jaba.'
+                    : 'No se pudo desactivar el tipo de jaba.'),
       type: ok ? ToastType.success : ToastType.error,
     );
   }

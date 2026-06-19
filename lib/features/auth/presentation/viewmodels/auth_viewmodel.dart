@@ -78,7 +78,7 @@ class AuthViewModel extends SafeChangeNotifier {
       final ok = await loadProfile();
 
       if (!ok) {
-        await _safeSignOut();
+        return;
       }
     } catch (error) {
       debugPrint('AUTH INIT ERROR: $error');
@@ -110,11 +110,10 @@ class AuthViewModel extends SafeChangeNotifier {
 
         final ok = await loadProfile();
 
-        if (!ok && hasSupabaseSession) {
-          await _safeSignOut();
+        if (!ok) {
+          return;
         }
       } catch (error) {
-        user = null;
         errorMessage = _clean(error);
         _finishLoading();
       } finally {
@@ -133,12 +132,10 @@ class AuthViewModel extends SafeChangeNotifier {
 
       return true;
     } on TimeoutException {
-      user = null;
       errorMessage =
           'La validación de sesión tardó demasiado. Revisa internet e intenta nuevamente.';
       return false;
     } on Object catch (error) {
-      user = null;
       errorMessage = _clean(error);
       return false;
     } finally {

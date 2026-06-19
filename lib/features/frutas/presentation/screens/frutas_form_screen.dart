@@ -9,10 +9,7 @@ import '../viewmodels/frutas_viewmodel.dart';
 class FrutaFormScreen extends StatefulWidget {
   final Fruta? item;
 
-  const FrutaFormScreen({
-    super.key,
-    this.item,
-  });
+  const FrutaFormScreen({super.key, this.item});
 
   @override
   State<FrutaFormScreen> createState() => _FrutaFormScreenState();
@@ -140,8 +137,8 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
     AppToast.show(
       ok
           ? _isEditing
-              ? 'Fruta actualizada correctamente.'
-              : 'Fruta registrada correctamente.'
+                ? 'Fruta actualizada correctamente.'
+                : 'Fruta registrada correctamente.'
           : vm.errorMessage ?? 'No se pudo guardar la fruta.',
       type: ok ? ToastType.success : ToastType.error,
     );

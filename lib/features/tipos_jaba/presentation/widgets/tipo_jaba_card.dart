@@ -26,10 +26,7 @@ class TipoJabaCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                _TipoJabaIcon(
-                  material: item.tipoMaterial,
-                  active: item.estado,
-                ),
+                _TipoJabaIcon(material: item.tipoMaterial, active: item.estado),
                 const SizedBox(width: 12),
                 Expanded(child: _Header(item: item)),
                 _StatusBadge(active: item.estado),
@@ -116,10 +113,7 @@ class _TipoJabaIcon extends StatelessWidget {
   final TipoMaterialJaba material;
   final bool active;
 
-  const _TipoJabaIcon({
-    required this.material,
-    required this.active,
-  });
+  const _TipoJabaIcon({required this.material, required this.active});
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +127,7 @@ class _TipoJabaIcon extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(
-        TipoJabaCard._materialIcon(material),
-        color: color,
-      ),
+      child: Icon(TipoJabaCard._materialIcon(material), color: color),
     );
   }
 }
@@ -159,10 +150,7 @@ class _Header extends StatelessWidget {
               : item.nombre,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w900,
-          ),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 3),
         Text(

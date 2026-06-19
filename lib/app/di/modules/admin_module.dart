@@ -97,7 +97,6 @@ class AdminModule {
     Provider<SedeRepository>(
       create: (context) => SedeRepositoryImpl(
         remoteDataSource: context.read<SedeRemoteDataSource>(),
-        networkChecker: context.read<NetworkChecker>(),
       ),
     ),
 

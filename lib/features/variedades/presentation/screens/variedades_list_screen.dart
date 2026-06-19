@@ -66,7 +66,9 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
                 }
 
                 if (vm.items.isEmpty) {
-                  return const EmptyState('Aún no tienes variedades registradas.');
+                  return const EmptyState(
+                    'Aún no tienes variedades registradas.',
+                  );
                 }
 
                 return RefreshIndicator(
@@ -162,12 +164,12 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
     AppToast.show(
       ok
           ? newStatus
-              ? 'Variedad activada correctamente.'
-              : 'Variedad desactivada correctamente.'
+                ? 'Variedad activada correctamente.'
+                : 'Variedad desactivada correctamente.'
           : viewModel.errorMessage ??
-              (newStatus
-                  ? 'No se pudo activar la variedad.'
-                  : 'No se pudo desactivar la variedad.'),
+                (newStatus
+                    ? 'No se pudo activar la variedad.'
+                    : 'No se pudo desactivar la variedad.'),
       type: ok ? ToastType.success : ToastType.error,
     );
   }

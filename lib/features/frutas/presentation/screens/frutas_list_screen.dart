@@ -159,12 +159,12 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
     AppToast.show(
       ok
           ? newStatus
-              ? 'Fruta activada correctamente.'
-              : 'Fruta desactivada correctamente.'
+                ? 'Fruta activada correctamente.'
+                : 'Fruta desactivada correctamente.'
           : viewModel.errorMessage ??
-              (newStatus
-                  ? 'No se pudo activar la fruta.'
-                  : 'No se pudo desactivar la fruta.'),
+                (newStatus
+                    ? 'No se pudo activar la fruta.'
+                    : 'No se pudo desactivar la fruta.'),
       type: ok ? ToastType.success : ToastType.error,
     );
   }

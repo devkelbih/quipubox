@@ -114,10 +114,7 @@ class _FrutaIcon extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(
-        Icons.eco_rounded,
-        color: color,
-      ),
+      child: Icon(Icons.eco_rounded, color: color),
     );
   }
 }
@@ -138,10 +135,7 @@ class _Header extends StatelessWidget {
           item.nombre.trim().isEmpty ? 'Fruta #${item.id ?? '-'}' : item.nombre,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w900,
-          ),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 3),
         Text(

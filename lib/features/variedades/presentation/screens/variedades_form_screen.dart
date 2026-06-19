@@ -9,10 +9,7 @@ import '../viewmodels/variedades_viewmodel.dart';
 class VariedadFormScreen extends StatefulWidget {
   final Variedad? item;
 
-  const VariedadFormScreen({
-    super.key,
-    this.item,
-  });
+  const VariedadFormScreen({super.key, this.item});
 
   @override
   State<VariedadFormScreen> createState() => _VariedadFormScreenState();
@@ -65,7 +62,9 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DropdownButtonFormField<int>(
-            value: vm.frutas.any((e) => e.id == _idFruta) ? _idFruta : null,
+            initialValue: vm.frutas.any((e) => e.id == _idFruta)
+                ? _idFruta
+                : null,
             decoration: const InputDecoration(
               labelText: 'Fruta',
               prefixIcon: Icon(Icons.eco_rounded),
@@ -176,8 +175,8 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
     AppToast.show(
       ok
           ? _isEditing
-              ? 'Variedad actualizada correctamente.'
-              : 'Variedad registrada correctamente.'
+                ? 'Variedad actualizada correctamente.'
+                : 'Variedad registrada correctamente.'
           : vm.errorMessage ?? 'No se pudo guardar la variedad.',
       type: ok ? ToastType.success : ToastType.error,
     );

@@ -31,7 +31,7 @@ class TipoJabaViewModel extends BaseStateViewModel {
     }
   }
 
-  Future<bool> create(TipoJaba tipoJaba ) async {
+  Future<bool> create(TipoJaba tipoJaba) async {
     final result = await run<TipoJaba>(
       state: ViewModelActionState.saving,
       action: () => createUseCase(tipoJaba),
