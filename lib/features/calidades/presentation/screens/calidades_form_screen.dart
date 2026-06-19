@@ -1,20 +1,155 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
-import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
-import '../../data/models/calidad_request_model.dart';
 import '../../domain/entities/calidad.dart';
 import '../viewmodels/calidades_viewmodel.dart';
-class CalidadFormScreen extends StatefulWidget { final Calidad? item; const CalidadFormScreen({super.key, this.item}); @override State<CalidadFormScreen> createState() => _CalidadFormScreenState(); }
+
+class CalidadFormScreen extends StatefulWidget {
+  final Calidad? item;
+
+  const CalidadFormScreen({
+    super.key,
+    this.item,
+  });
+
+  @override
+  State<CalidadFormScreen> createState() => _CalidadFormScreenState();
+}
+
 class _CalidadFormScreenState extends State<CalidadFormScreen> {
-  final formKey = GlobalKey<FormState>();
-  final nombreController = TextEditingController();
-  final descripcionController = TextEditingController();
-  @override void initState() { super.initState(); if (widget.item != null) { nombreController.text = widget.item!.nombre.toString();
-      descripcionController.text = widget.item!.descripcion.toString(); } }
-  @override void dispose() { nombreController.dispose();
-    descripcionController.dispose(); super.dispose(); }
-  @override Widget build(BuildContext context) { final vm = context.watch<CalidadViewModel>(); return AlertDialog(title: Text(widget.item == null ? 'Nuevo registro' : 'Editar registro'), content: SizedBox(width: 420, child: SingleChildScrollView(child: Form(key: formKey, child: Column(mainAxisSize: MainAxisSize.min, children: [TextFormField(controller: nombreController, keyboardType: TextInputType.text, decoration: const InputDecoration(labelText: 'Nombre'), validator: (v) => v == null || v.trim().isEmpty ? 'Campo obligatorio' : null,), const SizedBox(height: 12),
-TextFormField(controller: descripcionController, keyboardType: TextInputType.text, decoration: const InputDecoration(labelText: 'Descripción'), ), const SizedBox(height: 12), if (vm.errorMessage != null) Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error))])))), actions: [TextButton(onPressed: vm.isSaving ? null : () => Navigator.of(context).pop(), child: const Text('Cancelar')), FilledButton(onPressed: vm.isSaving ? null : _save, child: vm.isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Guardar'))]); }
-  Future<void> _save() async { if (!formKey.currentState!.validate()) return; final request = CalidadRequestModel(idEmpresa: widget.item == null ? context.read<AuthViewModel>().currentCompanyId : null, nombre: nombreController.text.trim(), descripcion: descripcionController.text.trim().isEmpty ? null : descripcionController.text.trim()); final ok = await context.read<CalidadViewModel>().save(id: widget.item?.id, request: request); if (!mounted) return; if (ok) { Navigator.of(context).pop(); AppToast.show('Guardado correctamente.', type: ToastType.success); } else { AppToast.show(context.read<CalidadViewModel>().errorMessage ?? 'No se pudo guardar.', type: ToastType.error); } }
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _nombreController;
+  late final TextEditingController _descripcionController;
+
+  bool get _isEditing => widget.item != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final item = widget.item;
+
+    _nombreController = TextEditingController(text: item?.nombre ?? '');
+    _descripcionController = TextEditingController(
+      text: item?.descripcion ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _descripcionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = context.watch<CalidadViewModel>();
+    final isOnline = context.watch<ConnectivityViewModel>().isOnline;
+
+    final canSubmit = !vm.isSaving && isOnline;
+
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextFormField(
+            controller: _nombreController,
+            enabled: !vm.isSaving,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              labelText: 'Nombre de la calidad',
+              hintText: 'Ej. Extra',
+              prefixIcon: Icon(Icons.workspace_premium_rounded),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Ingresa el nombre de la calidad';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 14),
+
+          TextFormField(
+            controller: _descripcionController,
+            enabled: !vm.isSaving,
+            textCapitalization: TextCapitalization.sentences,
+            minLines: 2,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              labelText: 'Descripción',
+              hintText: 'Opcional',
+              prefixIcon: Icon(Icons.notes_rounded),
+            ),
+          ),
+          const SizedBox(height: 22),
+
+          FilledButton.icon(
+            onPressed: canSubmit ? _submit : null,
+            icon: vm.isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(_isEditing ? Icons.save_rounded : Icons.add_rounded),
+            label: Text(_isEditing ? 'Guardar cambios' : 'Registrar calidad'),
+          ),
+
+          if (!isOnline) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Se requiere conexión a internet para guardar.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final vm = context.read<CalidadViewModel>();
+    final item = widget.item;
+
+    final calidad = Calidad(
+      id: item?.id,
+      idEmpresa: item?.idEmpresa,
+      estado: item?.estado ?? true,
+      nombre: _nombreController.text.trim(),
+      descripcion: _nullIfEmpty(_descripcionController.text),
+      empresaNombre: item?.empresaNombre,
+    );
+
+    final ok = _isEditing ? await vm.update(calidad) : await vm.create(calidad);
+
+    if (!mounted) return;
+
+    AppToast.show(
+      ok
+          ? _isEditing
+              ? 'Calidad actualizada correctamente.'
+              : 'Calidad registrada correctamente.'
+          : vm.errorMessage ?? 'No se pudo guardar la calidad.',
+      type: ok ? ToastType.success : ToastType.error,
+    );
+
+    if (ok) Navigator.pop(context);
+  }
+
+  String? _nullIfEmpty(String value) {
+    final clean = value.trim();
+    return clean.isEmpty ? null : clean;
+  }
 }

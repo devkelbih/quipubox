@@ -1,24 +1,185 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
-import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
-import '../../data/models/tipos_jaba_request_model.dart';
 import '../../domain/entities/tipos_jaba.dart';
+import '../../domain/enums/tipo_material_jaba.dart';
 import '../viewmodels/tipos_jaba_viewmodel.dart';
-class TipoJabaFormScreen extends StatefulWidget { final TipoJaba? item; const TipoJabaFormScreen({super.key, this.item}); @override State<TipoJabaFormScreen> createState() => _TipoJabaFormScreenState(); }
+
+class TipoJabaFormScreen extends StatefulWidget {
+  final TipoJaba? item;
+
+  const TipoJabaFormScreen({
+    super.key,
+    this.item,
+  });
+
+  @override
+  State<TipoJabaFormScreen> createState() => _TipoJabaFormScreenState();
+}
+
 class _TipoJabaFormScreenState extends State<TipoJabaFormScreen> {
-  final formKey = GlobalKey<FormState>();
-  final nombreController = TextEditingController();
-  final tipoMaterialController = TextEditingController();
-  final descripcionController = TextEditingController();
-  @override void initState() { super.initState(); if (widget.item != null) { nombreController.text = widget.item!.nombre.toString();
-      tipoMaterialController.text = widget.item!.tipoMaterial.toString();
-      descripcionController.text = widget.item!.descripcion.toString(); } }
-  @override void dispose() { nombreController.dispose();
-    tipoMaterialController.dispose();
-    descripcionController.dispose(); super.dispose(); }
-  @override Widget build(BuildContext context) { final vm = context.watch<TipoJabaViewModel>(); return AlertDialog(title: Text(widget.item == null ? 'Nuevo registro' : 'Editar registro'), content: SizedBox(width: 420, child: SingleChildScrollView(child: Form(key: formKey, child: Column(mainAxisSize: MainAxisSize.min, children: [TextFormField(controller: nombreController, keyboardType: TextInputType.text, decoration: const InputDecoration(labelText: 'Nombre'), validator: (v) => v == null || v.trim().isEmpty ? 'Campo obligatorio' : null,), const SizedBox(height: 12),
-TextFormField(controller: tipoMaterialController, keyboardType: TextInputType.text, decoration: const InputDecoration(labelText: 'Material'), validator: (v) => v == null || v.trim().isEmpty ? 'Campo obligatorio' : null,), const SizedBox(height: 12),
-TextFormField(controller: descripcionController, keyboardType: TextInputType.text, decoration: const InputDecoration(labelText: 'Descripción'), ), const SizedBox(height: 12), if (vm.errorMessage != null) Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error))])))), actions: [TextButton(onPressed: vm.isSaving ? null : () => Navigator.of(context).pop(), child: const Text('Cancelar')), FilledButton(onPressed: vm.isSaving ? null : _save, child: vm.isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Guardar'))]); }
-  Future<void> _save() async { if (!formKey.currentState!.validate()) return; final request = TipoJabaRequestModel(idEmpresa: widget.item == null ? context.read<AuthViewModel>().currentCompanyId : null, nombre: nombreController.text.trim(), tipoMaterial: tipoMaterialController.text.trim(), descripcion: descripcionController.text.trim().isEmpty ? null : descripcionController.text.trim()); final ok = await context.read<TipoJabaViewModel>().save(id: widget.item?.id, request: request); if (!mounted) return; if (ok) { Navigator.of(context).pop(); AppToast.show('Guardado correctamente.', type: ToastType.success); } else { AppToast.show(context.read<TipoJabaViewModel>().errorMessage ?? 'No se pudo guardar.', type: ToastType.error); } }
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _nombreController;
+  late final TextEditingController _descripcionController;
+
+  late TipoMaterialJaba _tipoMaterial;
+
+  bool get _isEditing => widget.item != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final item = widget.item;
+
+    _nombreController = TextEditingController(text: item?.nombre ?? '');
+    _descripcionController = TextEditingController(
+      text: item?.descripcion ?? '',
+    );
+
+    _tipoMaterial = item?.tipoMaterial ?? TipoMaterialJaba.madera;
+  }
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _descripcionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = context.watch<TipoJabaViewModel>();
+    final isOnline = context.watch<ConnectivityViewModel>().isOnline;
+
+    final canSubmit = !vm.isSaving && isOnline;
+
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextFormField(
+            controller: _nombreController,
+            enabled: !vm.isSaving,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              labelText: 'Nombre del tipo de jaba',
+              hintText: 'Ej. Pepinera',
+              prefixIcon: Icon(Icons.inventory_2_rounded),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Ingresa el nombre del tipo de jaba';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 14),
+
+          DropdownButtonFormField<TipoMaterialJaba>(
+            initialValue: _tipoMaterial,
+            decoration: const InputDecoration(
+              labelText: 'Material',
+              prefixIcon: Icon(Icons.category_rounded),
+            ),
+            items: TipoMaterialJaba.values.map((tipo) {
+              return DropdownMenuItem<TipoMaterialJaba>(
+                value: tipo,
+                child: Text(tipo.label),
+              );
+            }).toList(),
+            onChanged: vm.isSaving
+                ? null
+                : (value) {
+                    if (value == null) return;
+                    setState(() => _tipoMaterial = value);
+                  },
+          ),
+          const SizedBox(height: 14),
+
+          TextFormField(
+            controller: _descripcionController,
+            enabled: !vm.isSaving,
+            textCapitalization: TextCapitalization.sentences,
+            minLines: 2,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              labelText: 'Descripción',
+              hintText: 'Opcional',
+              prefixIcon: Icon(Icons.notes_rounded),
+            ),
+          ),
+          const SizedBox(height: 22),
+
+          FilledButton.icon(
+            onPressed: canSubmit ? _submit : null,
+            icon: vm.isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(_isEditing ? Icons.save_rounded : Icons.add_rounded),
+            label: Text(
+              _isEditing ? 'Guardar cambios' : 'Registrar tipo de jaba',
+            ),
+          ),
+
+          if (!isOnline) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Se requiere conexión a internet para guardar.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final vm = context.read<TipoJabaViewModel>();
+    final item = widget.item;
+
+    final tipoJaba = TipoJaba(
+      id: item?.id,
+      idEmpresa: item?.idEmpresa,
+      estado: item?.estado ?? true,
+      nombre: _nombreController.text.trim(),
+      tipoMaterial: _tipoMaterial,
+      descripcion: _nullIfEmpty(_descripcionController.text),
+    );
+
+    final ok = _isEditing
+        ? await vm.update(tipoJaba)
+        : await vm.create(tipoJaba);
+
+    if (!mounted) return;
+
+    AppToast.show(
+      ok
+          ? _isEditing
+              ? 'Tipo de jaba actualizado correctamente.'
+              : 'Tipo de jaba registrado correctamente.'
+          : vm.errorMessage ?? 'No se pudo guardar el tipo de jaba.',
+      type: ok ? ToastType.success : ToastType.error,
+    );
+
+    if (ok) Navigator.pop(context);
+  }
+
+  String? _nullIfEmpty(String value) {
+    final clean = value.trim();
+    return clean.isEmpty ? null : clean;
+  }
 }

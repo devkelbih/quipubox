@@ -14,7 +14,6 @@ import 'modules/settings_module.dart';
 
 /// Registro principal de dependencias de toda la aplicación.
 ///
-/// Este archivo ya no contiene los detalles de cada módulo.
 /// Su única responsabilidad es:
 ///
 /// 1. Registrar servicios globales (Core).

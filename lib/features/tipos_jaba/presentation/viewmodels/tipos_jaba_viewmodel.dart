@@ -1,94 +1,82 @@
-import '../../../../core/network/network_checker.dart';
-import '../../../../core/state/safe_change_notifier.dart';
-import '../../data/models/tipos_jaba_request_model.dart';
+import 'package:quipubox/core/state/base_state_viewmodel.dart';
+import 'package:quipubox/features/tipos_jaba/domain/usecases/change_tipo_jaba_status.dart';
+
 import '../../domain/entities/tipos_jaba.dart';
 import '../../domain/usecases/create_tipos_jaba.dart';
-import '../../domain/usecases/delete_tipos_jaba.dart';
 import '../../domain/usecases/get_tipos_jaba.dart';
 import '../../domain/usecases/update_tipos_jaba.dart';
 
-class TipoJabaViewModel extends SafeChangeNotifier {
+class TipoJabaViewModel extends BaseStateViewModel {
   final GetTiposJabaUseCase getItemsUseCase;
   final CreateTipoJabaUseCase createUseCase;
   final UpdateTipoJabaUseCase updateUseCase;
-  final DeleteTipoJabaUseCase deleteUseCase;
-  final NetworkChecker networkChecker;
+  final ChangeTipoJabaStatusUseCase changeStatusUseCase;
   TipoJabaViewModel({
     required this.getItemsUseCase,
     required this.createUseCase,
     required this.updateUseCase,
-    required this.deleteUseCase,
-    required this.networkChecker,
+    required this.changeStatusUseCase,
   });
   List<TipoJaba> items = [];
-  bool isLoading = false;
-  bool isSaving = false;
-  bool isDeleting = false;
-  String? errorMessage;
+
   Future<void> load() async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
-    try {
-      items = await getItemsUseCase();
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-    } finally {
-      isLoading = false;
+    final result = await run<List<TipoJaba>>(
+      state: ViewModelActionState.loading,
+      action: getItemsUseCase.call,
+    );
+
+    if (result != null) {
+      items = result;
       notifyListeners();
     }
   }
 
-  Future<bool> save({int? id, required TipoJabaRequestModel request}) async {
-    if (!await networkChecker.hasInternet()) {
-      errorMessage = 'No hay conexión a internet. No se puede guardar.';
-      notifyListeners();
-      return false;
-    }
-    isSaving = true;
-    errorMessage = null;
+  Future<bool> create(TipoJaba tipoJaba ) async {
+    final result = await run<TipoJaba>(
+      state: ViewModelActionState.saving,
+      action: () => createUseCase(tipoJaba),
+    );
+
+    if (result == null) return false;
+
+    items.add(result);
     notifyListeners();
-    try {
-      if (id == null) {
-        await createUseCase(request);
-      } else {
-        await updateUseCase(id, request: request);
-      }
-      await load();
-      return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isSaving = false;
-      notifyListeners();
-    }
+    return true;
   }
 
-  Future<bool> remove(int id) async {
-    if (!await networkChecker.hasInternet()) {
-      errorMessage = 'No hay conexión a internet. No se puede desactivar.';
-      notifyListeners();
-      return false;
+  Future<bool> update(TipoJaba tipoJaba) async {
+    final result = await run<TipoJaba>(
+      state: ViewModelActionState.saving,
+      action: () => updateUseCase(tipoJaba),
+    );
+
+    if (result == null) return false;
+
+    final index = items.indexWhere((e) => e.id == result.id);
+
+    if (index != -1) {
+      items[index] = result;
     }
-    isDeleting = true;
-    errorMessage = null;
+
     notifyListeners();
-    try {
-      await deleteUseCase(id);
-      await load();
-      return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isDeleting = false;
-      notifyListeners();
-    }
+    return true;
   }
 
-  String _clean(Object e) => e
-      .toString()
-      .replaceFirst('Exception: ', '')
-      .replaceFirst('AppException: ', '');
+  Future<bool> changeStatus({required int id, required bool estado}) async {
+    final result = await run<TipoJaba>(
+      state: ViewModelActionState.changingStatus,
+      action: () => changeStatusUseCase(id: id, estado: estado),
+    );
+
+    if (result == null) return false;
+
+    final index = items.indexWhere((e) => e.id == result.id);
+
+    if (index != -1) {
+      items[index] = result;
+    }
+
+    notifyListeners();
+    return true;
+  }
 }
