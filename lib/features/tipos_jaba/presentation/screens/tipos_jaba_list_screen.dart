@@ -6,7 +6,7 @@ import 'package:quipubox/features/tipos_jaba/presentation/widgets/tipo_jaba_card
 
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/filters/status_summary_filter.dart';
-import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/tipos_jaba.dart';
 import '../viewmodels/tipos_jaba_viewmodel.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class CompanyProfileScreen extends StatelessWidget {

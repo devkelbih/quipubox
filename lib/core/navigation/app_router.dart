@@ -32,16 +32,23 @@ class AppRouter {
     redirect: (context, state) {
       final location = state.matchedLocation;
 
-      if (authViewModel.isLoading) {
-        return null;
+      final isSplash = location == AppRoutes.splash;
+      final isLogin = location == AppRoutes.login;
+      final isAuthRoute = isSplash || isLogin;
+
+      final hasSession = authViewModel.hasSupabaseSession;
+      final hasProfile = authViewModel.hasProfile;
+
+      if (authViewModel.isCheckingSession) {
+        return isSplash ? null : AppRoutes.splash;
       }
 
-      final isLogin = location == AppRoutes.login;
-      final isSplash = location == AppRoutes.splash;
-      final isAuthRoute = isLogin || isSplash;
-
-      if (!authViewModel.isAuthenticated) {
+      if (!hasSession) {
         return isLogin ? null : AppRoutes.login;
+      }
+
+      if (!hasProfile) {
+        return isSplash ? null : AppRoutes.splash;
       }
 
       if (isAuthRoute) {
@@ -58,7 +65,6 @@ class AppRouter {
         path: AppRoutes.settings,
         builder: (_, __) => const SettingsPage(),
       ),
-      //TODO: company screen debe verse en el setting, de la cuenta, no en el menu principal, revisar esto luego
       GoRoute(
         path: AppRoutes.company,
         builder: (_, __) => const CompanyProfileScreen(),

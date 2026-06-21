@@ -5,7 +5,7 @@ import 'package:quipubox/core/ui/feedback/change_status_dialog.dart';
 import 'package:quipubox/features/sedes/presentation/widgets/sede_card.dart';
 
 import '../../../../core/ui/feedback/app_toast.dart';
-import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../../../core/ui/filters/status_summary_filter.dart';
 import '../../domain/entities/sede.dart';

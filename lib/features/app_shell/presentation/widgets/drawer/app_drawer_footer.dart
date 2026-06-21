@@ -4,12 +4,14 @@ class AppDrawerFooter extends StatelessWidget {
   final bool isDarkMode;
   final VoidCallback onToggleTheme;
   final VoidCallback onLogout;
+  final bool isSigningOut;
 
   const AppDrawerFooter({
     super.key,
     required this.isDarkMode,
     required this.onToggleTheme,
     required this.onLogout,
+    required this.isSigningOut,
   });
 
   @override
@@ -89,9 +91,9 @@ class AppDrawerFooter extends StatelessWidget {
               width: double.infinity,
               height: 54,
               child: OutlinedButton.icon(
-                onPressed: onLogout,
+                onPressed: isSigningOut ? null : onLogout,
                 icon: const Icon(Icons.logout_rounded),
-                label: const Text('Cerrar sesión'),
+                label: Text('Cerrar sesión'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFD32F2F),
                   backgroundColor: const Color(0xFFFFEDEE),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../viewmodels/roles_viewmodel.dart';
 

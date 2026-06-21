@@ -1,18 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/exceptions/app_exception.dart';
-import '../../../../core/network/network_checker.dart';
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../models/app_user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-  final NetworkChecker networkChecker;
+  final AuthLocalDataSource localDataSource;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
-    required this.networkChecker,
+    required this.localDataSource,
   });
 
   @override
@@ -23,34 +24,44 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> loginWithGoogle() async {
-    final hasInternet = await networkChecker.hasInternet();
-
-    if (!hasInternet) {
-      throw const AppException('No hay conexión a internet.');
+    if (kDebugMode) {
+      await Future.delayed(const Duration(seconds: 3));
     }
-
     await remoteDataSource.loginWithGoogle();
   }
 
   @override
   Future<void> logout() async {
-    final hasInternet = await networkChecker.hasInternet();
-
-    if (!hasInternet) {
-      throw const AppException('No hay conexión a internet.');
+    try {
+      if (kDebugMode) {
+        await Future.delayed(const Duration(seconds: 3));
+      }
+      await remoteDataSource.logout();
+    } finally {
+      await clearCachedUser();
     }
-
-    await remoteDataSource.logout();
   }
 
   @override
   Future<AppUser> getProfile() async {
-    final hasInternet = await networkChecker.hasInternet();
-
-    if (!hasInternet) {
-      throw const AppException('No hay conexión a internet.');
+    if (kDebugMode) {
+      await Future.delayed(const Duration(seconds: 3));
     }
-
     return remoteDataSource.getProfile();
+  }
+
+  @override
+  Future<AppUser?> getCachedUser() {
+    return localDataSource.getCachedUser();
+  }
+
+  @override
+  Future<void> saveCachedUser(AppUser user) {
+    return localDataSource.saveCachedUser(AppUserModel.fromEntity(user));
+  }
+
+  @override
+  Future<void> clearCachedUser() {
+    return localDataSource.clearCachedUser();
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/ui/feedback/app_toast.dart';
-import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/usuario.dart';
 import '../viewmodels/usuarios_viewmodel.dart';

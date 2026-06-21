@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
-import '../../../features/settings/presentation/viewmodels/settings_viewmodel.dart';
-import '../../navigation/app_routes.dart';
-import '../feedback/app_toast.dart';
+import '../../../../auth/presentation/viewmodels/auth_viewmodel.dart';
+import '../../../../settings/presentation/viewmodels/settings_viewmodel.dart';
+import '../../../../../core/navigation/app_routes.dart';
+import '../../../../../core/ui/feedback/app_toast.dart';
 import 'app_drawer_footer.dart';
 import 'app_drawer_header.dart';
 import 'app_drawer_items.dart';
@@ -33,15 +33,8 @@ class _AppDrawerState extends State<AppDrawer> {
 
     if (!context.mounted) return;
 
-    if (currentRoute == route) {
-      _isNavigating = false;
-      return;
-    }
-
-    if (route == AppRoutes.home) {
-      context.go(AppRoutes.home);
-    } else {
-      context.push(route);
+    if (currentRoute != route) {
+      context.go(route);
     }
 
     if (mounted) {
@@ -105,6 +98,12 @@ class _AppDrawerState extends State<AppDrawer> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
                 children: [
+                  const SizedBox(height: 18),
+                  AppDrawerSimpleItem(
+                    icon: Icons.dashboard_rounded,
+                    title: 'Inicio',
+                    onTap: () => _open(context, AppRoutes.home),
+                  ),
                   const SizedBox(height: 18),
                   const AppDrawerSectionTitle('Administración'),
                   AppDrawerModule(
@@ -256,6 +255,7 @@ class _AppDrawerState extends State<AppDrawer> {
               onToggleTheme: () =>
                   context.read<SettingsViewModel>().toggleDarkMode(context),
               onLogout: () => _logout(context),
+              isSigningOut: auth.isSigningOut,
             ),
           ],
         ),

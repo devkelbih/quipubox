@@ -58,6 +58,7 @@ class AuthRemoteDataSource {
 
     return AppUserModel.fromJson(
       response as Map<String, dynamic>,
+      source: 'remote',
     );
   }
 }

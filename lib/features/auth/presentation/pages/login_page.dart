@@ -13,7 +13,7 @@ class LoginPage extends StatelessWidget {
     final auth = context.watch<AuthViewModel>();
     final isOnline = context.watch<ConnectivityViewModel>().isOnline;
 
-    final canLogin = !auth.isLoading && isOnline;
+    final canLogin = !auth.isAuthBusy && isOnline;
 
     return Scaffold(
       body: SafeArea(
@@ -38,9 +38,7 @@ class LoginPage extends StatelessWidget {
                       Text(
                         'Quipubox',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
+                        style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 8),
@@ -53,11 +51,11 @@ class LoginPage extends StatelessWidget {
                       FilledButton.icon(
                         onPressed: canLogin
                             ? () async {
-                                final authViewModel =
-                                    context.read<AuthViewModel>();
+                                final authViewModel = context
+                                    .read<AuthViewModel>();
 
-                                final ok =
-                                    await authViewModel.loginWithGoogle();
+                                final ok = await authViewModel
+                                    .loginWithGoogle();
 
                                 if (!ok) {
                                   AppToast.show(
@@ -68,7 +66,7 @@ class LoginPage extends StatelessWidget {
                                 }
                               }
                             : null,
-                        icon: auth.isLoading
+                        icon: auth.isSigningIn
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
@@ -77,7 +75,11 @@ class LoginPage extends StatelessWidget {
                                 ),
                               )
                             : const Icon(Icons.login_rounded),
-                        label: const Text('Continuar con Google'),
+                        label: Text(
+                          auth.isSigningIn
+                              ? 'Iniciando sesión...'
+                              : 'Continuar con Google',
+                        ),
                       ),
 
                       if (!isOnline) ...[

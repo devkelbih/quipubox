@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../../core/ui/filters/status_summary_filter.dart';
-import '../../../../core/ui/layout/app_scaffold.dart';
+import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../../../core/ui/sheets/app_form_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/camion.dart';

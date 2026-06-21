@@ -33,122 +33,109 @@ class AppProviders {
   /// Retorna la lista completa de Providers
   /// que será usada por MultiProvider en app.dart.
   static providers(SharedPreferences preferences) => [
+    // ==========================================================
+    // CORE
+    // Dependencias compartidas por toda la aplicación.
+    // ==========================================================
 
-        // ==========================================================
-        // CORE
-        // Dependencias compartidas por toda la aplicación.
-        // ==========================================================
+    /// SharedPreferences inicializado en main.dart.
+    ///
+    /// Se reutiliza en Settings,
+    /// persistencia local y futuras configuraciones.
+    Provider<SharedPreferences>.value(value: preferences),
 
-        /// SharedPreferences inicializado en main.dart.
-        ///
-        /// Se reutiliza en Settings,
-        /// persistencia local y futuras configuraciones.
-        Provider<SharedPreferences>.value(
-          value: preferences,
-        ),
+    /// Cliente HTTP central.
+    ///
+    /// Todos los DataSources remotos usan esta instancia.
+    /// Maneja:
+    /// - JWT de Supabase
+    /// - Headers
+    /// - Timeouts
+    /// - Manejo de errores
+    Provider<ApiClient>(create: (_) => ApiClient()),
 
-        /// Cliente HTTP central.
-        ///
-        /// Todos los DataSources remotos usan esta instancia.
-        /// Maneja:
-        /// - JWT de Supabase
-        /// - Headers
-        /// - Timeouts
-        /// - Manejo de errores
-        Provider<ApiClient>(
-          create: (_) => ApiClient(),
-        ),
+    /// Servicio para validar acceso a internet.
+    /// Es utilizado por:
+    /// - ConnectivityViewModel
+    /// - AuthRepository para login/profile/logout
+    /// - Operaciones críticas puntuales
+    Provider<NetworkChecker>(create: (_) => NetworkChecker()),
 
-        /// Servicio para validar acceso a internet.
-        ///
-        /// Es utilizado por:
-        /// - Repositories
-        /// - ConnectivityViewModel
-        /// - Operaciones críticas
-        Provider<NetworkChecker>(
-          create: (_) => NetworkChecker(),
-        ),
+    /// ViewModel global que escucha cambios
+    /// de conectividad de red.
+    ///
+    /// Permite mostrar mensajes como:
+    /// "Sin conexión a internet"
+    ///
+    /// El operador "..start()"
+    /// ejecuta el método start()
+    /// inmediatamente después de crear el objeto.
+    ChangeNotifierProvider<ConnectivityViewModel>(
+      create: (context) =>
+          ConnectivityViewModel(networkChecker: context.read<NetworkChecker>())
+            ..start(),
+    ),
 
-        /// ViewModel global que escucha cambios
-        /// de conectividad de red.
-        ///
-        /// Permite mostrar mensajes como:
-        /// "Sin conexión a internet"
-        ///
-        /// El operador "..start()"
-        /// ejecuta el método start()
-        /// inmediatamente después de crear el objeto.
-        ChangeNotifierProvider<ConnectivityViewModel>(
-          create: (context) => ConnectivityViewModel(
-            networkChecker: context.read<NetworkChecker>(),
-          )..start(),
-        ),
+    // ==========================================================
+    // AUTH
+    // Login, sesión y perfil.
+    // ==========================================================
 
-        // ==========================================================
-        // AUTH
-        // Login, sesión y perfil.
-        // ==========================================================
+    /// Expande todos los providers registrados
+    /// dentro de AuthModule.
+    ///
+    /// Incluye:
+    /// - AuthRemoteDataSource
+    /// - AuthRepository
+    /// - UseCases
+    /// - AuthViewModel
+    /// - CurrentSession
+    ...AuthModule.providers,
 
-        /// Expande todos los providers registrados
-        /// dentro de AuthModule.
-        ///
-        /// Incluye:
-        /// - AuthRemoteDataSource
-        /// - AuthRepository
-        /// - UseCases
-        /// - AuthViewModel
-        /// - CurrentSession
-        ...AuthModule.providers,
+    // ==========================================================
+    // ROUTER
+    // Navegación principal de la aplicación.
+    // ==========================================================
 
-        // ==========================================================
-        // ROUTER
-        // Navegación principal de la aplicación.
-        // ==========================================================
+    /// Router central basado en GoRouter.
+    ///
+    /// Depende de AuthViewModel para decidir:
+    ///
+    /// - Splash
+    /// - Login
+    /// - Home
+    /// - Redirecciones
+    Provider<AppRouter>(
+      create: (context) => AppRouter(context.read<AuthViewModel>()),
+    ),
 
-        /// Router central basado en GoRouter.
-        ///
-        /// Depende de AuthViewModel para decidir:
-        ///
-        /// - Splash
-        /// - Login
-        /// - Home
-        /// - Redirecciones
-        Provider<AppRouter>(
-          create: (context) => AppRouter(
-            context.read<AuthViewModel>(),
-          ),
-        ),
+    // ==========================================================
+    // SETTINGS
+    // Tema y configuraciones.
+    // ==========================================================
+    ...SettingsModule.providers,
 
-        // ==========================================================
-        // SETTINGS
-        // Tema y configuraciones.
-        // ==========================================================
+    // ==========================================================
+    // ADMINISTRACIÓN
+    //
+    // Roles
+    // Usuarios
+    // Sedes
+    // Lugares Operativos
+    // Puestos
+    // Clientes
+    // ==========================================================
+    ...AdminModule.providers,
 
-        ...SettingsModule.providers,
-
-        // ==========================================================
-        // ADMINISTRACIÓN
-        //
-        // Roles
-        // Usuarios
-        // Sedes
-        // Lugares Operativos
-        // Puestos
-        // Clientes
-        // ==========================================================
-
-        ...AdminModule.providers,
-
-        // ==========================================================
-        // CATÁLOGOS
-        //
-        // Frutas
-        // Variedades
-        // Calidades
-        // Tipos de Jaba
-        // Camiones
-        // ==========================================================
-
-        ...CatalogosModule.providers,
-      ];
+    // ==========================================================
+    // CATÁLOGOS
+    //
+    // Frutas
+    // Variedades
+    // Calidades
+    // Tipos de Jaba
+    // Camiones
+    // ==========================================================
+    ...CatalogosModule.providers,
+  ];
 }

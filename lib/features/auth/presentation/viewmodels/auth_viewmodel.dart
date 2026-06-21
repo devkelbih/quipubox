@@ -1,23 +1,30 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:quipubox/core/state/base_state_viewmodel.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/exceptions/app_exception.dart';
-import '../../../../core/state/safe_change_notifier.dart';
 import '../../domain/entities/app_user.dart';
+import '../../domain/usecases/clear_cached_user_usecase.dart';
+import '../../domain/usecases/get_cached_user_usecase.dart';
 import '../../domain/usecases/get_current_session_usecase.dart';
 import '../../domain/usecases/get_profile_usecase.dart';
 import '../../domain/usecases/login_with_google_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/save_cached_user_usecase.dart';
 
-class AuthViewModel extends SafeChangeNotifier {
+class AuthViewModel extends BaseStateViewModel {
   final GetCurrentSessionUseCase getCurrentSessionUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
   final LogoutUseCase logoutUseCase;
   final GetProfileUseCase getProfileUseCase;
+  final GetCachedUserUseCase getCachedUserUseCase;
+  final SaveCachedUserUseCase saveCachedUserUseCase;
+  final ClearCachedUserUseCase clearCachedUserUseCase;
 
   StreamSubscription<AuthState>? _authSubscription;
+
+  bool _isInitializing = false;
   bool _handlingAuthChange = false;
 
   AuthViewModel({
@@ -25,31 +32,34 @@ class AuthViewModel extends SafeChangeNotifier {
     required this.loginWithGoogleUseCase,
     required this.logoutUseCase,
     required this.getProfileUseCase,
+    required this.getCachedUserUseCase,
+    required this.saveCachedUserUseCase,
+    required this.clearCachedUserUseCase,
   }) {
     initialize();
   }
-
+  // Usuario actualmente autenticado.
   AppUser? user;
 
-  bool isLoading = true;
-  bool isSaving = false;
-  bool isDeleting = false;
-
-  String? errorMessage;
-
+  // Información rápida de autenticación.
   bool get hasSupabaseSession => getCurrentSessionUseCase() != null;
+  bool get isAuthenticated => hasSupabaseSession;
+  bool get hasProfile => user != null;
 
-  bool get isAuthenticated => hasSupabaseSession && user != null;
-
+  // Datos frecuentes del usuario para evitar null-checks repetidos.
   int? get currentUserId => user?.id;
-
   int? get currentCompanyId => user?.idEmpresa;
-
-  List<int> get currentRoleIds => user?.roleIds ?? [];
-
-  List<String> get currentRoleNames => user?.roleNames ?? [];
-
   int? get currentSedeId => user?.idSede;
+
+  // Estados específicos de UI.
+  bool get isCheckingSession => isLoading;
+  bool get isSigningIn => isSaving;
+  bool get isSigningOut => isDeleting;
+  bool get isAuthBusy => isLoading || isSaving || isDeleting;
+
+  // Roles del usuario.
+  List<int> get currentRoleIds => user?.roleIds ?? [];
+  List<String> get currentRoleNames => user?.roleNames ?? [];
 
   bool hasRoleId(int roleId) {
     return user?.hasRoleId(roleId) ?? false;
@@ -60,6 +70,13 @@ class AuthViewModel extends SafeChangeNotifier {
   }
 
   Future<void> initialize() async {
+    if (_isInitializing) return;
+
+    _isInitializing = true;
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
     debugPrint('AUTH INIT START');
 
     try {
@@ -70,23 +87,21 @@ class AuthViewModel extends SafeChangeNotifier {
       debugPrint('SESSION: ${session == null ? 'NO' : 'SI'}');
 
       if (session == null) {
-        user = null;
-        errorMessage = null;
+        await _clearLocalAuthState(notify: false);
         return;
       }
 
-      final ok = await loadProfile();
+      await _loadCachedUser();
 
-      if (!ok) {
-        return;
-      }
-    } catch (error) {
+      await _refreshProfileSilently();
+    } on Object catch (error) {
       debugPrint('AUTH INIT ERROR: $error');
-      user = null;
-      errorMessage = _clean(error);
+      errorMessage = error.toString();
     } finally {
+      _isInitializing = false;
+      isLoading = false;
       debugPrint('AUTH INIT FINISH');
-      _finishLoading();
+      notifyListeners();
     }
   }
 
@@ -96,106 +111,115 @@ class AuthViewModel extends SafeChangeNotifier {
     _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
       data,
     ) async {
-      if (_handlingAuthChange) return;
+      if (_isInitializing || _handlingAuthChange) return;
 
       _handlingAuthChange = true;
 
       try {
         if (data.session == null) {
-          user = null;
-          errorMessage = null;
-          _finishLoading();
+          await _clearLocalAuthState();
           return;
         }
 
-        final ok = await loadProfile();
-
-        if (!ok) {
-          return;
-        }
-      } catch (error) {
-        errorMessage = _clean(error);
-        _finishLoading();
+        await _loadCachedUser();
+        await loadProfile();
+      } on Object catch (error) {
+        errorMessage = error.toString();
+        notifyListeners();
       } finally {
         _handlingAuthChange = false;
       }
     });
   }
 
+  Future<void> _loadCachedUser() async {
+    try {
+      final cachedUser = await getCachedUserUseCase();
+
+      if (cachedUser == null) return;
+
+      user = cachedUser;
+      notifyListeners();
+    } on Object catch (error) {
+      debugPrint('No se pudo cargar usuario cacheado: $error');
+    }
+  }
+
+  Future<void> _refreshProfileSilently() async {
+    try {
+      final freshUser = await getProfileUseCase().timeout(
+        const Duration(seconds: 20),
+      );
+
+      user = freshUser;
+
+      try {
+        await saveCachedUserUseCase(freshUser);
+      } on Object catch (cacheError) {
+        debugPrint('No se pudo guardar usuario cacheado: $cacheError');
+      }
+    } on Object catch (error) {
+      debugPrint('No se pudo refrescar perfil remoto: $error');
+      errorMessage = error.toString();
+    }
+  }
+
   Future<bool> loadProfile() async {
-    isLoading = true;
+    final result = await run<AppUser>(
+      state: ViewModelActionState.saving,
+      action: () {
+        return getProfileUseCase().timeout(const Duration(seconds: 20));
+      },
+    );
+
+    if (result == null) return false;
+
+    user = result;
+    notifyListeners();
+
+    try {
+      await saveCachedUserUseCase(result);
+    } on Object catch (cacheError) {
+      debugPrint('No se pudo guardar usuario cacheado: $cacheError');
+    }
+
+    return true;
+  }
+
+  Future<bool> loginWithGoogle() {
+    return runBool(
+      state: ViewModelActionState.saving,
+      action: loginWithGoogleUseCase.call,
+    );
+  }
+
+  Future<bool> logout() {
+    return runBool(
+      state: ViewModelActionState.deleting,
+      preventDuplicates: true,
+      action: () async {
+        try {
+          await logoutUseCase();
+        } on Object catch (error) {
+          debugPrint('Logout remoto/local de Supabase falló: $error');
+        } finally {
+          await _clearLocalAuthState(notify: false);
+        }
+      },
+    );
+  }
+
+  Future<void> _clearLocalAuthState({bool notify = true}) async {
+    user = null;
     errorMessage = null;
-    notifyListeners();
 
     try {
-      user = await getProfileUseCase().timeout(const Duration(seconds: 20));
-
-      return true;
-    } on TimeoutException {
-      errorMessage =
-          'La validación de sesión tardó demasiado. Revisa internet e intenta nuevamente.';
-      return false;
+      await clearCachedUserUseCase();
     } on Object catch (error) {
-      errorMessage = _clean(error);
-      return false;
-    } finally {
-      _finishLoading();
-    }
-  }
-
-  Future<bool> loginWithGoogle() async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
-
-    try {
-      await loginWithGoogleUseCase();
-      return true;
-    } on Object catch (error) {
-      errorMessage = _clean(error);
-      return false;
-    } finally {
-      _finishLoading();
-    }
-  }
-
-  Future<void> logout() async {
-    isLoading = true;
-    notifyListeners();
-
-    try {
-      await logoutUseCase();
-      user = null;
-      errorMessage = null;
-    } on Object catch (error) {
-      errorMessage = _clean(error);
-    } finally {
-      _finishLoading();
-    }
-  }
-
-  Future<void> _safeSignOut() async {
-    try {
-      await logoutUseCase();
-    } on Object catch (error) {
-      debugPrint('No se pudo cerrar sesión de forma segura: $error');
-    } finally {
-      user = null;
-      _finishLoading();
-    }
-  }
-
-  void _finishLoading() {
-    isLoading = false;
-    notifyListeners();
-  }
-
-  String _clean(Object error) {
-    if (error is AppException) {
-      return error.message;
+      debugPrint('No se pudo limpiar usuario cacheado: $error');
     }
 
-    return error.toString();
+    if (notify) notifyListeners();
   }
 
   @override
