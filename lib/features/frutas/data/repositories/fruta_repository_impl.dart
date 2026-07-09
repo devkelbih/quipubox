@@ -1,5 +1,3 @@
-import 'package:quipubox/core/exceptions/app_exception.dart';
-
 import '../../domain/entities/fruta.dart';
 import '../../domain/repositories/fruta_repository.dart';
 import '../datasources/fruta_remote_data_source.dart';
@@ -9,31 +7,29 @@ class FrutaRepositoryImpl implements FrutaRepository {
   final FrutaRemoteDataSource remoteDataSource;
 
   FrutaRepositoryImpl({required this.remoteDataSource});
-
   @override
   Future<List<Fruta>> getAll() async {
-    return remoteDataSource.getAll();
+    final models = remoteDataSource.getAll();
+    return models.then(
+      (value) => value.map((model) => model.toEntity()).toList(),
+    );
   }
 
   @override
   Future<Fruta> create(Fruta fruta) async {
     final request = FrutaRequestModel.fromEntity(fruta);
-    return remoteDataSource.create(request);
+    final model = await remoteDataSource.create(request);
+    return model.toEntity();
   }
 
   @override
   Future<Fruta> update(Fruta fruta) async {
-    final id = fruta.id;
-    if (id == null) {
-      throw const AppException('No se encontró el ID de la fruta.');
-    }
-
     final request = FrutaRequestModel.fromEntity(fruta);
-    return remoteDataSource.update(id, request: request);
+    final model = await remoteDataSource.update(fruta.id!, request: request);
+    return model.toEntity();
   }
 
   @override
-  Future<Fruta> changeStatus({required int id, required bool estado}) async {
-    return remoteDataSource.changeStatus(id: id, estado: estado);
-  }
+  Future<bool> changeStatus({required int id, required bool estado}) =>
+      remoteDataSource.changeStatus(id: id, estado: estado);
 }

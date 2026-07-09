@@ -62,17 +62,17 @@ class CamionViewModel extends BaseStateViewModel {
   }
 
   Future<bool> changeStatus({required int id, required bool estado}) async {
-    final result = await run<Camion>(
+    final confirmedStatus = await run<bool>(
       state: ViewModelActionState.changingStatus,
       action: () => changeStatusUseCase(id: id, estado: estado),
     );
 
-    if (result == null) return false;
+    if (confirmedStatus == null) return false;
 
-    final index = items.indexWhere((e) => e.id == result.id);
+    final index = items.indexWhere((e) => e.id == id);
 
     if (index != -1) {
-      items[index] = result;
+      items[index] = items[index].copyWith(estado: confirmedStatus);
     }
 
     notifyListeners();

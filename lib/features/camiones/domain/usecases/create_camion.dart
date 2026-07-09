@@ -7,10 +7,7 @@ class CreateCamionUseCase {
   final CamionRepository repository;
   final CurrentSession currentSession;
 
-  CreateCamionUseCase({
-    required this.repository,
-    required this.currentSession,
-  });
+  CreateCamionUseCase({required this.repository, required this.currentSession});
 
   Future<Camion> call(Camion camion) {
     final idEmpresa = currentSession.currentCompanyId;
@@ -19,8 +16,6 @@ class CreateCamionUseCase {
       throw const AppException('No se encontró la empresa del usuario.');
     }
 
-    return repository.create(
-      camion.copyWith(idEmpresa: idEmpresa),
-    );
+    return repository.create(camion.copyWith(idEmpresa: idEmpresa));
   }
 }

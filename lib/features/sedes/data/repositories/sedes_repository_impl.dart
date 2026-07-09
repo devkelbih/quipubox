@@ -1,4 +1,3 @@
-import '../../../../core/exceptions/app_exception.dart';
 import '../../domain/entities/sede.dart';
 import '../../domain/repositories/sedes_repository.dart';
 import '../datasources/sedes_remote_data_source.dart';
@@ -11,28 +10,27 @@ class SedeRepositoryImpl implements SedeRepository {
 
   @override
   Future<List<Sede>> getAll() async {
-    return remoteDataSource.getAll();
+    final models = await remoteDataSource.getAll();
+    return models.map((model) => model.toEntity()).toList();
   }
 
   @override
   Future<Sede> create(Sede sede) async {
     final request = SedeRequestModel.fromEntity(sede);
 
-    return remoteDataSource.create(request);
+    final model = await remoteDataSource.create(request);
+    return model.toEntity();
   }
 
   @override
   Future<Sede> update(Sede sede) async {
-    final id = sede.id;
-    if (id == null) {
-      throw const AppException('No se encontró el ID de la sede.');
-    }
     final request = SedeRequestModel.fromEntity(sede);
-    return remoteDataSource.update(id, request: request);
+
+    final model = await remoteDataSource.update(sede.id!, request: request);
+    return model.toEntity();
   }
 
   @override
-  Future<Sede> changeStatus({required int id, required bool estado}) async {
-    return remoteDataSource.changeStatus(id: id, estado: estado);
-  }
+  Future<bool> changeStatus({required int id, required bool estado}) =>
+      remoteDataSource.changeStatus(id: id, estado: estado);
 }

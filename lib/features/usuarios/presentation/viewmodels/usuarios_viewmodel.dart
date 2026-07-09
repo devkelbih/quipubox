@@ -1,94 +1,73 @@
-import '../../../../core/network/network_checker.dart';
-import '../../../../core/state/safe_change_notifier.dart';
-import '../../data/models/usuario_request_model.dart';
+import 'package:quipubox/core/state/base_state_viewmodel.dart';
 import '../../domain/entities/usuario.dart';
 import '../../domain/usecases/create_usuario.dart';
-import '../../domain/usecases/delete_usuario.dart';
+import '../../domain/usecases/change_usuario_status.dart';
 import '../../domain/usecases/get_usuarios.dart';
 import '../../domain/usecases/update_usuario.dart';
 
-class UsuarioViewModel extends SafeChangeNotifier {
+class UsuarioViewModel extends BaseStateViewModel {
   final GetUsuariosUseCase getItemsUseCase;
   final CreateUsuarioUseCase createUseCase;
   final UpdateUsuarioUseCase updateUseCase;
-  final DeleteUsuarioUseCase deleteUseCase;
-  final NetworkChecker networkChecker;
+  final ChangeUsuarioStatusUseCase changeStatusUseCase;
   UsuarioViewModel({
     required this.getItemsUseCase,
     required this.createUseCase,
     required this.updateUseCase,
-    required this.deleteUseCase,
-    required this.networkChecker,
+    required this.changeStatusUseCase,
   });
   List<Usuario> items = [];
-  bool isLoading = false;
-  bool isSaving = false;
-  bool isDeleting = false;
-  String? errorMessage;
   Future<void> load() async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
-    try {
-      items = await getItemsUseCase();
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-    } finally {
-      isLoading = false;
+    final result = await run<List<Usuario>>(
+      state: ViewModelActionState.loading,
+      action: getItemsUseCase.call,
+    );
+
+    if (result != null) {
+      items = result;
       notifyListeners();
     }
   }
 
-  Future<bool> save({int? id, required UsuarioRequestModel request}) async {
-    if (!await networkChecker.hasInternet()) {
-      errorMessage = 'No hay conexión a internet. No se puede guardar.';
-      notifyListeners();
-      return false;
-    }
-    isSaving = true;
-    errorMessage = null;
-    notifyListeners();
-    try {
-      if (id == null) {
-        await createUseCase(request);
-      } else {
-        await updateUseCase(id, request: request);
-      }
+  Future<bool> create(Usuario usuario) async {
+    final result = await run<Usuario>(
+      state: ViewModelActionState.saving,
+      action: () => createUseCase(usuario),
+    );
+    if (result != null) {
       await load();
       return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isSaving = false;
-      notifyListeners();
     }
+    return false;
   }
 
-  Future<bool> remove(int id) async {
-    if (!await networkChecker.hasInternet()) {
-      errorMessage = 'No hay conexión a internet. No se puede desactivar.';
-      notifyListeners();
-      return false;
-    }
-    isDeleting = true;
-    errorMessage = null;
-    notifyListeners();
-    try {
-      await deleteUseCase(id);
+  Future<bool> update(Usuario usuario) async {
+    final result = await run<Usuario>(
+      state: ViewModelActionState.saving,
+      action: () => updateUseCase(usuario),
+    );
+    if (result != null) {
       await load();
       return true;
-    } on Object catch (e) {
-      errorMessage = _clean(e);
-      return false;
-    } finally {
-      isDeleting = false;
-      notifyListeners();
     }
+    return false;
   }
 
-  String _clean(Object e) => e
-      .toString()
-      .replaceFirst('Exception: ', '')
-      .replaceFirst('AppException: ', '');
+  Future<bool> changeStatus({required int id, required bool estado}) async {
+    final confirmedStatus = await run<bool>(
+      state: ViewModelActionState.changingStatus,
+      action: () => changeStatusUseCase(id: id, estado: estado),
+    );
+
+    if (confirmedStatus == null) return false;
+
+    final index = items.indexWhere((e) => e.id == id);
+
+    if (index != -1) {
+      items[index] = items[index].copyWith(estado: confirmedStatus);
+    }
+
+    notifyListeners();
+    return true;
+  }
 }

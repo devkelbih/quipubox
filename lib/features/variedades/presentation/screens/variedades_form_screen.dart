@@ -153,17 +153,15 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
     final vm = context.read<VariedadViewModel>();
     final item = widget.item;
 
-    final frutaSeleccionada = _selectedFrutaName(vm);
+    _selectedFrutaName(vm);
 
     final variedad = Variedad(
       id: item?.id,
       idEmpresa: item?.idEmpresa,
-      idFruta: _idFruta,
+      idFruta: _idFruta!,
       estado: item?.estado ?? true,
       nombre: _nombreController.text.trim(),
       descripcion: _nullIfEmpty(_descripcionController.text),
-      frutaNombre: frutaSeleccionada ?? item?.frutaNombre,
-      empresaNombre: item?.empresaNombre,
     );
 
     final ok = _isEditing

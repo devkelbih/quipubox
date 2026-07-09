@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/config/app_config.dart';
@@ -24,33 +23,6 @@ class AuthRemoteDataSource {
 
   Future<void> logout() {
     return Supabase.instance.client.auth.signOut();
-  }
-
-  Future<Session?> recoverSession() async {
-    final supabase = Supabase.instance.client;
-
-    try {
-      final current = supabase.auth.currentSession;
-
-      if (current == null) {
-        debugPrint('SUPABASE SESSION NULL');
-        return null;
-      }
-
-      final refreshed = await supabase.auth.refreshSession();
-
-      debugPrint('SUPABASE TOKEN REFRESH OK');
-
-      return refreshed.session ?? current;
-    } catch (error) {
-      debugPrint('SUPABASE REFRESH ERROR => $error');
-      return supabase.auth.currentSession;
-    }
-  }
-
-  Future<String?> getAccessToken() async {
-    final session = await recoverSession();
-    return session?.accessToken;
   }
 
   Future<AppUserModel> getProfile() async {

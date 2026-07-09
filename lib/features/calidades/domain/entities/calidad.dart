@@ -4,7 +4,6 @@ class Calidad {
   final bool estado;
   final String nombre;
   final String? descripcion;
-  final String? empresaNombre;
 
   const Calidad({
     this.id,
@@ -12,7 +11,6 @@ class Calidad {
     this.estado = true,
     required this.nombre,
     this.descripcion,
-    this.empresaNombre,
   });
 
   Calidad copyWith({
@@ -29,7 +27,6 @@ class Calidad {
       estado: estado ?? this.estado,
       nombre: nombre ?? this.nombre,
       descripcion: descripcion ?? this.descripcion,
-      empresaNombre: empresaNombre ?? this.empresaNombre,
     );
   }
 }

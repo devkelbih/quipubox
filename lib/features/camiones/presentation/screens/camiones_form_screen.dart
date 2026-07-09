@@ -8,10 +8,7 @@ import '../viewmodels/camiones_viewmodel.dart';
 class CamionFormScreen extends StatefulWidget {
   final Camion? item;
 
-  const CamionFormScreen({
-    super.key,
-    this.item,
-  });
+  const CamionFormScreen({super.key, this.item});
 
   @override
   State<CamionFormScreen> createState() => _CamionFormScreenState();
@@ -131,8 +128,8 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
     final item = widget.item;
 
     final camion = Camion(
-      id: item?.id ?? 0,
-      idEmpresa: item?.idEmpresa ?? 0,
+      id: item?.id,
+      idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
       placa: placaController.text.trim().toUpperCase(),
       descripcion: _emptyToNull(descripcionController.text),
@@ -141,9 +138,7 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
 
     final vm = context.read<CamionViewModel>();
 
-    final ok = item == null
-        ? await vm.create(camion)
-        : await vm.update(camion);
+    final ok = item == null ? await vm.create(camion) : await vm.update(camion);
 
     if (!mounted) return;
 

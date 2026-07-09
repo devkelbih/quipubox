@@ -64,19 +64,7 @@ class ApiClient {
   /// Por eso, antes de llamar al backend, intentamos refrescar la sesión.
   /// Si el refresh falla, se devuelve el token actual como último intento.
   Future<String?> _getValidAccessToken() async {
-    final supabase = Supabase.instance.client;
-    final currentSession = supabase.auth.currentSession;
-
-    if (currentSession == null) {
-      return null;
-    }
-
-    try {
-      final refreshed = await supabase.auth.refreshSession();
-      return refreshed.session?.accessToken ?? currentSession.accessToken;
-    } catch (_) {
-      return currentSession.accessToken;
-    }
+    return Supabase.instance.client.auth.currentSession?.accessToken;
   }
 
   /// Método interno que ejecuta todas las solicitudes.

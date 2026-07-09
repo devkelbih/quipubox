@@ -1,25 +1,42 @@
 import 'package:flutter/foundation.dart';
+import 'package:quipubox/features/auth/data/models/auth_sede_model.dart';
 
 import '../../../company/data/models/empresa_model.dart';
 import '../../../roles/data/models/role_model.dart';
-import '../../../sedes/data/models/sede_model.dart';
-import '../../domain/entities/app_user.dart';
+import '../../domain/entities/authenticated_user.dart';
 
-class AppUserModel extends AppUser {
+class AppUserModel {
+  final int id;
+
+  final EmpresaModel empresa;
+  final AuthSedeModel sede;
+  final List<RoleModel> roles;
+
+  final String email;
+  final String nombres;
+  final String apellidos;
+  final String? telefono;
+  final String? avatarUrl;
+
+  final bool estado;
+
   const AppUserModel({
-    required super.id,
-    required super.empresa,
-    required super.sede,
-    required super.roles,
-    required super.email,
-    required super.nombres,
-    required super.apellidos,
-    required super.estado,
-    super.telefono,
-    super.avatarUrl,
+    required this.id,
+    required this.empresa,
+    required this.sede,
+    required this.roles,
+    required this.email,
+    required this.nombres,
+    required this.apellidos,
+    this.telefono,
+    this.avatarUrl,
+    required this.estado,
   });
 
-  factory AppUserModel.fromJson(Map<String, dynamic> json, {String source = 'unknown'}) {
+  factory AppUserModel.fromJson(
+    Map<String, dynamic> json, {
+    String source = 'unknown',
+  }) {
     debugPrint('PROFILE JSON [$source] => $json');
 
     final empresaJson = json['empresa'] is Map
@@ -35,7 +52,7 @@ class AppUserModel extends AppUser {
     return AppUserModel(
       id: _readInt(json['id']),
       empresa: EmpresaModel.fromJson(empresaJson),
-      sede: SedeModel.fromJson(sedeJson),
+      sede: AuthSedeModel.fromJson(sedeJson),
       roles: rolesJson.map(RoleModel.fromJson).toList(),
       email: json['email']?.toString() ?? '',
       nombres: json['nombres']?.toString() ?? '',
@@ -46,18 +63,33 @@ class AppUserModel extends AppUser {
     );
   }
 
-  factory AppUserModel.fromEntity(AppUser user) {
+  factory AppUserModel.fromEntity(AuthenticatedUser user) {
     return AppUserModel(
       id: user.id,
-      empresa: user.empresa,
-      sede: user.sede,
-      roles: user.roles,
+      empresa: EmpresaModel.fromEntity(user.empresa),
+      sede: AuthSedeModel.fromEntity(user.sede),
+      roles: user.roles.map(RoleModel.fromEntity).toList(),
       email: user.email,
       nombres: user.nombres,
       apellidos: user.apellidos,
       telefono: user.telefono,
       avatarUrl: user.avatarUrl,
       estado: user.estado,
+    );
+  }
+
+  AuthenticatedUser toEntity() {
+    return AuthenticatedUser(
+      id: id,
+      empresa: empresa.toEntity(),
+      sede: sede.toEntity(),
+      roles: roles.map((e) => e.toEntity()).toList(),
+      email: email,
+      nombres: nombres,
+      apellidos: apellidos,
+      telefono: telefono,
+      avatarUrl: avatarUrl,
+      estado: estado,
     );
   }
 
@@ -76,7 +108,9 @@ class AppUserModel extends AppUser {
     };
   }
 
-  static List<Map<String, dynamic>> _readRoles(Map<String, dynamic> json) {
+  static List<Map<String, dynamic>> _readRoles(
+    Map<String, dynamic> json,
+  ) {
     if (json['roles'] is List) {
       return (json['roles'] as List)
           .whereType<Map>()
@@ -93,6 +127,7 @@ class AppUserModel extends AppUser {
 
   static int _readInt(dynamic value) {
     if (value is int) return value;
+
     return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
@@ -107,16 +142,20 @@ class AppUserModel extends AppUser {
       }
 
       if (json is Map) {
-        return _jsonSafeMap(Map<String, dynamic>.from(json));
+        return _jsonSafeMap(
+          Map<String, dynamic>.from(json),
+        );
       }
     } on Object {
-      // Fallback para entidades/modelos que todavía no tienen toJson().
+      // fallback
     }
 
     return _fallbackEntityToJson(value);
   }
 
-  static Map<String, dynamic> _fallbackEntityToJson(dynamic value) {
+  static Map<String, dynamic> _fallbackEntityToJson(
+    dynamic value,
+  ) {
     final output = <String, dynamic>{};
 
     void add(String key, dynamic Function() getter) {
@@ -127,7 +166,7 @@ class AppUserModel extends AppUser {
           output[key] = _jsonSafe(result);
         }
       } on Object {
-        // Campo inexistente en esta entidad.
+        // ignorar
       }
     }
 
@@ -151,9 +190,14 @@ class AppUserModel extends AppUser {
     return output;
   }
 
-  static Map<String, dynamic> _jsonSafeMap(Map<String, dynamic> map) {
+  static Map<String, dynamic> _jsonSafeMap(
+    Map<String, dynamic> map,
+  ) {
     return map.map(
-      (key, value) => MapEntry(key, _jsonSafe(value)),
+      (key, value) => MapEntry(
+        key,
+        _jsonSafe(value),
+      ),
     );
   }
 

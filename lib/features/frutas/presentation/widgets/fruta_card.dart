@@ -46,9 +46,7 @@ class FrutaCard extends StatelessWidget {
                   _InfoLine(
                     icon: Icons.grain_rounded,
                     label: 'Variedades',
-                    value: item.variedadesCount == 1
-                        ? '1 variedad'
-                        : '${item.variedadesCount} variedades',
+                    value: 'x variedades',
                   ),
                   if (_hasText(item.descripcion)) ...[
                     const SizedBox(height: 8),

@@ -1,4 +1,4 @@
-import '../entities/sede.dart';
+import 'package:quipubox/core/exceptions/app_exception.dart';
 import '../repositories/sedes_repository.dart';
 
 class ChangeSedeStatusUseCase {
@@ -6,7 +6,10 @@ class ChangeSedeStatusUseCase {
 
   ChangeSedeStatusUseCase(this.repository);
 
-  Future<Sede> call({required int id, required bool estado}) {
+  Future<bool> call({required int id, required bool estado}) {
+    if (id <= 0) {
+      throw const AppException('No se encontró el ID de la sede.');
+    }
     return repository.changeStatus(id: id, estado: estado);
   }
 }

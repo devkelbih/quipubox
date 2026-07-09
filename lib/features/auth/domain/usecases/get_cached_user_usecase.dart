@@ -1,4 +1,4 @@
-import '../entities/app_user.dart';
+import '../entities/authenticated_user.dart';
 import '../repositories/auth_repository.dart';
 
 class GetCachedUserUseCase {
@@ -6,7 +6,7 @@ class GetCachedUserUseCase {
 
   GetCachedUserUseCase(this.repository);
 
-  Future<AppUser?> call() {
+  Future<AuthenticatedUser?> call() {
     return repository.getCachedUser();
   }
 }

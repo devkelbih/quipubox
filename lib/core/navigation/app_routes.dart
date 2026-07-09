@@ -6,7 +6,7 @@ class AppRoutes {
   static const settings = '/settings';
   static const company = '/company';
   static const sedes = '/sedes';
-  static const roles = '/roles';
+  static const roles = '/roles';//ver
   static const usuarios = '/usuarios';
   static const clientes = '/clientes';
   static const lugaresOperativos = '/lugares-operativos';

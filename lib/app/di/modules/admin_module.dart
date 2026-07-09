@@ -1,5 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:quipubox/features/usuarios/domain/usecases/change_usuario_status.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/network_checker.dart';
@@ -9,7 +10,6 @@ import '../../../features/roles/data/datasources/roles_remote_data_source.dart';
 import '../../../features/roles/data/repositories/roles_repository_impl.dart';
 import '../../../features/roles/domain/repositories/roles_repository.dart';
 import '../../../features/roles/domain/usecases/get_roles.dart';
-import '../../../features/roles/presentation/viewmodels/roles_viewmodel.dart';
 
 import '../../../features/sedes/data/datasources/sedes_remote_data_source.dart';
 import '../../../features/sedes/data/repositories/sedes_repository_impl.dart';
@@ -42,7 +42,6 @@ import '../../../features/usuarios/data/datasources/usuarios_remote_data_source.
 import '../../../features/usuarios/data/repositories/usuarios_repository_impl.dart';
 import '../../../features/usuarios/domain/repositories/usuarios_repository.dart';
 import '../../../features/usuarios/domain/usecases/create_usuario.dart';
-import '../../../features/usuarios/domain/usecases/delete_usuario.dart';
 import '../../../features/usuarios/domain/usecases/get_usuarios.dart';
 import '../../../features/usuarios/domain/usecases/update_usuario.dart';
 import '../../../features/usuarios/presentation/viewmodels/usuarios_viewmodel.dart';
@@ -61,37 +60,22 @@ class AdminModule {
 
   static List<SingleChildWidget> providers = [
     // Roles
-
     Provider<RolesRemoteDataSource>(
-      create: (context) => RolesRemoteDataSource(
-        context.read<ApiClient>(),
-      ),
+      create: (context) => RolesRemoteDataSource(context.read<ApiClient>()),
     ),
 
     Provider<RolesRepository>(
-      create: (context) => RolesRepositoryImpl(
-        context.read<RolesRemoteDataSource>(),
-      ),
+      create: (context) =>
+          RolesRepositoryImpl(context.read<RolesRemoteDataSource>()),
     ),
 
     Provider<GetRolesUseCase>(
-      create: (context) => GetRolesUseCase(
-        context.read<RolesRepository>(),
-      ),
-    ),
-
-    ChangeNotifierProvider<RolesViewModel>(
-      create: (context) => RolesViewModel(
-        context.read<GetRolesUseCase>(),
-      ),
+      create: (context) => GetRolesUseCase(context.read<RolesRepository>()),
     ),
 
     // Sedes
-
     Provider<SedeRemoteDataSource>(
-      create: (context) => SedeRemoteDataSource(
-        context.read<ApiClient>(),
-      ),
+      create: (context) => SedeRemoteDataSource(context.read<ApiClient>()),
     ),
 
     Provider<SedeRepository>(
@@ -101,9 +85,7 @@ class AdminModule {
     ),
 
     Provider<GetSedesUseCase>(
-      create: (context) => GetSedesUseCase(
-        context.read<SedeRepository>(),
-      ),
+      create: (context) => GetSedesUseCase(context.read<SedeRepository>()),
     ),
 
     Provider<CreateSedeUseCase>(
@@ -114,15 +96,12 @@ class AdminModule {
     ),
 
     Provider<UpdateSedeUseCase>(
-      create: (context) => UpdateSedeUseCase(
-        context.read<SedeRepository>(),
-      ),
+      create: (context) => UpdateSedeUseCase(context.read<SedeRepository>()),
     ),
 
     Provider<ChangeSedeStatusUseCase>(
-      create: (context) => ChangeSedeStatusUseCase(
-        context.read<SedeRepository>(),
-      ),
+      create: (context) =>
+          ChangeSedeStatusUseCase(context.read<SedeRepository>()),
     ),
 
     ChangeNotifierProvider<SedeViewModel>(
@@ -135,11 +114,9 @@ class AdminModule {
     ),
 
     // Lugares operativos
-
     Provider<LugarOperativoRemoteDataSource>(
-      create: (context) => LugarOperativoRemoteDataSource(
-        context.read<ApiClient>(),
-      ),
+      create: (context) =>
+          LugarOperativoRemoteDataSource(context.read<ApiClient>()),
     ),
 
     Provider<LugarOperativoRepository>(
@@ -149,27 +126,23 @@ class AdminModule {
     ),
 
     Provider<GetLugaresOperativosUseCase>(
-      create: (context) => GetLugaresOperativosUseCase(
-        context.read<LugarOperativoRepository>(),
-      ),
+      create: (context) =>
+          GetLugaresOperativosUseCase(context.read<LugarOperativoRepository>()),
     ),
 
     Provider<CreateLugarOperativoUseCase>(
-      create: (context) => CreateLugarOperativoUseCase(
-        context.read<LugarOperativoRepository>(),
-      ),
+      create: (context) =>
+          CreateLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
     ),
 
     Provider<UpdateLugarOperativoUseCase>(
-      create: (context) => UpdateLugarOperativoUseCase(
-        context.read<LugarOperativoRepository>(),
-      ),
+      create: (context) =>
+          UpdateLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
     ),
 
     Provider<DeleteLugarOperativoUseCase>(
-      create: (context) => DeleteLugarOperativoUseCase(
-        context.read<LugarOperativoRepository>(),
-      ),
+      create: (context) =>
+          DeleteLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
     ),
 
     ChangeNotifierProvider<LugarOperativoViewModel>(
@@ -183,41 +156,32 @@ class AdminModule {
     ),
 
     // Puestos
-
     Provider<PuestoRemoteDataSource>(
-      create: (context) => PuestoRemoteDataSource(
-        context.read<ApiClient>(),
-      ),
+      create: (context) => PuestoRemoteDataSource(context.read<ApiClient>()),
     ),
 
     Provider<PuestoRepository>(
-      create: (context) => PuestoRepositoryImpl(
-        context.read<PuestoRemoteDataSource>(),
-      ),
+      create: (context) =>
+          PuestoRepositoryImpl(context.read<PuestoRemoteDataSource>()),
     ),
 
     Provider<GetPuestosUseCase>(
-      create: (context) => GetPuestosUseCase(
-        context.read<PuestoRepository>(),
-      ),
+      create: (context) => GetPuestosUseCase(context.read<PuestoRepository>()),
     ),
 
     Provider<CreatePuestoUseCase>(
-      create: (context) => CreatePuestoUseCase(
-        context.read<PuestoRepository>(),
-      ),
+      create: (context) =>
+          CreatePuestoUseCase(context.read<PuestoRepository>()),
     ),
 
     Provider<UpdatePuestoUseCase>(
-      create: (context) => UpdatePuestoUseCase(
-        context.read<PuestoRepository>(),
-      ),
+      create: (context) =>
+          UpdatePuestoUseCase(context.read<PuestoRepository>()),
     ),
 
     Provider<DeletePuestoUseCase>(
-      create: (context) => DeletePuestoUseCase(
-        context.read<PuestoRepository>(),
-      ),
+      create: (context) =>
+          DeletePuestoUseCase(context.read<PuestoRepository>()),
     ),
 
     ChangeNotifierProvider<PuestoViewModel>(
@@ -231,89 +195,75 @@ class AdminModule {
     ),
 
     // Usuarios
+    // Usuarios
+Provider<UsuarioRemoteDataSource>(
+  create: (context) => UsuarioRemoteDataSource(context.read<ApiClient>()),
+),
 
-    Provider<UsuarioRemoteDataSource>(
-      create: (context) => UsuarioRemoteDataSource(
-        context.read<ApiClient>(),
-      ),
-    ),
+Provider<UsuarioRepository>(
+  create: (context) =>
+      UsuarioRepositoryImpl(context.read<UsuarioRemoteDataSource>()),
+),
 
-    Provider<UsuarioRepository>(
-      create: (context) => UsuarioRepositoryImpl(
-        context.read<UsuarioRemoteDataSource>(),
-      ),
-    ),
+Provider<GetUsuariosUseCase>(
+  create: (context) =>
+      GetUsuariosUseCase(context.read<UsuarioRepository>()),
+),
 
-    Provider<GetUsuariosUseCase>(
-      create: (context) => GetUsuariosUseCase(
-        context.read<UsuarioRepository>(),
-      ),
-    ),
+Provider<CreateUsuarioUseCase>(
+  create: (context) => CreateUsuarioUseCase(
+    repository: context.read<UsuarioRepository>(),
+    currentSession: context.read<CurrentSession>(),
+  ),
+),
 
-    Provider<CreateUsuarioUseCase>(
-      create: (context) => CreateUsuarioUseCase(
-        context.read<UsuarioRepository>(),
-      ),
-    ),
+Provider<UpdateUsuarioUseCase>(
+  create: (context) =>
+      UpdateUsuarioUseCase(context.read<UsuarioRepository>()),
+),
 
-    Provider<UpdateUsuarioUseCase>(
-      create: (context) => UpdateUsuarioUseCase(
-        context.read<UsuarioRepository>(),
-      ),
-    ),
+Provider<ChangeUsuarioStatusUseCase>(
+  create: (context) =>
+      ChangeUsuarioStatusUseCase(context.read<UsuarioRepository>()),
+),
 
-    Provider<DeleteUsuarioUseCase>(
-      create: (context) => DeleteUsuarioUseCase(
-        context.read<UsuarioRepository>(),
-      ),
-    ),
-
-    ChangeNotifierProvider<UsuarioViewModel>(
-      create: (context) => UsuarioViewModel(
-        getItemsUseCase: context.read<GetUsuariosUseCase>(),
-        createUseCase: context.read<CreateUsuarioUseCase>(),
-        updateUseCase: context.read<UpdateUsuarioUseCase>(),
-        deleteUseCase: context.read<DeleteUsuarioUseCase>(),
-        networkChecker: context.read<NetworkChecker>(),
-      ),
-    ),
+ChangeNotifierProvider<UsuarioViewModel>(
+  create: (context) => UsuarioViewModel(
+    getItemsUseCase: context.read<GetUsuariosUseCase>(),
+    createUseCase: context.read<CreateUsuarioUseCase>(),
+    updateUseCase: context.read<UpdateUsuarioUseCase>(),
+    changeStatusUseCase: context.read<ChangeUsuarioStatusUseCase>(),
+  ),
+),
 
     // Clientes
-
     Provider<ClienteRemoteDataSource>(
-      create: (context) => ClienteRemoteDataSource(
-        context.read<ApiClient>(),
-      ),
+      create: (context) => ClienteRemoteDataSource(context.read<ApiClient>()),
     ),
 
     Provider<ClienteRepository>(
-      create: (context) => ClienteRepositoryImpl(
-        context.read<ClienteRemoteDataSource>(),
-      ),
+      create: (context) =>
+          ClienteRepositoryImpl(context.read<ClienteRemoteDataSource>()),
     ),
 
     Provider<GetClientesUseCase>(
-      create: (context) => GetClientesUseCase(
-        context.read<ClienteRepository>(),
-      ),
+      create: (context) =>
+          GetClientesUseCase(context.read<ClienteRepository>()),
     ),
 
     Provider<CreateClienteUseCase>(
-      create: (context) => CreateClienteUseCase(
-        context.read<ClienteRepository>(),
-      ),
+      create: (context) =>
+          CreateClienteUseCase(context.read<ClienteRepository>()),
     ),
 
     Provider<UpdateClienteUseCase>(
-      create: (context) => UpdateClienteUseCase(
-        context.read<ClienteRepository>(),
-      ),
+      create: (context) =>
+          UpdateClienteUseCase(context.read<ClienteRepository>()),
     ),
 
     Provider<DeleteClienteUseCase>(
-      create: (context) => DeleteClienteUseCase(
-        context.read<ClienteRepository>(),
-      ),
+      create: (context) =>
+          DeleteClienteUseCase(context.read<ClienteRepository>()),
     ),
 
     ChangeNotifierProvider<ClienteViewModel>(

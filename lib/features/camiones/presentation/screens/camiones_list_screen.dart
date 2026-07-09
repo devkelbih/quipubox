@@ -147,7 +147,7 @@ class _CamionListScreenState extends State<CamionListScreen> {
     final viewModel = context.read<CamionViewModel>();
 
     final ok = await viewModel.changeStatus(
-      id: item.id,
+      id: item.id!,
       estado: newStatus,
     );
 

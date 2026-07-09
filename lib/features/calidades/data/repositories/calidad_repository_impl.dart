@@ -1,5 +1,3 @@
-import 'package:quipubox/core/exceptions/app_exception.dart';
-
 import '../../domain/entities/calidad.dart';
 import '../../domain/repositories/calidad_repository.dart';
 import '../datasources/calidad_remote_data_source.dart';
@@ -12,28 +10,25 @@ class CalidadRepositoryImpl implements CalidadRepository {
 
   @override
   Future<List<Calidad>> getAll() async {
-    return remoteDataSource.getAll();
+    final models = await remoteDataSource.getAll();
+    return models.map((model) => model.toEntity()).toList();
   }
 
   @override
   Future<Calidad> create(Calidad calidad) async {
     final request = CalidadRequestModel.fromEntity(calidad);
-    return remoteDataSource.create(request);
+    final model = await remoteDataSource.create(request);
+    return model.toEntity();
   }
 
   @override
   Future<Calidad> update(Calidad calidad) async {
-    final id = calidad.id;
-    if (id == null) {
-      throw const AppException('No se encontró el ID de la calidad.');
-    }
-
-    final request = CalidadRequestModel.fromEntity(calidad);
-    return remoteDataSource.update(id, request: request);
+  final request = CalidadRequestModel.fromEntity(calidad);
+  final model = await remoteDataSource.update(calidad.id!, request: request);
+  return model.toEntity();
   }
 
   @override
-  Future<Calidad> changeStatus({required int id, required bool estado}) async {
-    return remoteDataSource.changeStatus(id: id, estado: estado);
-  }
+  Future<bool> changeStatus({required int id, required bool estado}) =>
+      remoteDataSource.changeStatus(id: id, estado: estado);
 }

@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../entities/app_user.dart';
+import '../entities/authenticated_user.dart';
 
 abstract class AuthRepository {
   Session? getCurrentSession();
@@ -11,11 +11,11 @@ abstract class AuthRepository {
 
   Future<void> logout();
 
-  Future<AppUser> getProfile();
+  Future<AuthenticatedUser> getProfile();
 
-  Future<AppUser?> getCachedUser();
+  Future<AuthenticatedUser?> getCachedUser();
 
-  Future<void> saveCachedUser(AppUser user);
+  Future<void> saveCachedUser(AuthenticatedUser user);
 
   Future<void> clearCachedUser();
 }

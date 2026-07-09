@@ -1,4 +1,4 @@
-import 'package:quipubox/features/tipos_jaba/domain/entities/tipos_jaba.dart';
+import 'package:quipubox/core/exceptions/app_exception.dart';
 import 'package:quipubox/features/tipos_jaba/domain/repositories/tipos_jaba_repository.dart';
 
 class ChangeTipoJabaStatusUseCase {
@@ -6,7 +6,10 @@ class ChangeTipoJabaStatusUseCase {
 
   ChangeTipoJabaStatusUseCase(this.repository);
 
-  Future<TipoJaba> call({required int id, required bool estado}) {
+  Future<bool> call({required int id, required bool estado}) {
+    if (id <= 0) {
+      throw const AppException('No se encontró el ID del tipo de jaba.');
+    }
     return repository.changeStatus(id: id, estado: estado);
   }
 }

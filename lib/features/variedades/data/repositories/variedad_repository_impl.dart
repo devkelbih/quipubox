@@ -1,5 +1,3 @@
-import 'package:quipubox/core/exceptions/app_exception.dart';
-
 import '../../domain/entities/variedad.dart';
 import '../../domain/repositories/variedad_repository.dart';
 import '../datasources/variedad_remote_data_source.dart';
@@ -8,50 +6,29 @@ import '../models/variedad_request_model.dart';
 class VariedadRepositoryImpl implements VariedadRepository {
   final VariedadRemoteDataSource remoteDataSource;
 
-  VariedadRepositoryImpl({
-    required this.remoteDataSource,
-  });
+  VariedadRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<List<Variedad>> getAll() async {
-    return remoteDataSource.getAll();
-  }
-
-  @override
-  Future<List<Variedad>> getByFruta(int frutaId) async {
-    return remoteDataSource.getByFruta(frutaId);
+    final models = await remoteDataSource.getAll();
+    return models.map((model) => model.toEntity()).toList();
   }
 
   @override
   Future<Variedad> create(Variedad variedad) async {
-
-    if (variedad.idFruta == null) {
-      throw const AppException('Selecciona una fruta.');
-    }
-
     final request = VariedadRequestModel.fromEntity(variedad);
-    return remoteDataSource.create(request);
+    final model = await remoteDataSource.create(request);
+    return model.toEntity();
   }
 
   @override
   Future<Variedad> update(Variedad variedad) async {
-
-    final id = variedad.id;
-    if (id == null) {
-      throw const AppException('No se encontró el ID de la variedad.');
-    }
-
-    if (variedad.idFruta == null) {
-      throw const AppException('Selecciona una fruta.');
-    }
-
     final request = VariedadRequestModel.fromEntity(variedad);
-    return remoteDataSource.update(id, request: request);
+    final model = await remoteDataSource.update(variedad.id!, request: request);
+    return model.toEntity();
   }
 
   @override
-  Future<Variedad> changeStatus({required int id, required bool estado}) async {
-    return remoteDataSource.changeStatus(id: id, estado: estado);
-  }
-
+  Future<bool> changeStatus({required int id, required bool estado}) =>
+      remoteDataSource.changeStatus(id: id, estado: estado);
 }

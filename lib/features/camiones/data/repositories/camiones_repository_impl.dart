@@ -6,45 +6,31 @@ import '../models/camion_request_model.dart';
 class CamionRepositoryImpl implements CamionRepository {
   final CamionRemoteDataSource remoteDataSource;
 
-  CamionRepositoryImpl({
-    required this.remoteDataSource,
-  });
+  CamionRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<List<Camion>> getAll() async {
-    return remoteDataSource.getAll();
+    final models = await remoteDataSource.getAll();
+    return models.map((model) => model.toEntity()).toList();
   }
 
   @override
   Future<Camion> create(Camion camion) async {
-
     final request = CamionRequestModel.fromEntity(camion);
 
-    return remoteDataSource.create(request);
+    final model = await remoteDataSource.create(request);
+    return model.toEntity();
   }
 
   @override
   Future<Camion> update(Camion camion) async {
-
     final request = CamionRequestModel.fromEntity(camion);
 
-    return remoteDataSource.update(
-      camion.id,
-      request: request,
-    );
+    final model = await remoteDataSource.update(camion.id!, request: request);
+    return model.toEntity();
   }
 
   @override
-  Future<Camion> changeStatus({
-    required int id,
-    required bool estado,
-  }) async {
-
-    return remoteDataSource.changeStatus(
-      id: id,
-      estado: estado,
-    );
-  }
-
-
+  Future<bool> changeStatus({required int id, required bool estado}) 
+      => remoteDataSource.changeStatus(id: id, estado: estado);
 }

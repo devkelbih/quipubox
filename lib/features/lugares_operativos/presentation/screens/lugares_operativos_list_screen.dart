@@ -132,10 +132,10 @@ class _LugaresHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withOpacity(0.45),
+        color: colorScheme.primaryContainer.withAlpha(45),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colorScheme.primary.withOpacity(0.12),
+          color: colorScheme.primary.withAlpha(12),
         ),
       ),
       child: Row(
@@ -144,7 +144,7 @@ class _LugaresHeader extends StatelessWidget {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.12),
+              color: colorScheme.primary.withAlpha(12),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
@@ -202,7 +202,7 @@ class _LugarCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(0.7),
+          color: colorScheme.outlineVariant.withAlpha(70),
         ),
       ),
       child: Padding(

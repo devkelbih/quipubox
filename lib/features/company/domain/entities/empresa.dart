@@ -16,4 +16,24 @@ class Empresa {
     this.direccion,
     required this.estado,
   });
+
+  Empresa copyWith({
+    int? id,
+    String? razonSocial,
+    String? nombreComercial,
+    String? ruc,
+    String? telefono,
+    String? direccion,
+    bool? estado,
+  }) {
+    return Empresa(
+      id: id ?? this.id,
+      razonSocial: razonSocial ?? this.razonSocial,
+      nombreComercial: nombreComercial ?? this.nombreComercial,
+      ruc: ruc ?? this.ruc,
+      telefono: telefono ?? this.telefono,
+      direccion: direccion ?? this.direccion,
+      estado: estado ?? this.estado,
+    );
+  }
 }

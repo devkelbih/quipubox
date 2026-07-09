@@ -6,12 +6,10 @@ import 'package:quipubox/features/variedades/domain/usecases/change_variedad_sta
 import '../../domain/entities/variedad.dart';
 import '../../domain/usecases/create_variedad.dart';
 import '../../domain/usecases/get_variedades.dart';
-import '../../domain/usecases/get_variedades_by_fruta.dart';
 import '../../domain/usecases/update_variedad.dart';
 
 class VariedadViewModel extends BaseStateViewModel {
   final GetVariedadesUseCase getItemsUseCase;
-  final GetVariedadesByFrutaUseCase getByFrutaUseCase;
   final GetFrutasUseCase getFrutasUseCase;
   final CreateVariedadUseCase createUseCase;
   final UpdateVariedadUseCase updateUseCase;
@@ -19,7 +17,6 @@ class VariedadViewModel extends BaseStateViewModel {
 
   VariedadViewModel({
     required this.getItemsUseCase,
-    required this.getByFrutaUseCase,
     required this.getFrutasUseCase,
     required this.createUseCase,
     required this.updateUseCase,
@@ -49,18 +46,6 @@ class VariedadViewModel extends BaseStateViewModel {
 
     if (result != null) {
       frutas = result;
-      notifyListeners();
-    }
-  }
-
-  Future<void> loadByFruta(int frutaId) async {
-    final result = await run<List<Variedad>>(
-      state: ViewModelActionState.loading,
-      action: () => getByFrutaUseCase(frutaId),
-    );
-
-    if (result != null) {
-      items = result;
       notifyListeners();
     }
   }
@@ -97,17 +82,17 @@ class VariedadViewModel extends BaseStateViewModel {
   }
 
   Future<bool> changeStatus({required int id, required bool estado}) async {
-    final result = await run<Variedad>(
+    final confirmedStatus = await run<bool>(
       state: ViewModelActionState.changingStatus,
       action: () => changeStatusUseCase(id: id, estado: estado),
     );
 
-    if (result == null) return false;
+    if (confirmedStatus == null) return false;
 
-    final index = items.indexWhere((e) => e.id == result.id);
+    final index = items.indexWhere((e) => e.id == id);
 
     if (index != -1) {
-      items[index] = result;
+      items[index] = items[index].copyWith(estado: confirmedStatus);
     }
 
     notifyListeners();

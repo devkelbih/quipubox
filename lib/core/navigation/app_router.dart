@@ -7,7 +7,6 @@ import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/company/presentation/screens/company_profile_screen.dart';
-import '../../features/roles/presentation/screens/roles_list_screen.dart';
 import '../../features/sedes/presentation/screens/sedes_list_screen.dart';
 import '../../features/usuarios/presentation/screens/usuarios_list_screen.dart';
 import '../../features/clientes/presentation/screens/clientes_list_screen.dart';
@@ -33,22 +32,19 @@ class AppRouter {
       final location = state.matchedLocation;
 
       final isSplash = location == AppRoutes.splash;
+
       final isLogin = location == AppRoutes.login;
+
       final isAuthRoute = isSplash || isLogin;
 
-      final hasSession = authViewModel.hasSupabaseSession;
-      final hasProfile = authViewModel.hasProfile;
+      final canOpenApp = authViewModel.canOpenApp;
 
       if (authViewModel.isCheckingSession) {
         return isSplash ? null : AppRoutes.splash;
       }
 
-      if (!hasSession) {
+      if (!canOpenApp) {
         return isLogin ? null : AppRoutes.login;
-      }
-
-      if (!hasProfile) {
-        return isSplash ? null : AppRoutes.splash;
       }
 
       if (isAuthRoute) {
@@ -68,10 +64,6 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.company,
         builder: (_, __) => const CompanyProfileScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.roles,
-        builder: (_, __) => const RolesListScreen(),
       ),
       GoRoute(
         path: AppRoutes.sedes,

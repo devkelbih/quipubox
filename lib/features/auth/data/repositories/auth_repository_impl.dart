@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../domain/entities/app_user.dart';
+import '../../domain/entities/authenticated_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
@@ -43,20 +43,22 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AppUser> getProfile() async {
+  Future<AuthenticatedUser> getProfile() async {
     if (kDebugMode) {
       await Future.delayed(const Duration(seconds: 3));
     }
-    return remoteDataSource.getProfile();
+    final model = await remoteDataSource.getProfile();
+    return model.toEntity();
   }
 
   @override
-  Future<AppUser?> getCachedUser() {
-    return localDataSource.getCachedUser();
+  Future<AuthenticatedUser?> getCachedUser() async {
+    final model = await localDataSource.getCachedUser();
+    return model?.toEntity();
   }
 
   @override
-  Future<void> saveCachedUser(AppUser user) {
+  Future<void> saveCachedUser(AuthenticatedUser user) {
     return localDataSource.saveCachedUser(AppUserModel.fromEntity(user));
   }
 

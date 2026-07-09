@@ -24,7 +24,7 @@ class CamionRequestModel {
 
   Map<String, dynamic> toCreateJson() {
     return {
-      if (idEmpresa != null && idEmpresa! > 0) 'id_empresa': idEmpresa,
+      if (idEmpresa != null) 'id_empresa': idEmpresa,
       'placa': placa.trim(),
       if (_hasText(descripcion)) 'descripcion': descripcion!.trim(),
       if (_hasText(observaciones)) 'observaciones': observaciones!.trim(),

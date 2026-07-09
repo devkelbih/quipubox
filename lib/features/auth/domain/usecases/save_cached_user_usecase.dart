@@ -1,4 +1,4 @@
-import '../entities/app_user.dart';
+import '../entities/authenticated_user.dart';
 import '../repositories/auth_repository.dart';
 
 class SaveCachedUserUseCase {
@@ -6,7 +6,7 @@ class SaveCachedUserUseCase {
 
   SaveCachedUserUseCase(this.repository);
 
-  Future<void> call(AppUser user) {
+  Future<void> call(AuthenticatedUser user) {
     return repository.saveCachedUser(user);
   }
 }

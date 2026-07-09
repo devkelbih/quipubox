@@ -5,7 +5,7 @@ abstract class TipoJabaRepository {
   Future<TipoJaba> create(TipoJaba tipoJaba);
   Future<TipoJaba> update(TipoJaba tipoJaba);
 
-  Future<TipoJaba> changeStatus({
+  Future<bool> changeStatus({
     required int id,
     required bool estado,
   });

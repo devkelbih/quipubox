@@ -5,7 +5,7 @@ abstract class CalidadRepository {
   Future<Calidad> create(Calidad calidad);
   Future<Calidad> update(Calidad calidad);
 
-  Future<Calidad> changeStatus({
+  Future<bool> changeStatus({
     required int id,
     required bool estado,
   });

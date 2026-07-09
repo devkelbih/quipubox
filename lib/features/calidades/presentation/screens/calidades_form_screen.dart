@@ -129,7 +129,6 @@ class _CalidadFormScreenState extends State<CalidadFormScreen> {
       estado: item?.estado ?? true,
       nombre: _nombreController.text.trim(),
       descripcion: _nullIfEmpty(_descripcionController.text),
-      empresaNombre: item?.empresaNombre,
     );
 
     final ok = _isEditing ? await vm.update(calidad) : await vm.create(calidad);

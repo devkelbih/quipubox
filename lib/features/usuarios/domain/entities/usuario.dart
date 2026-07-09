@@ -10,14 +10,13 @@ class Usuario {
   final List<Role> roles;
 
   final String nombres;
-  final String apellidos;
+  final String? apellidos;
   final String? telefono;
   final String email;
 
   final String? googleUid;
   final String? avatarUrl;
 
-  final String estadoAcceso;
   final bool estado;
 
   const Usuario({
@@ -31,15 +30,42 @@ class Usuario {
     required this.email,
     this.googleUid,
     this.avatarUrl,
-    required this.estadoAcceso,
     required this.estado,
   });
 
-  String get nombreCompleto => '$nombres $apellidos'.trim();
+String get nombreCompleto => '$nombres ${apellidos ?? ''}'.trim();
 
   int get idEmpresa => empresa.id;
 
   int get idSede => sede.id!;
 
   List<int> get roleIds => roles.map((e) => e.id).toList();
+
+  Usuario copyWith({
+    int? id,
+    Empresa? empresa,
+    Sede? sede,
+    List<Role>? roles,
+    String? nombres,
+    String? apellidos,
+    String? telefono,
+    String? email,
+    String? googleUid,
+    String? avatarUrl,
+    bool? estado,
+  }) {
+    return Usuario(
+      id: id ?? this.id,
+      empresa: empresa ?? this.empresa,
+      sede: sede ?? this.sede,
+      roles: roles ?? this.roles,
+      nombres: nombres ?? this.nombres,
+      apellidos: apellidos ?? this.apellidos,
+      telefono: telefono ?? this.telefono,
+      email: email ?? this.email,
+      googleUid: googleUid ?? this.googleUid,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      estado: estado ?? this.estado,
+    );
+  }
 }

@@ -46,9 +46,9 @@ class VariedadCard extends StatelessWidget {
                   _InfoLine(
                     icon: Icons.eco_rounded,
                     label: 'Fruta',
-                    value: item.frutaNombre?.trim().isNotEmpty == true
-                        ? item.frutaNombre!
-                        : 'Fruta #${item.idFruta ?? '-'}',
+                    value: item.frutaNombre.trim().isNotEmpty == true
+                        ? item.frutaNombre
+                        : 'Fruta #${item.idFruta}',
                   ),
                   if (_hasText(item.descripcion)) ...[
                     const SizedBox(height: 8),
@@ -147,8 +147,8 @@ class _Header extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         Text(
-          item.frutaNombre?.trim().isNotEmpty == true
-              ? item.frutaNombre!
+          item.frutaNombre.trim().isNotEmpty == true
+              ? item.frutaNombre
               : 'Sin fruta',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

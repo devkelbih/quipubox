@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quipubox/core/state/base_state_viewmodel.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../domain/entities/app_user.dart';
+import '../../domain/entities/authenticated_user.dart';
 import '../../domain/usecases/clear_cached_user_usecase.dart';
 import '../../domain/usecases/get_cached_user_usecase.dart';
 import '../../domain/usecases/get_current_session_usecase.dart';
@@ -39,12 +39,21 @@ class AuthViewModel extends BaseStateViewModel {
     initialize();
   }
   // Usuario actualmente autenticado.
-  AppUser? user;
+  AuthenticatedUser? user;
 
   // Información rápida de autenticación.
   bool get hasSupabaseSession => getCurrentSessionUseCase() != null;
-  bool get isAuthenticated => hasSupabaseSession;
   bool get hasProfile => user != null;
+
+  /// Indica si la aplicación puede abrirse.
+  ///
+  /// Se permite el acceso cuando:
+  /// - existe una sesión válida de Supabase, o
+  /// - existe un usuario cacheado.
+  ///
+  /// Esto permite abrir la aplicación sin conexión
+  /// utilizando la información almacenada localmente.
+  bool get canOpenApp => hasSupabaseSession || hasProfile;
 
   // Datos frecuentes del usuario para evitar null-checks repetidos.
   int? get currentUserId => user?.id;
@@ -159,13 +168,16 @@ class AuthViewModel extends BaseStateViewModel {
         debugPrint('No se pudo guardar usuario cacheado: $cacheError');
       }
     } on Object catch (error) {
-      debugPrint('No se pudo refrescar perfil remoto: $error');
-      errorMessage = error.toString();
+      debugPrint('Perfil remoto no disponible, usando cache local: $error');
+
+      // NO modificar errorMessage.
+      // NO limpiar sesión.
+      // NO expulsar usuario.
     }
   }
 
   Future<bool> loadProfile() async {
-    final result = await run<AppUser>(
+    final result = await run<AuthenticatedUser>(
       state: ViewModelActionState.saving,
       action: () {
         return getProfileUseCase().timeout(const Duration(seconds: 20));

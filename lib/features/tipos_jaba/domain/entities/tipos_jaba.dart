@@ -7,7 +7,6 @@ class TipoJaba {
   final String nombre;
   final TipoMaterialJaba tipoMaterial;
   final String? descripcion;
-  final String? empresaNombre;
 
   const TipoJaba({
     this.id,
@@ -16,7 +15,6 @@ class TipoJaba {
     required this.nombre,
     required this.tipoMaterial,
     this.descripcion,
-    this.empresaNombre,
   });
 
   TipoJaba copyWith({
@@ -26,7 +24,6 @@ class TipoJaba {
     String? nombre,
     TipoMaterialJaba? tipoMaterial,
     String? descripcion,
-    String? empresaNombre,
   }) {
     return TipoJaba(
       id: id ?? this.id,
@@ -35,7 +32,6 @@ class TipoJaba {
       nombre: nombre ?? this.nombre,
       tipoMaterial: tipoMaterial ?? this.tipoMaterial,
       descripcion: descripcion ?? this.descripcion,
-      empresaNombre: empresaNombre ?? this.empresaNombre,
     );
   }
 }

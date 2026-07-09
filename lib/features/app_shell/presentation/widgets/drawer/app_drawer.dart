@@ -136,10 +136,6 @@ class _AppDrawerState extends State<AppDrawer> {
                         onTap: () => _open(context, AppRoutes.usuarios),
                       ),
                       AppDrawerSubItem(
-                        title: 'Roles',
-                        onTap: () => _open(context, AppRoutes.roles),
-                      ),
-                      AppDrawerSubItem(
                         title: 'Permisos',
                         onTap: () => _notAvailable(context),
                       ),

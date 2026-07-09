@@ -1,43 +1,37 @@
 import '../../domain/entities/camion.dart';
 
-class CamionModel extends Camion {
+class CamionModel {
+  final int id;
+  final int idEmpresa;
+  final bool estado;
+  final String placa;
+  final String? descripcion;
+  final String? observaciones;
   const CamionModel({
-    required super.id,
-    required super.idEmpresa,
-    required super.estado,
-    required super.placa,
-    super.descripcion,
-    super.observaciones,
+    required this.id,
+    required this.idEmpresa,
+    required this.estado,
+    required this.placa,
+    this.descripcion,
+    this.observaciones,
   });
 
   factory CamionModel.fromJson(Map<String, dynamic> json) {
     return CamionModel(
-      id: json['id_camion'] as int? ?? 0,
-      idEmpresa: json['id_empresa'] as int? ?? 0,
+      id: json['id_camion'] as int,
+      idEmpresa: json['id_empresa'] as int,
       estado: json['estado'] == true,
       placa: json['placa']?.toString() ?? '',
       descripcion: json['descripcion']?.toString(),
       observaciones: json['observaciones']?.toString(),
     );
   }
-
-  static List<CamionModel> listFrom(dynamic response) {
-    if (response is List) {
-      return response
-          .map((e) => CamionModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-
-    if (response is Map<String, dynamic> && response['data'] is List) {
-      return (response['data'] as List)
-          .map((e) => CamionModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-
-    if (response is Map<String, dynamic>) {
-      return [CamionModel.fromJson(response)];
-    }
-
-    return [];
-  }
+  Camion toEntity() => Camion(
+    id: id,
+    idEmpresa: idEmpresa,
+    estado: estado,
+    placa: placa,
+    descripcion: descripcion,
+    observaciones: observaciones,
+  );
 }

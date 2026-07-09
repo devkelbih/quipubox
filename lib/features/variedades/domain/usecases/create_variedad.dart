@@ -20,12 +20,6 @@ class CreateVariedadUseCase {
       throw const AppException('No se encontró la empresa del usuario.');
     }
 
-    if (variedad.idFruta == null) {
-      throw const AppException('Selecciona una fruta.');
-    }
-
-    return repository.create(
-      variedad.copyWith(idEmpresa: idEmpresa),
-    );
+    return repository.create(variedad.copyWith(idEmpresa: idEmpresa));
   }
 }

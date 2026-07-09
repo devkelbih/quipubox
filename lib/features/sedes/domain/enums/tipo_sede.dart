@@ -1,7 +1,20 @@
 enum TipoSede {
   origen,
   destino,
-  ambos,
+  ambos;
+
+  static TipoSede fromValue(String value) {
+    switch (value.toLowerCase().trim()) {
+      case 'origen':
+        return TipoSede.origen;
+      case 'destino':
+        return TipoSede.destino;
+      case 'ambos':
+        return TipoSede.ambos;
+      default:
+        throw Exception('Tipo de sede no válido: $value');
+    }
+  }
 }
 
 extension TipoSedeX on TipoSede {
@@ -24,19 +37,6 @@ extension TipoSedeX on TipoSede {
         return 'Destino';
       case TipoSede.ambos:
         return 'Ambos';
-    }
-  }
-
-  static TipoSede fromValue(String value) {
-    switch (value.toLowerCase().trim()) {
-      case 'origen':
-        return TipoSede.origen;
-      case 'destino':
-        return TipoSede.destino;
-      case 'ambos':
-        return TipoSede.ambos;
-      default:
-        throw Exception('Tipo de sede no válido: $value');
     }
   }
 }

@@ -3,20 +3,34 @@ import '../../../roles/data/models/role_model.dart';
 import '../../../sedes/data/models/sede_model.dart';
 import '../../domain/entities/usuario.dart';
 
-class UsuarioModel extends Usuario {
+class UsuarioModel {
+  final int id;
+  final EmpresaModel empresa;
+  final SedeModel sede;
+  final List<RoleModel> roles;
+
+  final String nombres;
+  final String? apellidos;
+  final String? telefono;
+  final String email;
+
+  final String? googleUid;
+  final String? avatarUrl;
+
+  final bool estado;
+
   const UsuarioModel({
-    required super.id,
-    required super.empresa,
-    required super.sede,
-    required super.roles,
-    required super.nombres,
-    required super.apellidos,
-    super.telefono,
-    required super.email,
-    super.googleUid,
-    super.avatarUrl,
-    required super.estadoAcceso,
-    required super.estado,
+    required this.id,
+    required this.empresa,
+    required this.sede,
+    required this.roles,
+    required this.nombres,
+    this.apellidos,
+    this.telefono,
+    required this.email,
+    this.googleUid,
+    this.avatarUrl,
+    required this.estado,
   });
 
   factory UsuarioModel.fromJson(Map<String, dynamic> json) {
@@ -36,14 +50,38 @@ class UsuarioModel extends Usuario {
       sede: SedeModel.fromJson(sedeJson),
       roles: rolesJson.map(RoleModel.fromJson).toList(),
       nombres: json['nombres']?.toString() ?? '',
-      apellidos: json['apellidos']?.toString() ?? '',
-      telefono: json['telefono']?.toString(),
+      apellidos: _readNullableString(json['apellidos']),
+      telefono: _readNullableString(json['telefono']),
       email: json['email']?.toString() ?? '',
-      googleUid: json['google_uid']?.toString(),
-      avatarUrl: json['avatar_url']?.toString(),
-      estadoAcceso: json['estado_acceso']?.toString() ?? 'activo',
+      googleUid: _readNullableString(json['google_uid']),
+      avatarUrl: _readNullableString(json['avatar_url']),
       estado: json['estado'] == true,
     );
+  }
+
+  Usuario toEntity() {
+    return Usuario(
+      id: id,
+      empresa: empresa.toEntity(),
+      sede: sede.toEntity(),
+      roles: roles.map((e) => e.toEntity()).toList(),
+      nombres: nombres,
+      apellidos: apellidos,
+      telefono: telefono,
+      email: email,
+      googleUid: googleUid,
+      avatarUrl: avatarUrl,
+      estado: estado,
+    );
+  }
+
+  static List<UsuarioModel> listFrom(dynamic data) {
+    if (data is! List) return [];
+
+    return data
+        .whereType<Map>()
+        .map((e) => UsuarioModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
   }
 
   static List<Map<String, dynamic>> _readRoles(Map<String, dynamic> json) {
@@ -62,17 +100,19 @@ class UsuarioModel extends Usuario {
     }).toList();
   }
 
-  static List<UsuarioModel> listFrom(dynamic data) {
-    if (data is! List) return [];
-
-    return data
-        .whereType<Map>()
-        .map((e) => UsuarioModel.fromJson(Map<String, dynamic>.from(e)))
-        .toList();
-  }
-
   static int _readInt(dynamic value) {
     if (value is int) return value;
+
     return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static String? _readNullableString(dynamic value) {
+    final text = value?.toString().trim();
+
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+
+    return text;
   }
 }

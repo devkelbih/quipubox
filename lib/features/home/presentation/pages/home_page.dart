@@ -68,7 +68,8 @@ class _HeroPanel extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(HomePage.heroImage, fit: BoxFit.cover),
+          /*Image.network(HomePage.heroImage, fit: BoxFit.cover),*/
+          FlutterLogo(size: 200),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -303,7 +304,8 @@ class _DeliveryCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(imageUrl, fit: BoxFit.cover),
+                /*Image.network(imageUrl, fit: BoxFit.cover),*/
+                FlutterLogo(size: 200),
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

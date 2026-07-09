@@ -9,7 +9,6 @@ import 'package:quipubox/features/frutas/domain/repositories/fruta_repository.da
 import 'package:quipubox/features/variedades/data/datasources/variedad_remote_data_source.dart';
 import 'package:quipubox/features/variedades/data/repositories/variedad_repository_impl.dart';
 import 'package:quipubox/features/variedades/domain/repositories/variedad_repository.dart';
-import 'package:quipubox/features/variedades/domain/usecases/get_variedades_by_fruta.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/session/current_session.dart';
@@ -110,11 +109,6 @@ class CatalogosModule {
           GetVariedadesUseCase(context.read<VariedadRepository>()),
     ),
 
-    Provider<GetVariedadesByFrutaUseCase>(
-      create: (context) =>
-          GetVariedadesByFrutaUseCase(context.read<VariedadRepository>()),
-    ),
-
     Provider<CreateVariedadUseCase>(
       create: (context) => CreateVariedadUseCase(
         repository: context.read<VariedadRepository>(),
@@ -135,7 +129,6 @@ class CatalogosModule {
     ChangeNotifierProvider<VariedadViewModel>(
       create: (context) => VariedadViewModel(
         getItemsUseCase: context.read<GetVariedadesUseCase>(),
-        getByFrutaUseCase: context.read<GetVariedadesByFrutaUseCase>(),
         getFrutasUseCase: context.read<GetFrutasUseCase>(),
         createUseCase: context.read<CreateVariedadUseCase>(),
         updateUseCase: context.read<UpdateVariedadUseCase>(),

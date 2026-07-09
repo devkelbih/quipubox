@@ -12,26 +12,23 @@ class UsuarioRemoteDataSource {
 
   Future<UsuarioModel> create(UsuarioRequestModel request) async =>
       UsuarioModel.fromJson(
-        await apiClient.post(
-          '/usuarios',
-          body: request.toCreateJson(),
-        ) as Map<String, dynamic>,
+        await apiClient.post('/usuarios', body: request.toCreateJson())
+            as Map<String, dynamic>,
       );
 
   Future<UsuarioModel> update(
     int id, {
     required UsuarioRequestModel request,
-  }) async =>
-      UsuarioModel.fromJson(
-        await apiClient.put(
-          '/usuarios/$id',
-          body: request.toUpdateJson(),
-        ) as Map<String, dynamic>,
-      );
+  }) async => UsuarioModel.fromJson(
+    await apiClient.put('/usuarios/$id', body: request.toUpdateJson())
+        as Map<String, dynamic>,
+  );
+  
+  Future<bool> changeStatus({required int id, required bool estado}) async {
+    final response =
+        await apiClient.patch('/usuarios/$id/estado', body: {'estado': estado})
+            as Map<String, dynamic>;
 
-  Future<void> delete(int id) async =>
-      apiClient.patch('/usuarios/$id/bloquear');
-
-  Future<void> activate(int id) async =>
-      apiClient.patch('/usuarios/$id/activar');
+    return response['estado'] == true;
+  }
 }

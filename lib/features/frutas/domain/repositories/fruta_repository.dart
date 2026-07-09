@@ -5,8 +5,5 @@ abstract class FrutaRepository {
   Future<Fruta> create(Fruta fruta);
   Future<Fruta> update(Fruta fruta);
 
-  Future<Fruta> changeStatus({
-    required int id,
-    required bool estado,
-  });
+  Future<bool> changeStatus({required int id, required bool estado});
 }

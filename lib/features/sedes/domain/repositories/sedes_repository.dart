@@ -7,5 +7,5 @@ abstract class SedeRepository {
 
   Future<Sede> update(Sede sede);
 
-  Future<Sede> changeStatus({required int id, required bool estado});
+  Future<bool> changeStatus({required int id, required bool estado});
 }
