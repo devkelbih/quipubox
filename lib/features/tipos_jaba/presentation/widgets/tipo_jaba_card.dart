@@ -46,11 +46,6 @@ class TipoJabaCard extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _InfoLine(
-                    icon: _materialIcon(item.tipoMaterial),
-                    label: 'Material',
-                    value: item.tipoMaterial.label,
-                  ),
                   if (_hasText(item.descripcion)) ...[
                     const SizedBox(height: 8),
                     _InfoLine(

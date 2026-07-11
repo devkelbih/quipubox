@@ -8,8 +8,10 @@ import '../../../../../core/navigation/app_routes.dart';
 import '../../../../../core/ui/feedback/app_toast.dart';
 import 'app_drawer_footer.dart';
 import 'app_drawer_header.dart';
-import 'app_drawer_items.dart';
-import 'app_drawer_module.dart';
+import 'app_drawer_tile.dart';
+import 'app_drawer_subtile.dart';
+import 'app_drawer_section.dart';
+import 'drawer_metrics.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -20,10 +22,20 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   bool _isNavigating = false;
-  Future<void> _open(BuildContext context, String route) async {
-    if (_isNavigating) return;
+
+  // =============================================================
+  // Navegación
+  // =============================================================
+
+  Future<void> _navigateTo(String route) async {
+    if (_isNavigating || !mounted) return;
 
     final currentRoute = GoRouterState.of(context).matchedLocation;
+
+    if (currentRoute == route) {
+      Navigator.of(context).pop();
+      return;
+    }
 
     _isNavigating = true;
 
@@ -31,35 +43,44 @@ class _AppDrawerState extends State<AppDrawer> {
 
     await Future<void>.delayed(const Duration(milliseconds: 180));
 
-    if (!context.mounted) return;
-
-    if (currentRoute != route) {
-      context.go(route);
+    if (!mounted) {
+      _isNavigating = false;
+      return;
     }
+
+    try {
+      if (mounted) {
+        context.go(route);
+      }
+    } finally {
+      if (mounted) {
+        _isNavigating = false;
+      }
+    }
+  }
+
+  Future<void> _showNotAvailable() async {
+    if (_isNavigating) return;
+
+    if (!mounted) return;
+
+    _isNavigating = true;
+    Navigator.of(context).pop();
+    AppToast.show('Módulo aún no disponible', type: ToastType.warning);
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
 
     if (mounted) {
       _isNavigating = false;
     }
   }
 
-  void _notAvailable(BuildContext context) {
+  Future<void> _logout() async {
     if (_isNavigating) return;
 
-    _isNavigating = true;
-
-    Navigator.of(context).pop();
-    AppToast.show('Módulo aún no disponible', type: ToastType.warning);
-
-    Future<void>.delayed(const Duration(milliseconds: 250), () {
-      if (mounted) _isNavigating = false;
-    });
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    if (_isNavigating) return;
+    if (!mounted) return;
 
     _isNavigating = true;
-
     Navigator.of(context).pop();
     await context.read<AuthViewModel>().logout();
 
@@ -67,6 +88,205 @@ class _AppDrawerState extends State<AppDrawer> {
       _isNavigating = false;
     }
   }
+
+  // =============================================================
+  // Helpers para construir secciones
+  // =============================================================
+
+  Widget _buildSection(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+      child: AppDrawerSection(title),
+    );
+  }
+
+  AppDrawerSubTile _buildSubTile({
+    required String title,
+    required VoidCallback onTap,
+    IconData? leadingIcon,
+  }) {
+    return AppDrawerSubTile(
+      title: title,
+      onTap: onTap,
+      leadingIcon: leadingIcon,
+    );
+  }
+
+  // =============================================================
+  // Secciones del drawer
+  // =============================================================
+
+  Widget _buildOperacionesSection() {
+    return Column(
+      children: [
+        _buildSection('Operaciones'),
+        AppDrawerTile(
+          icon: Icons.local_shipping_rounded,
+          title: 'Operaciones',
+          subtitle: 'Carga, reparto, entregas y guías',
+          children: [
+            _buildSubTile(title: 'Nueva carga', onTap: _showNotAvailable),
+            _buildSubTile(
+              title: 'Operaciones registradas',
+              onTap: _showNotAvailable,
+            ),
+            _buildSubTile(
+              title: 'Repartos y entregas',
+              onTap: _showNotAvailable,
+            ),
+            _buildSubTile(title: 'Guías operativas', onTap: _showNotAvailable),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRetornoSection() {
+    return Column(
+      children: [
+        AppDrawerTile(
+          icon: Icons.assignment_return_rounded,
+          title: 'Retorno de jabas',
+          subtitle: 'Control de retornos y saldos',
+          children: [
+            _buildSubTile(title: 'Estado de cuenta', onTap: _showNotAvailable),
+            _buildSubTile(title: 'Recuperaciones', onTap: _showNotAvailable),
+            _buildSubTile(title: 'Devoluciones', onTap: _showNotAvailable),
+            _buildSubTile(title: 'Saldos pendientes', onTap: _showNotAvailable),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildClientesSection() {
+    return Column(
+      children: [
+        _buildSection('Clientes'),
+        AppDrawerTile(
+          icon: Icons.groups_2_rounded,
+          title: 'Clientes',
+          subtitle: 'Clientes y relaciones comerciales',
+          children: [
+            _buildSubTile(
+              title: 'Clientes',
+              onTap: () => _navigateTo(AppRoutes.clientes),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCatalogosSection() {
+    return Column(
+      children: [
+        _buildSection('Catálogos'),
+        AppDrawerTile(
+          icon: Icons.inventory_2_rounded,
+          title: 'Productos',
+          subtitle: 'Frutas, variedades, calidades y tipos de jaba',
+          children: [
+            _buildSubTile(
+              title: 'Frutas',
+              onTap: () => _navigateTo(AppRoutes.frutas),
+            ),
+            _buildSubTile(
+              title: 'Variedades',
+              onTap: () => _navigateTo(AppRoutes.variedades),
+            ),
+            _buildSubTile(
+              title: 'Calidades',
+              onTap: () => _navigateTo(AppRoutes.calidades),
+            ),
+            _buildSubTile(
+              title: 'Tipos de jaba',
+              onTap: () => _navigateTo(AppRoutes.tiposJaba),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        AppDrawerTile(
+          icon: Icons.route_rounded,
+          title: 'Logística',
+          subtitle: 'Camiones, sedes y lugares operativos',
+          children: [
+            _buildSubTile(
+              title: 'Camiones',
+              onTap: () => _navigateTo(AppRoutes.camiones),
+            ),
+            _buildSubTile(
+              title: 'Sedes',
+              onTap: () => _navigateTo(AppRoutes.sedes),
+            ),
+            _buildSubTile(
+              title: 'Lugares operativos',
+              onTap: () => _navigateTo(AppRoutes.lugaresOperativos),
+            ),
+            _buildSubTile(
+              title: 'Puestos',
+              onTap: () => _navigateTo(AppRoutes.puestos),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAdminSection() {
+    return Column(
+      children: [
+        _buildSection('Administración'),
+        AppDrawerTile(
+          icon: Icons.admin_panel_settings_rounded,
+          title: 'Usuarios y permisos',
+          subtitle: 'Usuarios, roles y permisos',
+          children: [
+            _buildSubTile(
+              title: 'Usuarios',
+              onTap: () => _navigateTo(AppRoutes.usuarios),
+            ),
+            _buildSubTile(title: 'Permisos', onTap: _showNotAvailable),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSeguimientoSection() {
+    return Column(
+      children: [
+        _buildSection('Seguimiento'),
+        AppDrawerTile(
+          icon: Icons.photo_camera_rounded,
+          title: 'Evidencias',
+          onTap: _showNotAvailable,
+        ),
+        const SizedBox(height: 10),
+        AppDrawerTile(
+          icon: Icons.report_problem_rounded,
+          title: 'Incidencias',
+          onTap: _showNotAvailable,
+        ),
+        const SizedBox(height: 10),
+        AppDrawerTile(
+          icon: Icons.query_stats_rounded,
+          title: 'Reportes',
+          onTap: _showNotAvailable,
+        ),
+        const SizedBox(height: 10),
+        AppDrawerTile(
+          icon: Icons.settings_rounded,
+          title: 'Ajustes',
+          onTap: () => _navigateTo(AppRoutes.settings),
+        ),
+      ],
+    );
+  }
+
+  // =============================================================
+  // Build principal
+  // =============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +297,7 @@ class _AppDrawerState extends State<AppDrawer> {
     final topPadding = MediaQuery.paddingOf(context).top;
 
     return Drawer(
-      width: MediaQuery.sizeOf(context).width * .86,
+      width: MediaQuery.sizeOf(context).width * DrawerMetrics.widthFactor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.horizontal(right: Radius.circular(30)),
       ),
@@ -85,203 +305,59 @@ class _AppDrawerState extends State<AppDrawer> {
         color: theme.colorScheme.surface,
         child: Column(
           children: [
+            // Header
             AppDrawerHeader(
               topPadding: topPadding,
               avatarUrl: user?.avatarUrl,
               name: user?.shortName ?? 'Usuario',
               role: user?.rolesSummary ?? '-',
               site: user?.sede.nombre ?? '-',
-              onTap: () => _notAvailable(context),
-              //onTap: () => _open(context, AppRoutes.profile),
+              onTap: _showNotAvailable,
             ),
+            // Contenido
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
-                children: [
-                  const SizedBox(height: 18),
-
-                  AppDrawerSimpleItem(
-                    icon: Icons.dashboard_rounded,
-                    title: 'Inicio',
-                    onTap: () => _open(context, AppRoutes.home),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  const AppDrawerSectionTitle('Operaciones'),
-
-                  AppDrawerModule(
-                    icon: Icons.local_shipping_rounded,
-                    title: 'Operaciones',
-                    subtitle: 'Carga, reparto, entregas y guías',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Nueva carga',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Operaciones registradas',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Repartos y entregas',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Guías operativas',
-                        onTap: () => _notAvailable(context),
-                      ),
-                    ],
-                  ),
-
-                  AppDrawerModule(
-                    icon: Icons.assignment_return_rounded,
-                    title: 'Retorno de jabas',
-                    subtitle: 'Control de retornos y saldos',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Estado de cuenta',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Recuperaciones',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Devoluciones',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Saldos pendientes',
-                        onTap: () => _notAvailable(context),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const AppDrawerSectionTitle('Clientes'),
-
-                  AppDrawerModule(
-                    icon: Icons.groups_2_rounded,
-                    title: 'Clientes',
-                    subtitle: 'Clientes y relaciones comerciales',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Clientes',
-                        onTap: () => _open(context, AppRoutes.clientes),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const AppDrawerSectionTitle('Catálogos'),
-
-                  AppDrawerModule(
-                    icon: Icons.inventory_2_rounded,
-                    title: 'Productos',
-                    subtitle: 'Frutas, variedades, calidades y tipos de jaba',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Frutas',
-                        onTap: () => _open(context, AppRoutes.frutas),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Variedades',
-                        onTap: () => _open(context, AppRoutes.variedades),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Calidades',
-                        onTap: () => _open(context, AppRoutes.calidades),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Tipos de jaba',
-                        onTap: () => _open(context, AppRoutes.tiposJaba),
-                      ),
-                    ],
-                  ),
-
-                  AppDrawerModule(
-                    icon: Icons.route_rounded,
-                    title: 'Logística',
-                    subtitle: 'Camiones, sedes y lugares operativos',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Camiones',
-                        onTap: () => _open(context, AppRoutes.camiones),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Sedes',
-                        onTap: () => _open(context, AppRoutes.sedes),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Lugares operativos',
-                        onTap: () =>
-                            _open(context, AppRoutes.lugaresOperativos),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Puestos',
-                        onTap: () => _open(context, AppRoutes.puestos),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const AppDrawerSectionTitle('Administración'),
-
-                  AppDrawerModule(
-                    icon: Icons.admin_panel_settings_rounded,
-                    title: 'Usuarios y permisos',
-                    subtitle: 'Usuarios, roles y permisos',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Usuarios',
-                        onTap: () => _open(context, AppRoutes.usuarios),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Permisos',
-                        onTap: () => _notAvailable(context),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const AppDrawerSectionTitle('Seguimiento'),
-
-                  AppDrawerSimpleItem(
-                    icon: Icons.photo_camera_rounded,
-                    title: 'Evidencias',
-                    onTap: () => _notAvailable(context),
-                  ),
-
-                  AppDrawerSimpleItem(
-                    icon: Icons.report_problem_rounded,
-                    title: 'Incidencias',
-                    onTap: () => _notAvailable(context),
-                  ),
-
-                  AppDrawerSimpleItem(
-                    icon: Icons.query_stats_rounded,
-                    title: 'Reportes',
-                    onTap: () => _notAvailable(context),
-                  ),
-
-                  AppDrawerSimpleItem(
-                    icon: Icons.settings_rounded,
-                    title: 'Ajustes',
-                    onTap: () => _open(context, AppRoutes.settings),
-                  ),
-                ],
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: DrawerMetrics.outerPadding,
+                  vertical: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Inicio
+                    AppDrawerTile(
+                      icon: Icons.dashboard_rounded,
+                      title: 'Inicio',
+                      onTap: () => _navigateTo(AppRoutes.home),
+                    ),
+                    const SizedBox(height: 8),
+                    // Operaciones
+                    _buildOperacionesSection(),
+                    const SizedBox(height: 8),
+                    // Retorno
+                    _buildRetornoSection(),
+                    const SizedBox(height: 8),
+                    // Clientes
+                    _buildClientesSection(),
+                    const SizedBox(height: 8),
+                    // Catálogos
+                    _buildCatalogosSection(),
+                    const SizedBox(height: 8),
+                    // Administración
+                    _buildAdminSection(),
+                    const SizedBox(height: 8),
+                    // Seguimiento
+                    _buildSeguimientoSection(),
+                  ],
+                ),
               ),
             ),
+            // Footer
             AppDrawerFooter(
               isDarkMode: settings.isEffectiveDarkMode(context),
               onToggleTheme: () =>
                   context.read<SettingsViewModel>().toggleDarkMode(context),
-              onLogout: () => _logout(context),
+              onLogout: _logout,
               isSigningOut: auth.isSigningOut,
             ),
           ],

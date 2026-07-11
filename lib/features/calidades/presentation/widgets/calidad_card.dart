@@ -102,10 +102,7 @@ class _CalidadIcon extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(
-        Icons.workspace_premium_rounded,
-        color: color,
-      ),
+      child: Icon(Icons.workspace_premium_rounded, color: color),
     );
   }
 }
@@ -117,8 +114,6 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -128,23 +123,7 @@ class _Header extends StatelessWidget {
               : item.nombre,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const SizedBox(height: 3),
-        Text(
-          item.descripcion?.trim().isNotEmpty == true
-              ? item.descripcion!
-              : 'Sin descripción',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-          ),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
         ),
       ],
     );
@@ -165,7 +144,7 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         active ? 'Activo' : 'Inactivo',

@@ -37,18 +37,13 @@ class CamionCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest
-                      .withValues(alpha: 0.45),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.45,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    if (_hasText(item.descripcion))
-                      _InfoLine(
-                        icon: Icons.description_rounded,
-                        label: 'Descripción',
-                        value: item.descripcion!,
-                      ),
                     if (_hasText(item.observaciones)) ...[
                       const SizedBox(height: 8),
                       _InfoLine(
@@ -114,10 +109,7 @@ class _CamionIcon extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(
-        Icons.local_shipping_rounded,
-        color: color,
-      ),
+      child: Icon(Icons.local_shipping_rounded, color: color),
     );
   }
 }
@@ -138,10 +130,7 @@ class _Header extends StatelessWidget {
           item.placa.trim().isEmpty ? 'Camión #${item.id}' : item.placa,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w900,
-          ),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 3),
         Text(
