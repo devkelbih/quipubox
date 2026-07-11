@@ -88,65 +88,100 @@ class _AppDrawerState extends State<AppDrawer> {
             AppDrawerHeader(
               topPadding: topPadding,
               avatarUrl: user?.avatarUrl,
-              name: user?.fullName ?? 'Usuario',
-              email: user?.email ?? '',
-              role: user?.roleNames.join(', ') ?? '-',
-              company: user?.empresa.razonSocial ?? '-',
+              name: user?.shortName ?? 'Usuario',
+              role: user?.rolesSummary ?? '-',
               site: user?.sede.nombre ?? '-',
+              onTap: () => _notAvailable(context),
+              //onTap: () => _open(context, AppRoutes.profile),
             ),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
                 children: [
                   const SizedBox(height: 18),
+
                   AppDrawerSimpleItem(
                     icon: Icons.dashboard_rounded,
                     title: 'Inicio',
                     onTap: () => _open(context, AppRoutes.home),
                   ),
+
                   const SizedBox(height: 18),
-                  const AppDrawerSectionTitle('Administración'),
+
+                  const AppDrawerSectionTitle('Operaciones'),
+
                   AppDrawerModule(
-                    icon: Icons.business_center_rounded,
-                    title: 'Sedes y operaciones',
-                    subtitle: 'Sedes, lugares operativos y puestos',
+                    icon: Icons.local_shipping_rounded,
+                    title: 'Operaciones',
+                    subtitle: 'Carga, reparto, entregas y guías',
                     children: [
                       AppDrawerSubItem(
-                        title: 'Sedes',
-                        onTap: () => _open(context, AppRoutes.sedes),
+                        title: 'Nueva carga',
+                        onTap: () => _notAvailable(context),
                       ),
                       AppDrawerSubItem(
-                        title: 'Lugares operativos',
-                        onTap: () =>
-                            _open(context, AppRoutes.lugaresOperativos),
+                        title: 'Operaciones registradas',
+                        onTap: () => _notAvailable(context),
                       ),
                       AppDrawerSubItem(
-                        title: 'Puestos',
-                        onTap: () => _open(context, AppRoutes.puestos),
-                      ),
-                    ],
-                  ),
-                  AppDrawerModule(
-                    icon: Icons.admin_panel_settings_rounded,
-                    title: 'Usuarios y roles',
-                    subtitle: 'Accesos, roles y permisos',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Usuarios',
-                        onTap: () => _open(context, AppRoutes.usuarios),
+                        title: 'Repartos y entregas',
+                        onTap: () => _notAvailable(context),
                       ),
                       AppDrawerSubItem(
-                        title: 'Permisos',
+                        title: 'Guías operativas',
                         onTap: () => _notAvailable(context),
                       ),
                     ],
                   ),
+
+                  AppDrawerModule(
+                    icon: Icons.assignment_return_rounded,
+                    title: 'Retorno de jabas',
+                    subtitle: 'Control de retornos y saldos',
+                    children: [
+                      AppDrawerSubItem(
+                        title: 'Estado de cuenta',
+                        onTap: () => _notAvailable(context),
+                      ),
+                      AppDrawerSubItem(
+                        title: 'Recuperaciones',
+                        onTap: () => _notAvailable(context),
+                      ),
+                      AppDrawerSubItem(
+                        title: 'Devoluciones',
+                        onTap: () => _notAvailable(context),
+                      ),
+                      AppDrawerSubItem(
+                        title: 'Saldos pendientes',
+                        onTap: () => _notAvailable(context),
+                      ),
+                    ],
+                  ),
+
                   const SizedBox(height: 10),
+
+                  const AppDrawerSectionTitle('Clientes'),
+
+                  AppDrawerModule(
+                    icon: Icons.groups_2_rounded,
+                    title: 'Clientes',
+                    subtitle: 'Clientes y relaciones comerciales',
+                    children: [
+                      AppDrawerSubItem(
+                        title: 'Clientes',
+                        onTap: () => _open(context, AppRoutes.clientes),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
                   const AppDrawerSectionTitle('Catálogos'),
+
                   AppDrawerModule(
                     icon: Icons.inventory_2_rounded,
                     title: 'Productos',
-                    subtitle: 'Frutas, variedades, calidades y jabas',
+                    subtitle: 'Frutas, variedades, calidades y tipos de jaba',
                     children: [
                       AppDrawerSubItem(
                         title: 'Frutas',
@@ -164,80 +199,76 @@ class _AppDrawerState extends State<AppDrawer> {
                         title: 'Tipos de jaba',
                         onTap: () => _open(context, AppRoutes.tiposJaba),
                       ),
+                    ],
+                  ),
+
+                  AppDrawerModule(
+                    icon: Icons.route_rounded,
+                    title: 'Logística',
+                    subtitle: 'Camiones, sedes y lugares operativos',
+                    children: [
                       AppDrawerSubItem(
                         title: 'Camiones',
                         onTap: () => _open(context, AppRoutes.camiones),
                       ),
-                    ],
-                  ),
-                  AppDrawerModule(
-                    icon: Icons.groups_2_rounded,
-                    title: 'Clientes',
-                    subtitle: 'Clientes, puestos y relación comercial',
-                    children: [
                       AppDrawerSubItem(
-                        title: 'Clientes',
-                        onTap: () => _open(context, AppRoutes.clientes),
+                        title: 'Sedes',
+                        onTap: () => _open(context, AppRoutes.sedes),
+                      ),
+                      AppDrawerSubItem(
+                        title: 'Lugares operativos',
+                        onTap: () =>
+                            _open(context, AppRoutes.lugaresOperativos),
+                      ),
+                      AppDrawerSubItem(
+                        title: 'Puestos',
+                        onTap: () => _open(context, AppRoutes.puestos),
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 10),
-                  const AppDrawerSectionTitle('Operaciones'),
+
+                  const AppDrawerSectionTitle('Administración'),
+
                   AppDrawerModule(
-                    icon: Icons.local_shipping_rounded,
-                    title: 'Carga y reparto',
-                    subtitle: 'Carga, reparto, entregas y guías',
+                    icon: Icons.admin_panel_settings_rounded,
+                    title: 'Usuarios y permisos',
+                    subtitle: 'Usuarios, roles y permisos',
                     children: [
                       AppDrawerSubItem(
-                        title: 'Nueva carga',
-                        onTap: () => _notAvailable(context),
+                        title: 'Usuarios',
+                        onTap: () => _open(context, AppRoutes.usuarios),
                       ),
                       AppDrawerSubItem(
-                        title: 'Cargas registradas',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Reparto y entregas',
+                        title: 'Permisos',
                         onTap: () => _notAvailable(context),
                       ),
                     ],
                   ),
-                  AppDrawerModule(
-                    icon: Icons.assignment_return_rounded,
-                    title: 'Control de jabas',
-                    subtitle: 'Movimientos, retornos y saldos',
-                    children: [
-                      AppDrawerSubItem(
-                        title: 'Movimientos',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Retornos pendientes',
-                        onTap: () => _notAvailable(context),
-                      ),
-                      AppDrawerSubItem(
-                        title: 'Saldos por cliente',
-                        onTap: () => _notAvailable(context),
-                      ),
-                    ],
-                  ),
+
                   const SizedBox(height: 10),
+
                   const AppDrawerSectionTitle('Seguimiento'),
+
                   AppDrawerSimpleItem(
                     icon: Icons.photo_camera_rounded,
                     title: 'Evidencias',
                     onTap: () => _notAvailable(context),
                   ),
+
                   AppDrawerSimpleItem(
                     icon: Icons.report_problem_rounded,
                     title: 'Incidencias',
                     onTap: () => _notAvailable(context),
                   ),
+
                   AppDrawerSimpleItem(
                     icon: Icons.query_stats_rounded,
                     title: 'Reportes',
                     onTap: () => _notAvailable(context),
                   ),
+
                   AppDrawerSimpleItem(
                     icon: Icons.settings_rounded,
                     title: 'Ajustes',

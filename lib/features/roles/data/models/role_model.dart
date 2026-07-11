@@ -53,4 +53,12 @@ class RoleModel {
       estado: role.estado,
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nombre': nombre,
+      'descripcion': descripcion,
+      'estado': estado,
+    };
+  }
 }

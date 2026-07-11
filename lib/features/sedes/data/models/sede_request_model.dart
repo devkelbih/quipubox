@@ -5,7 +5,7 @@ import '../../domain/entities/sede.dart';
 class SedeRequestModel {
   final int? idEmpresa;
   final String nombre;
-  final String tipoSede;
+  final TipoSede tipoSede;
   final String? direccion;
   final String? ciudad;
   final String? departamento;
@@ -23,7 +23,7 @@ class SedeRequestModel {
     return SedeRequestModel(
       idEmpresa: sede.idEmpresa,
       nombre: sede.nombre,
-      tipoSede: sede.tipoSede.value,
+      tipoSede: sede.tipoSede,
       direccion: sede.direccion,
       ciudad: sede.ciudad,
       departamento: sede.departamento,
@@ -31,23 +31,25 @@ class SedeRequestModel {
   }
 
   Map<String, dynamic> toCreateJson() => {
-    if (idEmpresa != null) 'id_empresa': idEmpresa,
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-    if (tipoSede.trim().isNotEmpty) 'tipo_sede': tipoSede.trim(),
-    if (direccion != null && direccion!.trim().isNotEmpty)
-      'direccion': direccion!.trim(),
-    if (ciudad != null && ciudad!.trim().isNotEmpty) 'ciudad': ciudad!.trim(),
-    if (departamento != null && departamento!.trim().isNotEmpty)
-      'departamento': departamento!.trim(),
-  };
+        if (idEmpresa != null) 'id_empresa': idEmpresa,
+        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+        'tipo_sede': tipoSede.value,
+        if (direccion != null && direccion!.trim().isNotEmpty)
+          'direccion': direccion!.trim(),
+        if (ciudad != null && ciudad!.trim().isNotEmpty)
+          'ciudad': ciudad!.trim(),
+        if (departamento != null && departamento!.trim().isNotEmpty)
+          'departamento': departamento!.trim(),
+      };
 
   Map<String, dynamic> toUpdateJson() => {
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-    if (tipoSede.trim().isNotEmpty) 'tipo_sede': tipoSede.trim(),
-    if (direccion != null && direccion!.trim().isNotEmpty)
-      'direccion': direccion!.trim(),
-    if (ciudad != null && ciudad!.trim().isNotEmpty) 'ciudad': ciudad!.trim(),
-    if (departamento != null && departamento!.trim().isNotEmpty)
-      'departamento': departamento!.trim(),
-  };
+        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+        'tipo_sede': tipoSede.value,
+        if (direccion != null && direccion!.trim().isNotEmpty)
+          'direccion': direccion!.trim(),
+        if (ciudad != null && ciudad!.trim().isNotEmpty)
+          'ciudad': ciudad!.trim(),
+        if (departamento != null && departamento!.trim().isNotEmpty)
+          'departamento': departamento!.trim(),
+      };
 }

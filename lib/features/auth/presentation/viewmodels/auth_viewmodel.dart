@@ -157,7 +157,7 @@ class AuthViewModel extends BaseStateViewModel {
   Future<void> _refreshProfileSilently() async {
     try {
       final freshUser = await getProfileUseCase().timeout(
-        const Duration(seconds: 20),
+        const Duration(seconds: 5),
       );
 
       user = freshUser;
@@ -201,7 +201,11 @@ class AuthViewModel extends BaseStateViewModel {
   Future<bool> loginWithGoogle() {
     return runBool(
       state: ViewModelActionState.saving,
-      action: loginWithGoogleUseCase.call,
+      action: () async {
+        await Future.delayed(const Duration(seconds: 3));
+
+        return loginWithGoogleUseCase();
+      },
     );
   }
 
@@ -210,6 +214,7 @@ class AuthViewModel extends BaseStateViewModel {
       state: ViewModelActionState.deleting,
       preventDuplicates: true,
       action: () async {
+        await Future.delayed(const Duration(seconds: 1));
         try {
           await logoutUseCase();
         } on Object catch (error) {

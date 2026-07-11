@@ -65,17 +65,11 @@ class EmpresaModel {
   ///
   /// Flujo típico:
   /// JSON -> Model
-  factory EmpresaModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory EmpresaModel.fromJson(Map<String, dynamic> json) {
     return EmpresaModel(
-      id: json['id_empresa'] as int? ??
-          json['id'] as int? ??
-          0,
-      razonSocial:
-          json['razon_social']?.toString() ?? '',
-      nombreComercial:
-          json['nombre_comercial']?.toString() ?? '',
+      id: json['id_empresa'] as int? ?? json['id'] as int? ?? 0,
+      razonSocial: json['razon_social']?.toString() ?? '',
+      nombreComercial: json['nombre_comercial']?.toString() ?? '',
       ruc: json['ruc']?.toString() ?? '',
       telefono: json['telefono']?.toString(),
       direccion: json['direccion']?.toString(),
@@ -112,9 +106,7 @@ class EmpresaModel {
   ///
   /// Flujo típico:
   /// Entity persistida -> Model -> Cache/JSON
-  factory EmpresaModel.fromEntity(
-    Empresa empresa,
-  ) {
+  factory EmpresaModel.fromEntity(Empresa empresa) {
     return EmpresaModel(
       id: empresa.id,
       razonSocial: empresa.razonSocial,
@@ -124,5 +116,16 @@ class EmpresaModel {
       direccion: empresa.direccion,
       estado: empresa.estado,
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'razon_social': razonSocial,
+      'nombre_comercial': nombreComercial,
+      'ruc': ruc,
+      'telefono': telefono,
+      'direccion': direccion,
+      'estado': estado,
+    };
   }
 }

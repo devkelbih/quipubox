@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/authenticated_user.dart';
@@ -24,18 +23,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> loginWithGoogle() async {
-    if (kDebugMode) {
-      await Future.delayed(const Duration(seconds: 3));
-    }
     await remoteDataSource.loginWithGoogle();
   }
 
   @override
   Future<void> logout() async {
     try {
-      if (kDebugMode) {
-        await Future.delayed(const Duration(seconds: 3));
-      }
       await remoteDataSource.logout();
     } finally {
       await clearCachedUser();
@@ -44,9 +37,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthenticatedUser> getProfile() async {
-    if (kDebugMode) {
-      await Future.delayed(const Duration(seconds: 3));
-    }
     final model = await remoteDataSource.getProfile();
     return model.toEntity();
   }
