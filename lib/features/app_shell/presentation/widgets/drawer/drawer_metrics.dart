@@ -13,7 +13,7 @@ abstract final class DrawerMetrics {
   // Drawer
   //========================
 
-  static const double widthFactor = .86;
+  static const double widthFactor = .80;
   static const double outerPadding = 14;
 
   //========================

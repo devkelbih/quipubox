@@ -299,57 +299,65 @@ class _AppDrawerState extends State<AppDrawer> {
     return Drawer(
       width: MediaQuery.sizeOf(context).width * DrawerMetrics.widthFactor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(right: Radius.circular(30)),
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(22)),
       ),
       child: ColoredBox(
         color: theme.colorScheme.surface,
         child: Column(
           children: [
-            // Header
-            AppDrawerHeader(
-              topPadding: topPadding,
-              avatarUrl: user?.avatarUrl,
-              name: user?.shortName ?? 'Usuario',
-              role: user?.rolesSummary ?? '-',
-              site: user?.sede.nombre ?? '-',
-              onTap: _showNotAvailable,
-            ),
             // Contenido
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: DrawerMetrics.outerPadding,
-                  vertical: 12,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Inicio
-                    AppDrawerTile(
-                      icon: Icons.dashboard_rounded,
-                      title: 'Inicio',
-                      onTap: () => _navigateTo(AppRoutes.home),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: AppDrawerHeader(
+                      topPadding: topPadding,
+                      avatarUrl: user?.avatarUrl,
+                      name: user?.shortName ?? 'Usuario',
+                      role: user?.rolesSummary ?? '-',
+                      site: user?.sede.nombre ?? '-',
+                      onTap: _showNotAvailable,
                     ),
-                    const SizedBox(height: 8),
-                    // Operaciones
-                    _buildOperacionesSection(),
-                    const SizedBox(height: 8),
-                    // Retorno
-                    _buildRetornoSection(),
-                    const SizedBox(height: 8),
-                    // Clientes
-                    _buildClientesSection(),
-                    const SizedBox(height: 8),
-                    // Catálogos
-                    _buildCatalogosSection(),
-                    const SizedBox(height: 8),
-                    // Administración
-                    _buildAdminSection(),
-                    const SizedBox(height: 8),
-                    // Seguimiento
-                    _buildSeguimientoSection(),
-                  ],
-                ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: DrawerMetrics.outerPadding,
+                      vertical: 12,
+                    ),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          // Header
+
+                          // Inicio
+                          AppDrawerTile(
+                            icon: Icons.dashboard_rounded,
+                            title: 'Inicio',
+                            onTap: () => _navigateTo(AppRoutes.home),
+                          ),
+                          const SizedBox(height: 8),
+                          // Operaciones
+                          _buildOperacionesSection(),
+                          const SizedBox(height: 8),
+                          // Retorno
+                          _buildRetornoSection(),
+                          const SizedBox(height: 8),
+                          // Clientes
+                          _buildClientesSection(),
+                          const SizedBox(height: 8),
+                          // Catálogos
+                          _buildCatalogosSection(),
+                          const SizedBox(height: 8),
+                          // Administración
+                          _buildAdminSection(),
+                          const SizedBox(height: 8),
+                          // Seguimiento
+                          _buildSeguimientoSection(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             // Footer

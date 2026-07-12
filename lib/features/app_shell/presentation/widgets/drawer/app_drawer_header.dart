@@ -38,16 +38,13 @@ class AppDrawerHeader extends StatelessWidget {
         ),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.only(
-            top: topPadding + 12,
-            bottom: 12,
-          ),
+          padding: EdgeInsets.only(top: topPadding + 12, bottom: 12),
           decoration: DrawerStyles.headerDecoration(colorScheme),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               // Círculo decorativo
-              _buildDecorationCircle(),
+              ..._buildDecorationCircles(),
               // Contenido
               _buildHeaderContent(),
             ],
@@ -61,19 +58,47 @@ class AppDrawerHeader extends StatelessWidget {
   // Widgets internos
   // =============================================================
 
-  Widget _buildDecorationCircle() {
-    return Positioned(
-      top: -55,
-      right: -45,
-      child: Container(
-        width: 165,
-        height: 165,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: .07),
+  List<Widget> _buildDecorationCircles() {
+    return [
+      Positioned(
+        top: -55,
+        right: -45,
+        child: Container(
+          width: 140,
+          height: 140,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withValues(alpha: .12),
+          ),
         ),
       ),
-    );
+
+      Positioned(
+        top: 22,
+        right: 102,
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withValues(alpha: .12),
+          ),
+        ),
+      ),
+
+      Positioned(
+        top: -10,
+        right: 110,
+        child: Container(
+          width: 18,
+          height: 18,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withValues(alpha: .12),
+          ),
+        ),
+      ),
+    ];
   }
 
   Widget _buildHeaderContent() {
@@ -170,15 +195,9 @@ class AppDrawerHeader extends StatelessWidget {
   Widget _buildChipsRow() {
     return Row(
       children: [
-        _HeaderChip(
-          icon: Icons.badge_rounded,
-          text: role,
-        ),
+        _HeaderChip(icon: Icons.badge_rounded, text: role),
         const Spacer(),
-        _HeaderChip(
-          icon: Icons.location_on_rounded,
-          text: site,
-        ),
+        _HeaderChip(icon: Icons.location_on_rounded, text: site),
       ],
     );
   }
@@ -192,10 +211,7 @@ class _CustomAvatar extends StatelessWidget {
   final String? avatarUrl;
   final double radius;
 
-  const _CustomAvatar({
-    required this.avatarUrl,
-    required this.radius,
-  });
+  const _CustomAvatar({required this.avatarUrl, required this.radius});
 
   @override
   Widget build(BuildContext context) {
@@ -229,11 +245,7 @@ class _CustomAvatar extends StatelessWidget {
                 },
               ),
             )
-          : const Icon(
-              Icons.person_rounded,
-              color: Colors.white,
-              size: 30,
-            ),
+          : const Icon(Icons.person_rounded, color: Colors.white, size: 30),
     );
   }
 }
@@ -242,18 +254,12 @@ class _HeaderChip extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _HeaderChip({
-    required this.icon,
-    required this.text,
-  });
+  const _HeaderChip({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: DrawerStyles.headerChipDecoration(),
       child: Row(
         mainAxisSize: MainAxisSize.min,

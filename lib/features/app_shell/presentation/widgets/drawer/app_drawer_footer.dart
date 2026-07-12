@@ -115,7 +115,7 @@ class AppDrawerFooter extends StatelessWidget {
         icon: const Icon(Icons.logout_rounded),
         label: const Text('Cerrar sesión'),
         style: OutlinedButton.styleFrom(
-          foregroundColor: theme.colorScheme.error,
+          foregroundColor: theme.colorScheme.onErrorContainer,
 
           backgroundColor: theme.colorScheme.errorContainer,
 
