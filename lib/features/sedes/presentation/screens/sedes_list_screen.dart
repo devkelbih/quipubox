@@ -45,11 +45,6 @@ class _SedeListScreenState extends State<SedeListScreen> {
 
     return AppScaffold(
       title: 'Sedes',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(context),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Nueva sede'),
-      ),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),

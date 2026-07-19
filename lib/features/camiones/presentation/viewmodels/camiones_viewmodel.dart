@@ -16,7 +16,7 @@ class CamionViewModel extends BaseStateViewModel {
     required this.updateUseCase,
     required this.changeStatusUseCase,
   });
-  List<Camion> items = [];
+  final List<Camion> items = [];
 
   Future<void> load() async {
     final result = await run<List<Camion>>(
@@ -25,7 +25,9 @@ class CamionViewModel extends BaseStateViewModel {
     );
 
     if (result != null) {
-      items = result;
+      items
+        ..clear()
+        ..addAll(result);
       notifyListeners();
     }
   }

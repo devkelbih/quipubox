@@ -45,11 +45,6 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
     return AppScaffold(
       title: 'Usuarios',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(context),
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: const Text('Nuevo usuario'),
-      ),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting || vm.isChangingStatus)

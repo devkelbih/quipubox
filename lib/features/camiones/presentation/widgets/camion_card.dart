@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
+
+import 'package:quipubox/core/ui/cards/app_card.dart';
+import 'package:quipubox/core/ui/cards/app_card_actions.dart';
+import 'package:quipubox/core/ui/cards/app_card_body.dart';
+import 'package:quipubox/core/ui/cards/app_card_header.dart';
+import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
+import 'package:quipubox/core/ui/cards/app_status_badge.dart';
 
 import '../../domain/entities/camion.dart';
 
@@ -16,211 +24,46 @@ class CamionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final placa = item.placa.value;
+    final descripcion = item.descripcion.value;
+    final observaciones = item.observaciones.value;
+    final title = placa.hasText ? placa : 'Camión #${item.id}';
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                _CamionIcon(active: item.estado),
-                const SizedBox(width: 12),
-                Expanded(child: _Header(item: item)),
-                _StatusBadge(active: item.estado),
-              ],
-            ),
-            if (_hasText(item.descripcion) || _hasText(item.observaciones)) ...[
-              const SizedBox(height: 14),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.45,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    if (_hasText(item.observaciones)) ...[
-                      const SizedBox(height: 8),
-                      _InfoLine(
-                        icon: Icons.notes_rounded,
-                        label: 'Observaciones',
-                        value: item.observaciones!,
-                      ),
-                    ],
-                  ],
-                ),
+    final subtitle = descripcion ?? 'Sin descripción';
+
+    return AppCard(
+      header: AppCardHeader(
+        icon: const Icon(Icons.local_shipping_rounded),
+        title: title,
+        subtitle: subtitle,
+        badge: AppStatusBadge.active(item.estado),
+      ),
+
+      body: observaciones == null
+          ? null
+          : AppCardBody(
+              child: AppCardInfoRow(
+                icon: Icons.notes_rounded,
+                label: 'Observaciones',
+                value: observaciones,
               ),
-            ],
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit_rounded, size: 18),
-                    label: const Text('Editar'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton.tonalIcon(
-                    onPressed: onChangeStatus,
-                    icon: Icon(
-                      item.estado
-                          ? Icons.block_rounded
-                          : Icons.check_circle_rounded,
-                      size: 18,
-                    ),
-                    label: Text(item.estado ? 'Desactivar' : 'Activar'),
-                  ),
-                ),
-              ],
             ),
-          ],
+
+      actions: AppCardActions(
+        secondaryAction: OutlinedButton.icon(
+          onPressed: onEdit,
+          icon: const Icon(Icons.edit_rounded, size: 18),
+          label: const Text('Editar'),
         ),
-      ),
-    );
-  }
-
-  static bool _hasText(String? value) {
-    return value != null && value.trim().isNotEmpty;
-  }
-}
-
-class _CamionIcon extends StatelessWidget {
-  final bool active;
-
-  const _CamionIcon({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final color = active ? colorScheme.primary : colorScheme.error;
-
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Icon(Icons.local_shipping_rounded, color: color),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  final Camion item;
-
-  const _Header({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item.placa.trim().isEmpty ? 'Camión #${item.id}' : item.placa,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 3),
-        Text(
-          item.descripcion?.trim().isNotEmpty == true
-              ? item.descripcion!
-              : 'Sin descripción',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
+        primaryAction: FilledButton.tonalIcon(
+          onPressed: onChangeStatus,
+          icon: Icon(
+            item.estado ? Icons.block_rounded : Icons.check_circle_rounded,
+            size: 18,
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  final bool active;
-
-  const _StatusBadge({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final color = active ? colorScheme.primary : colorScheme.error;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        active ? 'Activo' : 'Inactivo',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: color,
+          label: Text(item.estado ? 'Desactivar' : 'Activar'),
         ),
       ),
-    );
-  }
-}
-
-class _InfoLine extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoLine({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '$label: ',
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                TextSpan(
-                  text: value,
-                  style: TextStyle(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

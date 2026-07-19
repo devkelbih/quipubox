@@ -45,11 +45,6 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
 
     return AppScaffold(
       title: 'Calidades',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(context),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Nueva calidad'),
-      ),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting || vm.isChangingStatus)

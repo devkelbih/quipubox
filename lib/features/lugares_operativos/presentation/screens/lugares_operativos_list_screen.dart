@@ -32,11 +32,6 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
 
     return AppScaffold(
       title: 'Lugares operativos',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(context),
-        icon: const Icon(Icons.add_location_alt_rounded),
-        label: const Text('Nuevo'),
-      ),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),
@@ -60,10 +55,7 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 90),
                     children: [
-                      _LugaresHeader(
-                        total: vm.total,
-                        activos: vm.activos,
-                      ),
+                      _LugaresHeader(total: vm.total, activos: vm.activos),
                       const SizedBox(height: 16),
                       ...vm.items.map(
                         (item) => Padding(
@@ -100,10 +92,7 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
     );
   }
 
-  Future<void> _openForm(
-    BuildContext context, {
-    LugarOperativo? item,
-  }) async {
+  Future<void> _openForm(BuildContext context, {LugarOperativo? item}) async {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -119,10 +108,7 @@ class _LugaresHeader extends StatelessWidget {
   final int total;
   final int activos;
 
-  const _LugaresHeader({
-    required this.total,
-    required this.activos,
-  });
+  const _LugaresHeader({required this.total, required this.activos});
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +120,7 @@ class _LugaresHeader extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.primaryContainer.withAlpha(45),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: colorScheme.primary.withAlpha(12),
-        ),
+        border: Border.all(color: colorScheme.primary.withAlpha(12)),
       ),
       child: Row(
         children: [
@@ -201,9 +185,7 @@ class _LugarCard extends StatelessWidget {
       color: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
-        side: BorderSide(
-          color: colorScheme.outlineVariant.withAlpha(70),
-        ),
+        side: BorderSide(color: colorScheme.outlineVariant.withAlpha(70)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -275,10 +257,7 @@ class _LugarCard extends StatelessWidget {
                 if (value == 'deactivate') onDeactivate();
               },
               itemBuilder: (_) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Text('Editar'),
-                ),
+                const PopupMenuItem(value: 'edit', child: Text('Editar')),
                 PopupMenuItem(
                   value: 'deactivate',
                   enabled: item.estado,
@@ -341,10 +320,7 @@ class _LugarIcon extends StatelessWidget {
         color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: Icon(
-        icon,
-        color: colorScheme.onPrimaryContainer,
-      ),
+      child: Icon(icon, color: colorScheme.onPrimaryContainer),
     );
   }
 }
@@ -353,10 +329,7 @@ class _InfoLine extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _InfoLine({
-    required this.icon,
-    required this.text,
-  });
+  const _InfoLine({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -368,11 +341,7 @@ class _InfoLine extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 16,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          Icon(icon, size: 16, color: colorScheme.onSurfaceVariant),
           const SizedBox(width: 7),
           Expanded(
             child: Text(
@@ -424,10 +393,7 @@ class _SoftChip extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _SoftChip({
-    required this.icon,
-    required this.label,
-  });
+  const _SoftChip({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -443,11 +409,7 @@ class _SoftChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 15,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          Icon(icon, size: 15, color: colorScheme.onSurfaceVariant),
           const SizedBox(width: 6),
           Text(
             label,

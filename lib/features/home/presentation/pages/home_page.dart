@@ -23,11 +23,6 @@ class HomePage extends StatelessWidget {
           child: Icon(Icons.notifications_none_rounded),
         ),
       ],
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.sedes),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Registrar'),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: const [
@@ -593,9 +588,7 @@ class _HeroChip extends StatelessWidget {
     return Chip(
       label: Text(text),
       backgroundColor: Colors.white.withValues(alpha: .18),
-      labelStyle: const TextStyle(
-        fontWeight: FontWeight.w800,
-      ),
+      labelStyle: const TextStyle(fontWeight: FontWeight.w800),
       side: BorderSide.none,
     );
   }

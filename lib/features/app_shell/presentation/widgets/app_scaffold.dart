@@ -7,15 +7,19 @@ import 'drawer/app_drawer.dart';
 class AppScaffold extends StatelessWidget {
   final String title;
   final Widget body;
-  final Widget? floatingActionButton;
+
+  /// Acciones del AppBar (ej. botón agregar).
   final List<Widget>? actions;
+
+  /// Widget mostrado debajo del AppBar (TabBar, filtros, etc.).
+  final PreferredSizeWidget? appBarBottom;
 
   const AppScaffold({
     super.key,
     required this.title,
     required this.body,
-    this.floatingActionButton,
     this.actions,
+    this.appBarBottom,
   });
 
   @override
@@ -32,20 +36,23 @@ class AppScaffold extends StatelessWidget {
             appBar: AppBar(
               title: Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w900),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                ),
               ),
               leading: Builder(
                 builder: (drawerContext) {
                   return IconButton(
                     icon: const Icon(Icons.menu_rounded),
-                    onPressed: () => Scaffold.of(drawerContext).openDrawer(),
+                    onPressed: () =>
+                        Scaffold.of(drawerContext).openDrawer(),
                   );
                 },
               ),
               actions: actions,
+              bottom: appBarBottom,
             ),
             drawer: const AppDrawer(),
-            floatingActionButton: isSigningOut ? null : floatingActionButton,
             body: body,
           ),
         ),

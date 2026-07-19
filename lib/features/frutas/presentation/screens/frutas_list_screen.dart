@@ -45,11 +45,6 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
 
     return AppScaffold(
       title: 'Frutas',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(context),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Nueva fruta'),
-      ),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting || vm.isChangingStatus)
