@@ -16,7 +16,7 @@ class ConnectivityViewModel extends SafeChangeNotifier {
   Future<void> start() async {
     await checkNow();
 
-    _timer = Timer.periodic(const Duration(seconds: 5), (_) => checkNow());
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) => checkNow());
   }
 
   Future<void> checkNow() async {

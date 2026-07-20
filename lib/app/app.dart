@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/network/connectivity_viewmodel.dart';
@@ -25,7 +27,9 @@ class QuipuboxApp extends StatelessWidget {
       themeMode: settings.themeMode,
       routerConfig: router,
       builder: (context, child) {
-        return _ConnectivityListener(child: child ?? const SizedBox.shrink());
+        return _ConnectivityListener(
+          child: child ?? const SizedBox.shrink(),
+        );
       },
     );
   }
@@ -34,14 +38,20 @@ class QuipuboxApp extends StatelessWidget {
 class _ConnectivityListener extends StatefulWidget {
   final Widget child;
 
-  const _ConnectivityListener({required this.child});
+  const _ConnectivityListener({
+    required this.child,
+  });
 
   @override
-  State<_ConnectivityListener> createState() => _ConnectivityListenerState();
+  State<_ConnectivityListener> createState() =>
+      _ConnectivityListenerState();
 }
 
 class _ConnectivityListenerState extends State<_ConnectivityListener> {
+  static const _initialOfflineDelay = Duration(seconds: 1);
+
   bool? _lastStatus;
+  Timer? _initialOfflineTimer;
 
   @override
   void didChangeDependencies() {
@@ -51,12 +61,40 @@ class _ConnectivityListenerState extends State<_ConnectivityListener> {
 
     if (!connectivity.hasCheckedOnce) return;
 
+    // ----------------------------------------------------------
+    // Primera sincronización (silenciosa).
+    // ----------------------------------------------------------
     if (_lastStatus == null) {
       _lastStatus = connectivity.isOnline;
+
+      // Si inicia offline esperamos un instante para confirmar
+      // que realmente sigue sin conexión antes de avisar.
+      if (!connectivity.isOnline) {
+        _initialOfflineTimer?.cancel();
+
+        _initialOfflineTimer = Timer(_initialOfflineDelay, () {
+          if (!mounted) return;
+
+          final current = context.read<ConnectivityViewModel>();
+
+          if (!current.isOnline) {
+            AppToast.show(
+              'Sin conexión a internet.',
+              type: ToastType.error,
+            );
+          }
+        });
+      }
+
       return;
     }
 
+    // ----------------------------------------------------------
+    // No hubo cambios.
+    // ----------------------------------------------------------
     if (_lastStatus == connectivity.isOnline) return;
+
+    _initialOfflineTimer?.cancel();
 
     _lastStatus = connectivity.isOnline;
 
@@ -67,9 +105,17 @@ class _ConnectivityListenerState extends State<_ConnectivityListener> {
         connectivity.isOnline
             ? 'Conexión restaurada.'
             : 'Sin conexión a internet.',
-        type: connectivity.isOnline ? ToastType.success : ToastType.error,
+        type: connectivity.isOnline
+            ? ToastType.success
+            : ToastType.error,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    _initialOfflineTimer?.cancel();
+    super.dispose();
   }
 
   @override
