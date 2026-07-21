@@ -5,8 +5,16 @@ class AppTheme {
 
   static const Color white = Colors.white;
 
-  static const Color primary = Color(0xFF0277BD);
-  static const Color primaryLight = Color(0xFF03A9F4);
+  // Paleta extraída del logo Quipubox
+  static const Color navy = Color(0xFF0B2340); // azul marino del cubo/logo
+  static const Color navyLight = Color(0xFF16406E); // variante más clara para dark mode / hover
+  static const Color teal = Color(0xFF17ABA6); // turquesa de las líneas del quipu
+  static const Color tealLight = Color(0xFF3FC7C2); // turquesa claro para acentos en dark mode
+
+  static const Color primary = navy;
+  static const Color primaryLight = navyLight;
+  static const Color accent = teal;
+  static const Color accentLight = tealLight;
 
   static const Color error = Color(0xFFD32F2F);
   static const Color errorDark = Color(0xFFFF6B6B);
@@ -14,8 +22,8 @@ class AppTheme {
   static const Color scaffoldLight = Color(0xFFF4F7FA);
   static const Color surfaceLight = Color(0xFFFFFFFF);
 
-  static const Color scaffoldDark = Color(0xFF121820);
-  static const Color surfaceDark = Color(0xFF1B2430);
+  static const Color scaffoldDark = Color(0xFF0A1420);
+  static const Color surfaceDark = Color(0xFF141F2D);
 
   static final ThemeData light = _buildLight();
   static final ThemeData dark = _buildDark();
@@ -25,10 +33,12 @@ class AppTheme {
       seedColor: primary,
       brightness: Brightness.light,
     ).copyWith(
-      primary: primary,
+      primary: teal,
       onPrimary: white,
-      secondary: primaryLight,
+      secondary: navy,
       onSecondary: white,
+      tertiary: teal,
+      onTertiary: white,
       surface: surfaceLight,
       onSurface: const Color(0xFF17212B),
       error: error,
@@ -41,16 +51,17 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: scaffoldLight,
       appBarTheme: _appBarTheme(
-        background: primary,
+        background: navy,
         foreground: white,
       ),
       inputDecorationTheme: _inputTheme(
         scheme: scheme,
         fillColor: surfaceLight,
+        focusColor: teal,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: primaryLight,
-        linearTrackColor: primary.withValues(alpha: 0.16),
+        color: teal,
+        linearTrackColor: teal.withValues(alpha: 0.16),
         circularTrackColor: scheme.outlineVariant,
         strokeWidth: 4,
       ),
@@ -59,13 +70,15 @@ class AppTheme {
 
   static ThemeData _buildDark() {
     final scheme = ColorScheme.fromSeed(
-      seedColor: primaryLight,
+      seedColor: tealLight,
       brightness: Brightness.dark,
     ).copyWith(
-      primary: primaryLight,
-      onPrimary: white,
-      secondary: primary,
+      primary: tealLight,
+      onPrimary: const Color(0xFF06211F),
+      secondary: navyLight,
       onSecondary: white,
+      tertiary: tealLight,
+      onTertiary: const Color(0xFF06211F),
       surface: surfaceDark,
       onSurface: const Color(0xFFE8EEF5),
       error: errorDark,
@@ -84,10 +97,11 @@ class AppTheme {
       inputDecorationTheme: _inputTheme(
         scheme: scheme,
         fillColor: surfaceDark,
+        focusColor: tealLight,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: primaryLight,
-        linearTrackColor: primaryLight.withValues(alpha: 0.18),
+        color: tealLight,
+        linearTrackColor: tealLight.withValues(alpha: 0.18),
         circularTrackColor: scheme.outlineVariant,
         strokeWidth: 4,
       ),
@@ -188,7 +202,7 @@ class AppTheme {
 
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surfaceContainerHighest.withValues(alpha: 0.65),
-        selectedColor: scheme.primary.withValues(alpha: 0.14),
+        selectedColor: scheme.primary.withValues(alpha: 0.16),
         labelStyle: TextStyle(
           color: scheme.onSurface,
           fontWeight: FontWeight.w700,
@@ -280,13 +294,14 @@ class AppTheme {
   static InputDecorationTheme _inputTheme({
     required ColorScheme scheme,
     required Color fillColor,
+    required Color focusColor,
   }) {
     return InputDecorationTheme(
       filled: true,
       fillColor: fillColor,
       labelStyle: TextStyle(color: scheme.onSurfaceVariant),
       floatingLabelStyle: TextStyle(
-        color: scheme.primary,
+        color: focusColor,
         fontWeight: FontWeight.w800,
       ),
       prefixIconColor: scheme.onSurfaceVariant,
@@ -302,7 +317,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: scheme.primary, width: 1.5),
+        borderSide: BorderSide(color: focusColor, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),

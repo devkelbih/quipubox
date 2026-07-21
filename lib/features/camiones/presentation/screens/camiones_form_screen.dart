@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../domain/entities/camion.dart';
 import '../viewmodels/camiones_viewmodel.dart';
@@ -8,18 +9,23 @@ import '../viewmodels/camiones_viewmodel.dart';
 class CamionFormScreen extends StatefulWidget {
   final Camion? item;
 
-  const CamionFormScreen({super.key, this.item});
+  const CamionFormScreen({
+    super.key,
+    this.item,
+  });
 
   @override
   State<CamionFormScreen> createState() => _CamionFormScreenState();
 }
 
 class _CamionFormScreenState extends State<CamionFormScreen> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final placaController = TextEditingController();
-  final descripcionController = TextEditingController();
-  final observacionesController = TextEditingController();
+  final _placaController = TextEditingController();
+  final _descripcionController = TextEditingController();
+  final _observacionesController = TextEditingController();
+
+  bool get _isEditing => widget.item != null;
 
   @override
   void initState() {
@@ -28,30 +34,35 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
     final item = widget.item;
 
     if (item != null) {
-      placaController.text = item.placa;
-      descripcionController.text = item.descripcion ?? '';
-      observacionesController.text = item.observaciones ?? '';
+      _placaController.text = item.placa;
+      _descripcionController.text = item.descripcion ?? '';
+      _observacionesController.text = item.observaciones ?? '';
     }
   }
 
   @override
   void dispose() {
-    placaController.dispose();
-    descripcionController.dispose();
-    observacionesController.dispose();
+    _placaController.dispose();
+    _descripcionController.dispose();
+    _observacionesController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<CamionViewModel>();
+    final connectivity = context.watch<ConnectivityViewModel>();
+
+    final canSubmit = !vm.isSaving && connectivity.isOnline;
 
     return Form(
-      key: formKey,
+      key: _formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
-            controller: placaController,
+            controller: _placaController,
+            enabled: !vm.isSaving,
             textCapitalization: TextCapitalization.characters,
             decoration: const InputDecoration(
               labelText: 'Placa',
@@ -61,21 +72,24 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
               if (value == null || value.trim().isEmpty) {
                 return 'Ingresa la placa del camión.';
               }
-
               return null;
             },
           ),
           const SizedBox(height: 12),
+
           TextFormField(
-            controller: descripcionController,
+            controller: _descripcionController,
+            enabled: !vm.isSaving,
             decoration: const InputDecoration(
               labelText: 'Descripción',
               prefixIcon: Icon(Icons.local_shipping_rounded),
             ),
           ),
           const SizedBox(height: 12),
+
           TextFormField(
-            controller: observacionesController,
+            controller: _observacionesController,
+            enabled: !vm.isSaving,
             maxLines: 3,
             decoration: const InputDecoration(
               labelText: 'Observaciones',
@@ -83,6 +97,7 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
               alignLabelWithHint: true,
             ),
           ),
+
           if (vm.errorMessage != null) ...[
             const SizedBox(height: 12),
             Text(
@@ -93,26 +108,48 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
               ),
             ),
           ],
+
+          if (!connectivity.isOnline) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Se requiere conexión a internet para guardar.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+
           const SizedBox(height: 18),
+
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: vm.isSaving ? null : () => Navigator.pop(context),
+                  onPressed: vm.isSaving
+                      ? null
+                      : () => Navigator.pop(context),
                   child: const Text('Cancelar'),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: FilledButton(
-                  onPressed: vm.isSaving ? null : _save,
+                  onPressed: canSubmit ? _save : null,
                   child: vm.isSaving
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
                         )
-                      : const Text('Guardar'),
+                      : Text(
+                          _isEditing
+                              ? 'Guardar cambios'
+                              : 'Registrar camión',
+                        ),
                 ),
               ),
             ],
@@ -123,7 +160,7 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     final item = widget.item;
 
@@ -131,32 +168,31 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
-      placa: placaController.text.trim().toUpperCase(),
-      descripcion: _emptyToNull(descripcionController.text),
-      observaciones: _emptyToNull(observacionesController.text),
+      placa: _placaController.text.trim().toUpperCase(),
+      descripcion: _emptyToNull(_descripcionController.text),
+      observaciones: _emptyToNull(_observacionesController.text),
     );
 
     final vm = context.read<CamionViewModel>();
 
-    final ok = item == null ? await vm.create(camion) : await vm.update(camion);
+    final ok = _isEditing
+        ? await vm.update(camion)
+        : await vm.create(camion);
 
     if (!mounted) return;
 
+    AppToast.show(
+      ok
+          ? _isEditing
+              ? 'Camión actualizado correctamente.'
+              : 'Camión registrado correctamente.'
+          : vm.errorMessage ?? 'No se pudo guardar el camión.',
+      type: ok ? ToastType.success : ToastType.error,
+    );
+
     if (ok) {
       Navigator.pop(context);
-      AppToast.show(
-        item == null
-            ? 'Camión registrado correctamente.'
-            : 'Camión actualizado correctamente.',
-        type: ToastType.success,
-      );
-      return;
     }
-
-    AppToast.show(
-      vm.errorMessage ?? 'No se pudo guardar el camión.',
-      type: ToastType.error,
-    );
   }
 
   String? _emptyToNull(String value) {

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quipubox/core/ui/sheets/app_form_sheet.dart';
-import 'package:quipubox/core/ui/feedback/change_status_dialog.dart';
-import 'package:quipubox/features/sedes/presentation/widgets/sede_card.dart';
+import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
 
 import '../../../../core/ui/feedback/app_toast.dart';
+import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
+import '../../../../core/ui/sheets/app_form_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
-import '../../../../core/ui/filters/status_summary_filter.dart';
 import '../../domain/entities/sede.dart';
 import '../viewmodels/sedes_viewmodel.dart';
+import '../widgets/sede_card.dart';
 import 'sedes_form_screen.dart';
 
 class SedeListScreen extends StatefulWidget {
@@ -45,55 +45,58 @@ class _SedeListScreenState extends State<SedeListScreen> {
 
     return AppScaffold(
       title: 'Sedes',
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.add_rounded),
+          onPressed: vm.isSaving ? null : () => _openForm(context),
+        ),
+      ],
+      appBarBottom: AppStatusTabBar(
+        total: vm.items.length,
+        active: activeCount,
+        inactive: inactiveCount,
+        selected: _statusFilter,
+        onChanged: (value) {
+          setState(() => _statusFilter = value);
+        },
+      ),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),
           Expanded(
-            child: Builder(
-              builder: (_) {
-                if (vm.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            child: () {
+              if (vm.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                if (vm.errorMessage != null && vm.items.isEmpty) {
-                  return EmptyState(vm.errorMessage!);
-                }
+              if (vm.errorMessage != null && vm.items.isEmpty) {
+                return EmptyState(vm.errorMessage!);
+              }
 
-                if (vm.items.isEmpty) {
-                  return const EmptyState('Aún no tienes sedes registradas.');
-                }
+              if (vm.items.isEmpty) {
+                return const EmptyState('Aún no tienes sedes registradas.');
+              }
 
-                return RefreshIndicator(
-                  onRefresh: vm.load,
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                    children: [
-                      StatusSummaryFilter(
-                        total: vm.items.length,
-                        active: activeCount,
-                        inactive: inactiveCount,
-                        selected: _statusFilter,
-                        onChanged: (value) {
-                          setState(() => _statusFilter = value);
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      ...filteredItems.map(
-                        (item) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: SedeCard(
-                            item: item,
-                            onEdit: () => _openForm(context, item: item),
-                            onChangeStatus: () =>
-                                _confirmChangeStatus(context, item),
-                          ),
+              return RefreshIndicator(
+                onRefresh: vm.load,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    ...filteredItems.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: SedeCard(
+                          item: item,
+                          onEdit: () => _openForm(context, item: item),
+                          onChangeStatus: () =>
+                              _confirmChangeStatus(context, item),
                         ),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    ),
+                  ],
+                ),
+              );
+            }(),
           ),
         ],
       ),
@@ -164,3 +167,4 @@ class _SedeListScreenState extends State<SedeListScreen> {
     );
   }
 }
+

@@ -1,88 +1,21 @@
 import 'package:flutter/material.dart';
-
-/// ===============================================================
-/// AppStatusBadge
-/// ---------------------------------------------------------------
-/// Badge reutilizable para representar estados de cualquier
-/// elemento de la aplicación.
-///
-/// Uso más común:
-///
-/// AppStatusBadge.active(item.estado)
-///
-/// Uso personalizado:
-///
-/// AppStatusBadge(
-///   label: 'Pendiente',
-///   type: AppStatusType.warning,
-/// )
-/// ===============================================================
-
-enum AppStatusType {
-  success,
-  warning,
-  danger,
-  info,
-  neutral,
-}
+import 'package:quipubox/core/ui/status/app_status.dart';
+import 'package:quipubox/core/ui/status/app_status_colors.dart';
 
 class AppStatusBadge extends StatelessWidget {
-  final String label;
-  final AppStatusType type;
+  final AppStatus status;
 
   const AppStatusBadge({
     super.key,
-    required this.label,
-    required this.type,
+    required this.status,
   });
-
-  /// Constructor para estados Activo / Inactivo.
-  factory AppStatusBadge.active(
-    bool active, {
-    Key? key,
-  }) {
-    return AppStatusBadge(
-      key: key,
-      label: active ? 'Activo' : 'Inactivo',
-      type: active
-          ? AppStatusType.success
-          : AppStatusType.danger,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    final (
-      foregroundColor,
-      backgroundColor,
-    ) = switch (type) {
-      AppStatusType.success => (
-        scheme.onPrimaryContainer,
-        scheme.primaryContainer,
-      ),
-
-      AppStatusType.warning => (
-        scheme.onTertiaryContainer,
-        scheme.tertiaryContainer,
-      ),
-
-      AppStatusType.danger => (
-        scheme.onErrorContainer,
-        scheme.errorContainer,
-      ),
-
-      AppStatusType.info => (
-        scheme.onSecondaryContainer,
-        scheme.secondaryContainer,
-      ),
-
-      AppStatusType.neutral => (
-        scheme.onSurfaceVariant,
-        scheme.surfaceContainerHighest,
-      ),
-    };
+    final style = AppStatusStyle.of(
+      context,
+      status.type,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -90,17 +23,17 @@ class AppStatusBadge extends StatelessWidget {
         vertical: 5,
       ),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: style.background,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        label,
+        status.label,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: foregroundColor,
+          color: style.foreground,
           fontSize: 12,
           fontWeight: FontWeight.w800,
-          letterSpacing: 0.15,
+          letterSpacing: .15,
           height: 1,
         ),
       ),

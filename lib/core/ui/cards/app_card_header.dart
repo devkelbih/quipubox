@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/ui/status/app_status.dart';
+import 'package:quipubox/core/ui/status/app_status_colors.dart';
 
-/// ===============================================================
-/// AppCardHeader
-/// ---------------------------------------------------------------
-/// Encabezado reutilizable para las tarjetas de Quipubox.
-///
-/// Se compone de:
-///
-/// • Icono representativo.
-/// • Título.
-/// • Subtítulo (opcional).
-/// • Badge o acción (opcional).
-///
-/// No conoce el contenido del Body ni las acciones.
-/// ===============================================================
 class AppCardHeader extends StatelessWidget {
   final Widget icon;
   final String title;
   final String? subtitle;
   final Widget? badge;
+
+  final AppStatus? status;
 
   const AppCardHeader({
     super.key,
@@ -26,6 +16,7 @@ class AppCardHeader extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.badge,
+    this.status,
   });
 
   @override
@@ -33,23 +24,27 @@ class AppCardHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
+    final style = status != null
+        ? AppStatusStyle.of(
+            context,
+            status!.type,
+          )
+        : null;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // =========================================================
-        // Icono
-        // =========================================================
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: scheme.primaryContainer,
+            color: style?.background ?? scheme.primaryContainer,
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
           child: IconTheme(
             data: IconThemeData(
-              color: scheme.primary,
+              color: style?.foreground ?? scheme.primary,
               size: 20,
             ),
             child: icon,
@@ -58,9 +53,6 @@ class AppCardHeader extends StatelessWidget {
 
         const SizedBox(width: 14),
 
-        // =========================================================
-        // Información
-        // =========================================================
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:quipubox/core/ui/cards/app_card.dart';
+import 'package:quipubox/core/ui/cards/app_card_actions.dart';
+import 'package:quipubox/core/ui/cards/app_card_header.dart';
+import 'package:quipubox/core/ui/cards/app_status_badge.dart';
+import 'package:quipubox/core/ui/status/app_status.dart';
+
 import '../../domain/entities/calidad.dart';
 
 class CalidadCard extends StatelessWidget {
@@ -16,191 +22,37 @@ class CalidadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final title =
+        item.nombre.trim().isEmpty ? 'Calidad #${item.id ?? '-'}' : item.nombre;
+    final descripcion =
+        item.descripcion?.trim().isNotEmpty == true ? item.descripcion : null;
+    final subtitle = descripcion ?? 'Sin descripción';
+    final status = AppStatus.active(item.estado);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                _CalidadIcon(active: item.estado),
-                const SizedBox(width: 12),
-                Expanded(child: _Header(item: item)),
-                _StatusBadge(active: item.estado),
-              ],
-            ),
-            if (_hasText(item.descripcion)) ...[
-              const SizedBox(height: 14),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.45,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: _InfoLine(
-                  icon: Icons.description_rounded,
-                  label: 'Descripción',
-                  value: item.descripcion!,
-                ),
-              ),
-            ],
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit_rounded, size: 18),
-                    label: const Text('Editar'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton.tonalIcon(
-                    onPressed: onChangeStatus,
-                    icon: Icon(
-                      item.estado
-                          ? Icons.block_rounded
-                          : Icons.check_circle_rounded,
-                      size: 18,
-                    ),
-                    label: Text(item.estado ? 'Desactivar' : 'Activar'),
-                  ),
-                ),
-              ],
-            ),
-          ],
+    return AppCard(
+      header: AppCardHeader(
+        icon: const Icon(Icons.workspace_premium_rounded),
+        title: title,
+        subtitle: subtitle,
+        status: status,
+        badge: AppStatusBadge(status: status),
+      ),
+      actions: AppCardActions(
+        secondaryAction: OutlinedButton.icon(
+          onPressed: onEdit,
+          icon: const Icon(Icons.edit_rounded, size: 18),
+          label: const Text('Editar'),
         ),
-      ),
-    );
-  }
-
-  static bool _hasText(String? value) {
-    return value != null && value.trim().isNotEmpty;
-  }
-}
-
-class _CalidadIcon extends StatelessWidget {
-  final bool active;
-
-  const _CalidadIcon({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final color = active ? colorScheme.primary : colorScheme.error;
-
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Icon(Icons.workspace_premium_rounded, color: color),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  final Calidad item;
-
-  const _Header({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item.nombre.trim().isEmpty
-              ? 'Calidad #${item.id ?? '-'}'
-              : item.nombre,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  final bool active;
-
-  const _StatusBadge({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final color = active ? colorScheme.primary : colorScheme.error;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        active ? 'Activo' : 'Inactivo',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoLine extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoLine({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '$label: ',
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                TextSpan(
-                  text: value,
-                  style: TextStyle(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
+        primaryAction: FilledButton.tonalIcon(
+          onPressed: onChangeStatus,
+          icon: Icon(
+            item.estado ? Icons.block_rounded : Icons.check_circle_rounded,
+            size: 18,
           ),
+          label: Text(item.estado ? 'Desactivar' : 'Activar'),
         ),
-      ],
+      ),
     );
   }
 }
+

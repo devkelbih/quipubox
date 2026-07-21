@@ -7,6 +7,7 @@ import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
 import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
 import 'package:quipubox/core/ui/cards/app_status_badge.dart';
+import 'package:quipubox/core/ui/status/app_status.dart';
 
 import '../../domain/entities/camion.dart';
 
@@ -30,13 +31,14 @@ class CamionCard extends StatelessWidget {
     final title = placa.hasText ? placa : 'Camión #${item.id}';
 
     final subtitle = descripcion ?? 'Sin descripción';
-
+    final status = AppStatus.active(item.estado);
     return AppCard(
       header: AppCardHeader(
         icon: const Icon(Icons.local_shipping_rounded),
         title: title,
         subtitle: subtitle,
-        badge: AppStatusBadge.active(item.estado),
+        status: status,
+        badge: AppStatusBadge(status: status),
       ),
 
       body: observaciones == null
