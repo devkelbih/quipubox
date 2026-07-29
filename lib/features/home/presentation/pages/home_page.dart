@@ -16,7 +16,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Quipubox',
+      title: Image.asset(
+        'assets/logo_dark.png',
+        height: 36,
+        fit: BoxFit.contain,
+      ),
       actions: const [
         Padding(
           padding: EdgeInsets.only(right: 12),

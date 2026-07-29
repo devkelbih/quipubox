@@ -21,7 +21,7 @@ abstract final class DrawerMetrics {
   //========================
 
   static const double cardRadius = 22;
-  static const double subCardRadius = 14;
+  static const double subCardRadius = 12;
 
   static const double cardSpacing = 10;
 
@@ -37,7 +37,7 @@ abstract final class DrawerMetrics {
     horizontal: 12,
     vertical: 12,
   );
-
+  static const double subTileSpacing = 18;
   //========================
   // Icon
   //========================

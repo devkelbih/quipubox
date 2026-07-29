@@ -9,7 +9,7 @@ class CompanyProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.watch<AuthViewModel>().user;
     return AppScaffold(
-      title: 'Empresa actual',
+      title: Text('Empresa actual'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

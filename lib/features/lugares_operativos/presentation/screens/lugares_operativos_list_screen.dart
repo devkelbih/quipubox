@@ -31,7 +31,7 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
     final vm = context.watch<LugarOperativoViewModel>();
 
     return AppScaffold(
-      title: 'Lugares operativos',
+      title: Text('Lugares operativos'),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),

@@ -44,7 +44,7 @@ class _SedeListScreenState extends State<SedeListScreen> {
     };
 
     return AppScaffold(
-      title: 'Sedes',
+      title: Text('Sedes'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),

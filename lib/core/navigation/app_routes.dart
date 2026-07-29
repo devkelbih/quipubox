@@ -2,9 +2,10 @@ class AppRoutes {
   const AppRoutes._();
   static const splash = '/splash';
   static const login = '/login';
-  static const home = '/home';
   static const settings = '/settings';
   static const company = '/company';
+  //Rutas de sistema
+  static const home = '/home';
   static const sedes = '/sedes';
   static const roles = '/roles';//ver
   static const usuarios = '/usuarios';

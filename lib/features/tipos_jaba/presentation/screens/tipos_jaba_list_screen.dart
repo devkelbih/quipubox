@@ -44,7 +44,7 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
     };
 
     return AppScaffold(
-      title: 'Tipos de jaba',
+      title: Text('Tipos de jaba'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),

@@ -26,7 +26,7 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
   Widget build(BuildContext context) {
     final vm = context.watch<ClienteViewModel>();
     return AppScaffold(
-      title: 'Clientes',
+      title: Text('Clientes'),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),

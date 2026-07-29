@@ -26,7 +26,7 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
   Widget build(BuildContext context) {
     final vm = context.watch<PuestoViewModel>();
     return AppScaffold(
-      title: 'Puestos',
+      title: Text('Puestos'),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),

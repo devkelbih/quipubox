@@ -5,22 +5,39 @@ import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'drawer/app_drawer.dart';
 
 class AppScaffold extends StatelessWidget {
-  final String title;
+  /// Recibe cualquier Widget (Text, SvgPicture, Row con Logo, etc.)
+  final Widget? title;
   final Widget body;
-
-  /// Acciones del AppBar (ej. botón agregar).
   final List<Widget>? actions;
-
-  /// Widget mostrado debajo del AppBar (TabBar, filtros, etc.).
   final PreferredSizeWidget? appBarBottom;
 
   const AppScaffold({
     super.key,
-    required this.title,
+    this.title,
     required this.body,
     this.actions,
     this.appBarBottom,
   });
+
+  /// Constructor conveniente para vistas con solo título en texto plano
+  factory AppScaffold.withTextTitle({
+    Key? key,
+    required String title,
+    required Widget body,
+    List<Widget>? actions,
+    PreferredSizeWidget? appBarBottom,
+  }) {
+    return AppScaffold(
+      key: key,
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w900),
+      ),
+      body: body,
+      actions: actions,
+      appBarBottom: appBarBottom,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +51,7 @@ class AppScaffold extends StatelessWidget {
           absorbing: isSigningOut,
           child: Scaffold(
             appBar: AppBar(
-              title: Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
+              title: title, // Pasa directamente el Widget, limpio y sin ternarios
               leading: Builder(
                 builder: (drawerContext) {
                   return IconButton(
@@ -72,10 +84,7 @@ class _BlockingLoaderOverlay extends StatelessWidget {
   final String text;
   final String message;
 
-  const _BlockingLoaderOverlay({
-    required this.text,
-    required this.message,
-  });
+  const _BlockingLoaderOverlay({required this.text, required this.message});
 
   @override
   Widget build(BuildContext context) {

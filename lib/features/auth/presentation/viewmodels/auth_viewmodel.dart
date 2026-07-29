@@ -156,6 +156,7 @@ class AuthViewModel extends BaseStateViewModel {
 
   Future<void> _refreshProfileSilently() async {
     try {
+      await Future.delayed(const Duration(seconds: 5));
       final freshUser = await getProfileUseCase().timeout(
         const Duration(seconds: 5),
       );
@@ -179,7 +180,7 @@ class AuthViewModel extends BaseStateViewModel {
   Future<bool> loadProfile() async {
     final result = await run<AuthenticatedUser>(
       state: ViewModelActionState.saving,
-      action: () {
+      action: () async {
         return getProfileUseCase().timeout(const Duration(seconds: 20));
       },
     );

@@ -44,7 +44,7 @@ class _CamionListScreenState extends State<CamionListScreen> {
     };
 
     return AppScaffold(
-      title: 'Camiones',
+      title: Text('Camiones'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),

@@ -44,7 +44,7 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
     };
 
     return AppScaffold(
-      title: 'Calidades',
+      title: Text('Calidades'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),

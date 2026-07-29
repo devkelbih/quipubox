@@ -44,7 +44,7 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
     };
 
     return AppScaffold(
-      title: 'Variedades',
+      title: Text('Variedades'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),

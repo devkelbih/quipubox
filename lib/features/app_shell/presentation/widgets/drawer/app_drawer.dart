@@ -103,13 +103,8 @@ class _AppDrawerState extends State<AppDrawer> {
   AppDrawerSubTile _buildSubTile({
     required String title,
     required VoidCallback onTap,
-    IconData? leadingIcon,
   }) {
-    return AppDrawerSubTile(
-      title: title,
-      onTap: onTap,
-      leadingIcon: leadingIcon,
-    );
+    return AppDrawerSubTile(title: title, onTap: onTap);
   }
 
   // =============================================================
@@ -205,7 +200,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         AppDrawerTile(
           icon: Icons.route_rounded,
           title: 'Logística',
@@ -262,19 +257,19 @@ class _AppDrawerState extends State<AppDrawer> {
           title: 'Evidencias',
           onTap: _showNotAvailable,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         AppDrawerTile(
           icon: Icons.report_problem_rounded,
           title: 'Incidencias',
           onTap: _showNotAvailable,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         AppDrawerTile(
           icon: Icons.query_stats_rounded,
           title: 'Reportes',
           onTap: _showNotAvailable,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         AppDrawerTile(
           icon: Icons.settings_rounded,
           title: 'Ajustes',

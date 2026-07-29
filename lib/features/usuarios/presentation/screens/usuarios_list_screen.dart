@@ -44,7 +44,7 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
     };
 
     return AppScaffold(
-      title: 'Usuarios',
+      title: Text('Usuarios'),
       body: Column(
         children: [
           if (vm.isSaving || vm.isDeleting || vm.isChangingStatus)

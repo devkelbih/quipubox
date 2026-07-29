@@ -44,7 +44,7 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
     };
 
     return AppScaffold(
-      title: 'Frutas',
+      title: Text('Frutas'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),
