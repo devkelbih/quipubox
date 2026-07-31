@@ -71,11 +71,11 @@ class _CamionListScreenState extends State<CamionListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(vm.errorMessage!);
+                return EmptyState(message: vm.errorMessage!);
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState('Aún no tienes camiones registrados.');
+                return const EmptyState(message: 'Aún no tienes camiones registrados.');
               }
 
               return RefreshIndicator(

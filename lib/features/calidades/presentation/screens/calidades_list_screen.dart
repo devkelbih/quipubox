@@ -71,11 +71,11 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(vm.errorMessage!);
+                return EmptyState(message:  vm.errorMessage!);
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState('Aún no tienes calidades registradas.');
+                return const EmptyState(message: 'Aún no tienes calidades registradas.');
               }
 
               return RefreshIndicator(

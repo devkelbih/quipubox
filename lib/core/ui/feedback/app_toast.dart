@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/theme/app_colors.dart';
 
 import '../../navigation/navigation_keys.dart';
 
@@ -209,19 +210,19 @@ class _ToastStyle {
   factory _ToastStyle.fromType(ToastType type, ColorScheme colorScheme) {
     return switch (type) {
       ToastType.success => _ToastStyle(
-          color: const Color(0xFF16A34A),
+          color: AppColors.success,
           icon: Icons.check_circle_rounded,
         ),
       ToastType.error => _ToastStyle(
-          color: colorScheme.error,
+          color: AppColors.error,
           icon: Icons.error_rounded,
         ),
       ToastType.warning => _ToastStyle(
-          color: const Color(0xFFF59E0B),
+          color: AppColors.warning,
           icon: Icons.warning_amber_rounded,
         ),
       ToastType.info => _ToastStyle(
-          color: colorScheme.primary,
+          color: AppColors.info,
           icon: Icons.info_rounded,
         ),
     };

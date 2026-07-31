@@ -57,11 +57,13 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
                 }
 
                 if (vm.errorMessage != null && vm.items.isEmpty) {
-                  return EmptyState(vm.errorMessage!);
+                  return EmptyState(message: vm.errorMessage!);
                 }
 
                 if (vm.items.isEmpty) {
-                  return const EmptyState('Aún no tienes usuarios registrados.');
+                  return const EmptyState(
+                    message: 'Aún no tienes usuarios registrados.',
+                  );
                 }
 
                 return RefreshIndicator(
@@ -69,15 +71,6 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                     children: [
-                      StatusSummaryFilter(
-                        total: vm.items.length,
-                        active: activeCount,
-                        inactive: inactiveCount,
-                        selected: _statusFilter,
-                        onChanged: (value) {
-                          setState(() => _statusFilter = value);
-                        },
-                      ),
                       const SizedBox(height: 14),
                       ...filteredItems.map(
                         (item) => Padding(
@@ -144,22 +137,19 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
     final viewModel = context.read<UsuarioViewModel>();
 
-    final ok = await viewModel.changeStatus(
-      id: item.id,
-      estado: newStatus,
-    );
+    final ok = await viewModel.changeStatus(id: item.id, estado: newStatus);
 
     if (!context.mounted) return;
 
     AppToast.show(
       ok
           ? newStatus
-              ? 'Usuario activado correctamente.'
-              : 'Usuario desactivado correctamente.'
+                ? 'Usuario activado correctamente.'
+                : 'Usuario desactivado correctamente.'
           : viewModel.errorMessage ??
-              (newStatus
-                  ? 'No se pudo activar el usuario.'
-                  : 'No se pudo desactivar el usuario.'),
+                (newStatus
+                    ? 'No se pudo activar el usuario.'
+                    : 'No se pudo desactivar el usuario.'),
       type: ok ? ToastType.success : ToastType.error,
     );
   }

@@ -70,11 +70,19 @@ class _SedeListScreenState extends State<SedeListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(vm.errorMessage!);
+                return EmptyState(
+                  message: vm.errorMessage!,
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState('Aún no tienes sedes registradas.');
+                return EmptyState(
+                  message: 'Aún no tienes sedes registradas.',
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               return RefreshIndicator(
@@ -167,4 +175,3 @@ class _SedeListScreenState extends State<SedeListScreen> {
     );
   }
 }
-

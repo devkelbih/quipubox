@@ -71,11 +71,11 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(vm.errorMessage!);
+                return EmptyState(message:vm.errorMessage!);
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState('Aún no tienes frutas registradas.');
+                return const EmptyState(message:'Aún no tienes frutas registradas.');
               }
 
               return RefreshIndicator(

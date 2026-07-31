@@ -71,12 +71,12 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(vm.errorMessage!);
+                return EmptyState(message: vm.errorMessage!);
               }
 
               if (vm.items.isEmpty) {
                 return const EmptyState(
-                  'Aún no tienes variedades registradas.',
+                  message: 'Aún no tienes variedades registradas.',
                 );
               }
 

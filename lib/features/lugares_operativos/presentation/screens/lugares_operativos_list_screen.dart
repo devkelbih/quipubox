@@ -43,11 +43,11 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
                 }
 
                 if (vm.errorMessage != null && vm.items.isEmpty) {
-                  return EmptyState(vm.errorMessage!);
+                  return EmptyState(message: vm.errorMessage!);
                 }
 
                 if (vm.items.isEmpty) {
-                  return const EmptyState('No hay lugares operativos.');
+                  return const EmptyState(message: 'No hay lugares operativos.');
                 }
 
                 return RefreshIndicator(

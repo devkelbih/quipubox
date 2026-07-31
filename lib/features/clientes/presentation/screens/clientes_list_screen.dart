@@ -37,10 +37,10 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (vm.errorMessage != null && vm.items.isEmpty) {
-                  return EmptyState(vm.errorMessage!);
+                  return EmptyState(message: vm.errorMessage!);
                 }
                 if (vm.items.isEmpty) {
-                  return const EmptyState('No hay registros.');
+                  return const EmptyState(message: 'No hay registros.');
                 }
                 return RefreshIndicator(
                   onRefresh: vm.load,

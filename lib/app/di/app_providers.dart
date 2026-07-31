@@ -44,37 +44,37 @@ class AppProviders {
     /// persistencia local y futuras configuraciones.
     Provider<SharedPreferences>.value(value: preferences),
 
-    /// Cliente HTTP central.
-    ///
-    /// Todos los DataSources remotos usan esta instancia.
-    /// Maneja:
-    /// - JWT de Supabase
-    /// - Headers
-    /// - Timeouts
-    /// - Manejo de errores
-    Provider<ApiClient>(create: (_) => ApiClient()),
-
     /// Servicio para validar acceso a internet.
     /// Es utilizado por:
+    /// - ApiClient (para bloquear peticiones sin red)
     /// - ConnectivityViewModel
     /// - AuthRepository para login/profile/logout
     /// - Operaciones críticas puntuales
     Provider<NetworkChecker>(create: (_) => NetworkChecker()),
 
+    /// Cliente HTTP central.
+    ///
+    /// Todos los DataSources remotos usan esta instancia.
+    /// Maneja:
+    /// - Validación previa de red
+    /// - JWT de Supabase
+    /// - Headers
+    /// - Timeouts
+    /// - Manejo de errores
+    Provider<ApiClient>(
+      create: (context) => ApiClient(
+        networkChecker: context.read<NetworkChecker>(),
+      ),
+    ),
+
     /// ViewModel global que escucha cambios
     /// de conectividad de red.
-    ///
-    /// Permite mostrar mensajes como:
-    /// "Sin conexión a internet"
-    ///
-    /// El operador "..start()"
-    /// ejecuta el método start()
-    /// inmediatamente después de crear el objeto.
     ChangeNotifierProvider<ConnectivityViewModel>(
       create: (context) =>
           ConnectivityViewModel(networkChecker: context.read<NetworkChecker>())
             ..start(),
     ),
+
 
     // ==========================================================
     // AUTH

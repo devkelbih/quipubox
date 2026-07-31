@@ -71,12 +71,12 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(vm.errorMessage!);
+                return EmptyState(message: vm.errorMessage!);
               }
 
               if (vm.items.isEmpty) {
                 return const EmptyState(
-                  'Aún no tienes tipos de jaba registrados.',
+                  message: 'Aún no tienes tipos de jaba registrados.',
                 );
               }
 

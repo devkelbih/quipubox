@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 
 enum StatusSummaryValue { all, active, inactive }
 
-class StatusSummaryFilter extends StatelessWidget {
+/*class StatusSummaryFilter extends StatelessWidget {
   final int total;
   final int active;
   final int inactive;
@@ -120,4 +119,4 @@ class _StatusSummaryItem extends StatelessWidget {
       ),
     );
   }
-}
+}*/

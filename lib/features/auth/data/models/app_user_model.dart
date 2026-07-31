@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:quipubox/features/auth/data/models/auth_sede_model.dart';
 
@@ -32,12 +34,17 @@ class AppUserModel {
     this.avatarUrl,
     required this.estado,
   });
+  static void logJson(String title, Map<String, dynamic> json) {
+    const encoder = JsonEncoder.withIndent('  ');
+
+    debugPrint('$title\n${encoder.convert(json)}');
+  }
 
   factory AppUserModel.fromJson(
     Map<String, dynamic> json, {
     String source = 'unknown',
   }) {
-    debugPrint('PROFILE JSON [$source] => $json');
+    logJson('PROFILE JSON [$source]', json);
 
     final empresaJson = json['empresa'] is Map
         ? Map<String, dynamic>.from(json['empresa'] as Map)

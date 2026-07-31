@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../config/app_config.dart';
 import '../exceptions/app_exception.dart';
+import 'network_checker.dart';
 
 /// Cliente HTTP centralizado de la aplicación.
 ///
@@ -20,9 +21,14 @@ import '../exceptions/app_exception.dart';
 ///
 /// Todos los módulos consumen este cliente.
 class ApiClient {
-  ApiClient({http.Client? client}) : _client = client ?? http.Client();
+  ApiClient({
+    http.Client? client,
+    NetworkChecker? networkChecker,
+  })  : _client = client ?? http.Client(),
+        _networkChecker = networkChecker;
 
   final http.Client _client;
+  final NetworkChecker? _networkChecker;
 
   /// Tiempo máximo permitido para una petición.
   static const _timeout = Duration(seconds: 20);
@@ -70,12 +76,13 @@ class ApiClient {
   /// Método interno que ejecuta todas las solicitudes.
   ///
   /// Flujo:
-  /// 1. Obtiene un JWT vigente desde Supabase.
-  /// 2. Construye URL completa.
-  /// 3. Construye headers.
-  /// 4. Convierte body a JSON.
-  /// 5. Ejecuta petición.
-  /// 6. Procesa respuesta.
+  /// 1. Verifica conectividad a internet si NetworkChecker está disponible.
+  /// 2. Obtiene un JWT vigente desde Supabase.
+  /// 3. Construye URL completa.
+  /// 4. Construye headers.
+  /// 5. Convierte body a JSON.
+  /// 6. Ejecuta petición.
+  /// 7. Procesa respuesta.
   Future<dynamic> _send(
     String method,
     String path, {
@@ -83,6 +90,15 @@ class ApiClient {
     Map<String, dynamic>? body,
   }) async {
     try {
+      if (_networkChecker != null) {
+        final isOnline = await _networkChecker.hasInternet();
+        if (!isOnline) {
+          throw const AppException(
+            'Sin conexión a internet. Comprueba tu red.',
+          );
+        }
+      }
+
       final token = await _getValidAccessToken();
 
       final uri = Uri.parse(
@@ -113,11 +129,11 @@ class ApiClient {
       rethrow;
     } on Object catch (error) {
       throw AppException(
-        //'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.',
         'No se pudo conectar con el servidor. $error',
       );
     }
   }
+
 
   /// Ejecuta físicamente la petición HTTP.
   Future<http.Response> _execute(
