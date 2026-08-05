@@ -144,18 +144,8 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
 
     if (confirmed != true || !context.mounted) return;
 
-    final id = item.id;
-
-    if (id == null) {
-      AppToast.show(
-        'No se encontró el ID de la variedad.',
-        type: ToastType.error,
-      );
-      return;
-    }
-
     final viewModel = context.read<VariedadViewModel>();
-    final ok = await viewModel.changeStatus(id: id, estado: newStatus);
+    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
 
     if (!context.mounted) return;
 

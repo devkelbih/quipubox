@@ -144,19 +144,9 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
 
     if (confirmed != true || !context.mounted) return;
 
-    final id = item.id;
-
-    if (id == null) {
-      AppToast.show(
-        'No se encontró el ID del tipo de jaba.',
-        type: ToastType.error,
-      );
-      return;
-    }
-
     final viewModel = context.read<TipoJabaViewModel>();
 
-    final ok = await viewModel.changeStatus(id: id, estado: newStatus);
+    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
 
     if (!context.mounted) return;
 

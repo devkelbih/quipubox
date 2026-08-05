@@ -12,13 +12,20 @@ class UsuariosFormScreen extends StatefulWidget {
 class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.usuario == null ? 'Crear Usuario' : 'Editar Usuario'),
-      ),
-      body: Center(
-        child: Text('Formulario para ${widget.usuario == null ? 'crear' : 'editar'} usuario'),
+    return Form(
+      child: Column(
+        children: [
+          TextFormField(
+            initialValue: widget.usuario?.nombreCompleto ?? '',
+            decoration: const InputDecoration(labelText: 'Nombre'),
+          ),
+          TextFormField(
+            initialValue: widget.usuario?.email ?? '',
+            decoration: const InputDecoration(labelText: 'Email'),
+          ),
+          // Add more fields as necessary
+        ],
       ),
     );
   }
-} 
+}

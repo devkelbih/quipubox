@@ -24,17 +24,17 @@ class VariedadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        item.nombre.trim().isEmpty ? 'Variedad #${item.id ?? '-'}' : item.nombre;
-    final subtitle =
-        item.frutaNombre.trim().isNotEmpty == true ? item.frutaNombre : 'Sin fruta';
+    final title = item.nombre.trim().isEmpty
+        ? 'Variedad #${item.id ?? '-'}'
+        : item.nombre;
+    final subtitle = item.frutaNombre.trim().isNotEmpty == true
+        ? item.frutaNombre
+        : 'Sin fruta';
     final status = AppStatus.active(item.estado);
 
-    final frutaText = item.frutaNombre.trim().isNotEmpty == true
-        ? item.frutaNombre
-        : 'Fruta #${item.idFruta}';
-    final descripcion =
-        item.descripcion?.trim().isNotEmpty == true ? item.descripcion : null;
+    final descripcion = item.descripcion?.trim().isNotEmpty == true
+        ? item.descripcion
+        : null;
 
     return AppCard(
       header: AppCardHeader(
@@ -44,25 +44,19 @@ class VariedadCard extends StatelessWidget {
         status: status,
         badge: AppStatusBadge(status: status),
       ),
-      body: AppCardBody(
-        child: Column(
-          children: [
-            AppCardInfoRow(
-              icon: Icons.eco_rounded,
-              label: 'Fruta',
-              value: frutaText,
-            ),
-            if (descripcion != null) ...[
-              const SizedBox(height: 10),
-              AppCardInfoRow(
-                icon: Icons.notes_rounded,
-                label: 'Descripción',
-                value: descripcion,
+      body: descripcion != null
+          ? AppCardBody(
+              child: Column(
+                children: [
+                  AppCardInfoRow(
+                    icon: Icons.notes_rounded,
+                    label: 'Descripción',
+                    value: descripcion,
+                  ),
+                ],
               ),
-            ],
-          ],
-        ),
-      ),
+            )
+          : null,
       actions: AppCardActions(
         secondaryAction: OutlinedButton.icon(
           onPressed: onEdit,
@@ -81,4 +75,3 @@ class VariedadCard extends StatelessWidget {
     );
   }
 }
-

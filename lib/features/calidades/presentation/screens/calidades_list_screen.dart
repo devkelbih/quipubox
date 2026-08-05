@@ -142,15 +142,9 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
 
     if (confirmed != true || !context.mounted) return;
 
-    final id = item.id;
-
-    if (id == null) {
-      AppToast.show('No se encontró el ID de la calidad.', type: ToastType.error);
-      return;
-    }
 
     final viewModel = context.read<CalidadViewModel>();
-    final ok = await viewModel.changeStatus(id: id, estado: newStatus);
+    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
 
     if (!context.mounted) return;
 

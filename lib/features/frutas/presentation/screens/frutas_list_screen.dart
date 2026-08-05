@@ -71,11 +71,13 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(message:vm.errorMessage!);
+                return EmptyState(message: vm.errorMessage!);
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState(message:'Aún no tienes frutas registradas.');
+                return const EmptyState(
+                  message: 'Aún no tienes frutas registradas.',
+                );
               }
 
               return RefreshIndicator(
@@ -91,6 +93,8 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
                           onEdit: () => _openForm(context, item: item),
                           onChangeStatus: () =>
                               _confirmChangeStatus(context, item),
+                          onViewVariedades: () =>
+                              _showVariedades(context, item),
                         ),
                       ),
                     ),
@@ -116,6 +120,69 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
           child: AppFormSheet(
             title: item == null ? 'Nueva fruta' : 'Editar fruta',
             child: FrutaFormScreen(item: item),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showVariedades(BuildContext context, Fruta item) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return SafeArea(
+          child: DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: .45,
+            maxChildSize: .80,
+            builder: (_, controller) {
+              return Material(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'Variedades de ${item.nombre}',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+
+                    Expanded(
+                      child: ListView.separated(
+                        controller: controller,
+                        itemCount: item.variedades?.length ?? 0,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (_, index) {
+                          final variedad = item.variedades![index];
+
+                          return ListTile(
+                            leading: const Icon(Icons.grain_rounded),
+                            title: Text(variedad.nombre),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
@@ -167,4 +234,3 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
     );
   }
 }
-

@@ -12,23 +12,26 @@ class AppFormSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final viewInsets = MediaQuery.viewInsetsOf(context);
+    final viewPadding = MediaQuery.viewPaddingOf(context);
     final colorScheme = Theme.of(context).colorScheme;
 
     return AnimatedPadding(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
-      padding: EdgeInsets.only(bottom: bottom),
+      padding: EdgeInsets.only(bottom: viewInsets.bottom),
       child: SafeArea(
         top: false,
         child: Container(
           width: double.infinity,
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.92,
+            maxHeight: MediaQuery.sizeOf(context).height * 0.92,
           ),
           decoration: BoxDecoration(
             color: colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(28),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -64,7 +67,12 @@ class AppFormSheet extends StatelessWidget {
               ),
               Flexible(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    20 + viewPadding.bottom,
+                  ),
                   child: child,
                 ),
               ),

@@ -26,14 +26,6 @@ class Fruta {
   /// Cantidad total de variedades asociadas.
   int get totalVariedades => variedades?.length ?? 0;
 
-  /// Indica si la fruta posee al menos una variedad.
-  bool get tieneVariedades => totalVariedades > 0;
-
-  /// Lista preparada para mostrar en UI:
-  ///
-  /// Hass · Hass Premium · Israel
-  String get variedadesTexto =>
-      variedades?.map((e) => e.nombre).join(' · ') ?? '';
 
   Fruta copyWith({
     int? id,

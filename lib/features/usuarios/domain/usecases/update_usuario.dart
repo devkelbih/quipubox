@@ -9,7 +9,7 @@ class UpdateUsuarioUseCase {
   UpdateUsuarioUseCase(this.repository);
 
   Future<Usuario> call(Usuario usuario) {
-    if (usuario.id <= 0) {
+    if (usuario.id == null || usuario.id! <= 0) {
       throw const AppException(
         'No se encontró el ID del usuario.',
       );

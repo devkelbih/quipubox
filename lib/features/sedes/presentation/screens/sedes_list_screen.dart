@@ -62,7 +62,8 @@ class _SedeListScreenState extends State<SedeListScreen> {
       ),
       body: Column(
         children: [
-          if (vm.isSaving || vm.isDeleting) const LinearProgressIndicator(),
+          if (vm.isSaving || vm.isDeleting || vm.isChangingStatus)
+            const LinearProgressIndicator(),
           Expanded(
             child: () {
               if (vm.isLoading) {
@@ -149,16 +150,9 @@ class _SedeListScreenState extends State<SedeListScreen> {
 
     if (confirmed != true || !context.mounted) return;
 
-    final id = item.id;
-
-    if (id == null) {
-      AppToast.show('No se encontró el ID de la sede.', type: ToastType.error);
-      return;
-    }
-
     final viewModel = context.read<SedeViewModel>();
 
-    final ok = await viewModel.changeStatus(id: id, estado: newStatus);
+    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
 
     if (!context.mounted) return;
 

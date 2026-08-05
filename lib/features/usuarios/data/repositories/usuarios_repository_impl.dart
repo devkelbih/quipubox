@@ -27,7 +27,7 @@ class UsuarioRepositoryImpl implements UsuarioRepository {
   @override
   Future<Usuario> update(Usuario usuario) async {
     final request = UsuarioRequestModel.fromEntity(usuario);
-    final model = await remoteDataSource.update(usuario.id, request: request);
+    final model = await remoteDataSource.update(usuario.id!, request: request);
 
     return model.toEntity();
   }

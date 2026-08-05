@@ -3,7 +3,7 @@ import '../../../roles/domain/entities/role.dart';
 import '../../../sedes/domain/entities/sede.dart';
 
 class Usuario {
-  final int id;
+  final int? id;
 
   final Empresa empresa;
   final Sede sede;
@@ -20,7 +20,7 @@ class Usuario {
   final bool estado;
 
   const Usuario({
-    required this.id,
+    this.id,
     required this.empresa,
     required this.sede,
     required this.roles,
@@ -33,7 +33,7 @@ class Usuario {
     required this.estado,
   });
 
-String get nombreCompleto => '$nombres ${apellidos ?? ''}'.trim();
+  String get nombreCompleto => '$nombres ${apellidos ?? ''}'.trim();
 
   int get idEmpresa => empresa.id;
 

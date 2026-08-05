@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
+import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
+import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
 import 'package:quipubox/core/ui/cards/app_status_badge.dart';
 import 'package:quipubox/core/ui/status/app_status.dart';
 
@@ -22,21 +24,30 @@ class CalidadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        item.nombre.trim().isEmpty ? 'Calidad #${item.id ?? '-'}' : item.nombre;
-    final descripcion =
-        item.descripcion?.trim().isNotEmpty == true ? item.descripcion : null;
-    final subtitle = descripcion ?? 'Sin descripción';
+    final title = item.nombre.trim().isEmpty
+        ? 'Calidad #${item.id ?? '-'}'
+        : item.nombre;
+    final descripcion = item.descripcion?.trim().isNotEmpty == true
+        ? item.descripcion
+        : null;
     final status = AppStatus.active(item.estado);
 
     return AppCard(
       header: AppCardHeader(
         icon: const Icon(Icons.workspace_premium_rounded),
         title: title,
-        subtitle: subtitle,
         status: status,
         badge: AppStatusBadge(status: status),
       ),
+      body: descripcion == null
+          ? null
+          : AppCardBody(
+              child: AppCardInfoRow(
+                icon: Icons.notes_rounded,
+                label: 'Descripción',
+                value: descripcion,
+              ),
+            ),
       actions: AppCardActions(
         secondaryAction: OutlinedButton.icon(
           onPressed: onEdit,
@@ -55,4 +66,3 @@ class CalidadCard extends StatelessWidget {
     );
   }
 }
-
