@@ -79,7 +79,7 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
               if (vm.items.isEmpty) {
                 return EmptyState(
-                  message: 'Aún no tienes sedes registradas.',
+                  message: 'Aún no tienes usuarios registradas.',
                   actionLabel: 'Reintentar',
                   onAction: vm.load,
                 );
@@ -112,7 +112,6 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
     );
   }
 
-  //TODO: analizar porque no abre el formulario de usuarios
   Future<void> _openForm(BuildContext context, {Usuario? item}) async {
     await showModalBottomSheet<void>(
       context: context,

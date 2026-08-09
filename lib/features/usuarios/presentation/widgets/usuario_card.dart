@@ -3,9 +3,10 @@ import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
 import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
-import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
+import 'package:quipubox/core/ui/cards/app_card_tag_section.dart';
 import 'package:quipubox/core/ui/cards/app_status_badge.dart';
 import 'package:quipubox/core/ui/status/app_status.dart';
+import 'package:quipubox/core/ui/tags/app_tag.dart';
 
 import '../../domain/entities/usuario.dart';
 
@@ -42,14 +43,12 @@ class UsuarioCard extends StatelessWidget {
         badge: AppStatusBadge(status: AppStatus.active(item.estado)),
       ),
       body: AppCardBody(
-        child: Column(
-          children: [
-            AppCardInfoRow(
-              icon: Icons.rule_folder,
-              label: 'Roles',
-              value: '''${item.roles.length} asignados''',
-            ),
-          ],
+        child: AppCardTagSection(
+          icon: Icons.admin_panel_settings_rounded,
+          label: 'Roles',
+          tags: item.roles
+              .map((role) => AppTag(label: role.nombre, size: AppTagSize.medium))
+              .toList(),
         ),
       ),
       actions: AppCardActions(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:quipubox/core/ui/status/app_status.dart';
 import 'package:quipubox/core/ui/status/app_status_colors.dart';
+import 'package:quipubox/core/ui/tags/app_tag.dart';
 
 class AppStatusBadge extends StatelessWidget {
   final AppStatus status;
@@ -17,26 +19,12 @@ class AppStatusBadge extends StatelessWidget {
       status.type,
     );
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 5,
-      ),
-      decoration: BoxDecoration(
-        color: style.background,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        status.label,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: style.foreground,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          letterSpacing: .15,
-          height: 1,
-        ),
-      ),
+    return AppTag(
+      label: status.label,
+      size: AppTagSize.small,
+      backgroundColor: style.background,
+      foregroundColor: style.foreground,
+      borderColor: Colors.transparent,
     );
   }
 }
