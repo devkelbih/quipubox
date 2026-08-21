@@ -86,7 +86,7 @@ class AuthViewModel extends BaseStateViewModel {
     errorMessage = null;
     notifyListeners();
 
-    debugPrint('AUTH INIT START');
+    //debugPrint('AUTH INIT START');
 
     try {
       _listenAuthChanges();
@@ -104,12 +104,12 @@ class AuthViewModel extends BaseStateViewModel {
 
       await _refreshProfileSilently();
     } on Object catch (error) {
-      debugPrint('AUTH INIT ERROR: $error');
+      //debugPrint('AUTH INIT ERROR: $error');
       errorMessage = error.toString();
     } finally {
       _isInitializing = false;
       isLoading = false;
-      debugPrint('AUTH INIT FINISH');
+      //debugPrint('AUTH INIT FINISH');
       notifyListeners();
     }
   }
@@ -203,7 +203,7 @@ class AuthViewModel extends BaseStateViewModel {
     return runBool(
       state: ViewModelActionState.saving,
       action: () async {
-        await Future.delayed(const Duration(seconds: 3));
+        //await Future.delayed(const Duration(seconds: 3));
 
         return loginWithGoogleUseCase();
       },

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:quipubox/features/auth/data/models/auth_sede_model.dart';
 
 import '../../../company/data/models/empresa_model.dart';
@@ -37,7 +36,7 @@ class AppUserModel {
   static void logJson(String title, Map<String, dynamic> json) {
     const encoder = JsonEncoder.withIndent('  ');
 
-    debugPrint('$title\n${encoder.convert(json)}');
+    //debugPrint('$title\n${encoder.convert(json)}');
   }
 
   factory AppUserModel.fromJson(

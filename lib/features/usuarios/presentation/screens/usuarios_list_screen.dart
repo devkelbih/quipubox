@@ -5,7 +5,6 @@ import 'package:quipubox/features/usuarios/presentation/screens/usuarios_form_sc
 
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
-import '../../../../core/ui/sheets/app_form_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../domain/entities/usuario.dart';
@@ -113,20 +112,13 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
   }
 
   Future<void> _openForm(BuildContext context, {Usuario? item}) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ChangeNotifierProvider.value(
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
           value: context.read<UsuarioViewModel>(),
-          child: AppFormSheet(
-            title: item == null ? 'Nuevo usuario' : 'Editar usuario',
-            child: UsuariosFormScreen(item: item),
-          ),
-        );
-      },
+          child: UsuariosFormScreen(usuario: item),
+        ),
+      ),
     );
   }
 
