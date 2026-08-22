@@ -29,10 +29,7 @@ class AppScaffold extends StatelessWidget {
   }) {
     return AppScaffold(
       key: key,
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w900),
-      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
       body: body,
       actions: actions,
       appBarBottom: appBarBottom,
@@ -51,13 +48,13 @@ class AppScaffold extends StatelessWidget {
           absorbing: isSigningOut,
           child: Scaffold(
             appBar: AppBar(
-              title: title, // Pasa directamente el Widget, limpio y sin ternarios
+              title:
+                  title, // Pasa directamente el Widget, limpio y sin ternarios
               leading: Builder(
                 builder: (drawerContext) {
                   return IconButton(
                     icon: const Icon(Icons.menu_rounded),
-                    onPressed: () =>
-                        Scaffold.of(drawerContext).openDrawer(),
+                    onPressed: () => Scaffold.of(drawerContext).openDrawer(),
                   );
                 },
               ),
@@ -102,10 +99,7 @@ class _BlockingLoaderOverlay extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    width: 64,
-                    height: 64,
                     child: CircularProgressIndicator(
-                      strokeWidth: 4,
                       color: theme.colorScheme.primary,
                     ),
                   ),

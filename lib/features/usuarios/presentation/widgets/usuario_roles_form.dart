@@ -53,7 +53,8 @@ class UsuarioRolesForm extends StatelessWidget {
                     label: Text(role.nombre),
                     selected: isSelected,
                     onSelected: (selected) {
-                      final updatedRoleIds = Set<int>.from(selectedRoleIds);
+                      final updatedRoleIds =
+                          Set<int>.from(selectedRoleIds);
 
                       if (selected) {
                         updatedRoleIds.add(role.id);
@@ -67,21 +68,25 @@ class UsuarioRolesForm extends StatelessWidget {
 
                   if (role.descripcion != null &&
                       role.descripcion!.trim().isNotEmpty)
-                    IconButton(
-                      icon: const Icon(
-                        Icons.info_outline,
-                        size: 20,
-                      ),
-                      tooltip: 'Ver descripción',
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ),
-                      onPressed: () {
-                        _showRoleDescription(
-                          context,
-                          role,
+                    Builder(
+                      builder: (iconContext) {
+                        return IconButton(
+                          icon: const Icon(
+                            Icons.info_outline,
+                            size: 18,
+                          ),
+                          tooltip: 'Ver información',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                          onPressed: () {
+                            _showRolePopup(
+                              iconContext,
+                              role,
+                            );
+                          },
                         );
                       },
                     ),
@@ -104,36 +109,86 @@ class UsuarioRolesForm extends StatelessWidget {
     );
   }
 
-  void _showRoleDescription(
+  void _showRolePopup(
     BuildContext context,
     Role role,
   ) {
-    showDialog<void>(
+    final RenderBox button =
+        context.findRenderObject() as RenderBox;
+
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final Offset position = button.localToGlobal(
+      Offset.zero,
+      ancestor: overlay,
+    );
+
+    final RelativeRect positionRect = RelativeRect.fromRect(
+      Rect.fromLTWH(
+        position.dx,
+        position.dy,
+        button.size.width,
+        button.size.height,
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu<void>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              const Icon(Icons.info_outline),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(role.nombre),
-              ),
-            ],
+      position: positionRect,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      items: [
+        PopupMenuItem<void>(
+          enabled: true,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
           ),
-          content: Text(
-            role.descripcion?.trim().isNotEmpty == true
-                ? role.descripcion!.trim()
-                : 'Este rol no tiene una descripción disponible.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cerrar'),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 260,
             ),
-          ],
-        );
-      },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.badge_outlined,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        role.nombre,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  role.descripcion!.trim(),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

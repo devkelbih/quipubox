@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: Image.asset(
-        'assets/logo_dark.png',
+        'assets/logo.png',
         height: 36,
         fit: BoxFit.contain,
       ),

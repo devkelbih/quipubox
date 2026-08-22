@@ -30,5 +30,5 @@ flutter:
   assets:
     - .env
     - assets/banner.jpg
-    - assets/banner_2.png
-    - assets/logo_dark.png
+    - assets/banner_login.jpg
+    - assets/logo.png

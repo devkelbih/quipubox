@@ -6,18 +6,18 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
           // Fondo con imagen banner
           Image.asset(
-            'assets/banner_2.png',
+            'assets/banner.jpg',
             fit: BoxFit.cover,
           ),
-          
-          // Overlay oscuro para mejor legibilidad
+
+          // Overlay oscuro para mejorar la legibilidad
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -30,78 +30,51 @@ class SplashPage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Contenido centrado
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Logo
                 Image.asset(
-                  'assets/logo_dark.png',
-                  height: screenSize.width * 0.25,
-                  width: screenSize.width * 0.25,
+                  'assets/logo.png',
+                  height: screenSize.width * 0.50,
+                  width: screenSize.width * 0.50,
                   fit: BoxFit.contain,
                 ),
-                
-                const SizedBox(height: 20),
-                
-                // Título principal
+
+                // Slogan pegado al logo
                 const Text(
-                  'Quipubox',
+                  'Conecta. Gestiona. Crece.',
                   style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
                   ),
                 ),
-                
-                const SizedBox(height: 8),
-                
-                // Subtítulo
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.blue.shade400,
-                        Colors.blue.shade700,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    'controla · gestiona · entrega',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-                
+
+                // Separación antes de la carga
                 const SizedBox(height: 40),
-                
-                // Indicador de carga con diseño moderno
-                SizedBox(
-                  height: 30,
-                  width: 30,
+
+                // Indicador de carga
+                const SizedBox(
+                  width: 28,
+                  height: 28,
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade300),
                     strokeWidth: 3,
                   ),
                 ),
-                
-                const SizedBox(height: 12),
-                
+
+                const SizedBox(height: 14),
+
                 // Texto de carga
                 const Text(
                   'Cargando...',
                   style: TextStyle(
                     color: Colors.white70,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.w300,
                     letterSpacing: 1.5,
                   ),
@@ -109,8 +82,8 @@ class SplashPage extends StatelessWidget {
               ],
             ),
           ),
-          
-          // Footer con versión (opcional)
+
+          // Footer con versión
           Positioned(
             bottom: 30,
             left: 0,
