@@ -71,12 +71,18 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(message: vm.errorMessage!);
+                return EmptyState(
+                  message: vm.errorMessage!,
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   message: 'Aún no tienes frutas registradas.',
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
                 );
               }
 
@@ -114,15 +120,10 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ChangeNotifierProvider.value(
-          value: context.read<FrutaViewModel>(),
-          child: AppFormSheet(
-            title: item == null ? 'Nueva fruta' : 'Editar fruta',
-            child: FrutaFormScreen(item: item),
-          ),
-        );
-      },
+      builder: (_) => AppFormSheet(
+        title: item == null ? 'Nueva fruta' : 'Editar fruta',
+        child: FrutaFormScreen(item: item),
+      ),
     );
   }
 

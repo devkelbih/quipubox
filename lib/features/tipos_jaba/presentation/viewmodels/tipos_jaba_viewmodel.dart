@@ -17,10 +17,10 @@ class TipoJabaViewModel extends BaseStateViewModel {
     required this.updateUseCase,
     required this.changeStatusUseCase,
   });
-  List<TipoJaba> items = [];
+  List<TiposJaba> items = [];
 
   Future<void> load() async {
-    final result = await run<List<TipoJaba>>(
+    final result = await run<List<TiposJaba>>(
       state: ViewModelActionState.loading,
       action: getItemsUseCase.call,
     );
@@ -31,8 +31,8 @@ class TipoJabaViewModel extends BaseStateViewModel {
     }
   }
 
-  Future<bool> create(TipoJaba tipoJaba) async {
-    final result = await run<TipoJaba>(
+  Future<bool> create(TiposJaba tipoJaba) async {
+    final result = await run<TiposJaba>(
       state: ViewModelActionState.saving,
       action: () => createUseCase(tipoJaba),
     );
@@ -44,8 +44,8 @@ class TipoJabaViewModel extends BaseStateViewModel {
     return true;
   }
 
-  Future<bool> update(TipoJaba tipoJaba) async {
-    final result = await run<TipoJaba>(
+  Future<bool> update(TiposJaba tipoJaba) async {
+    final result = await run<TiposJaba>(
       state: ViewModelActionState.saving,
       action: () => updateUseCase(tipoJaba),
     );

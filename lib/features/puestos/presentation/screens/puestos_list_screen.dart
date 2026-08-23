@@ -37,10 +37,18 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (vm.errorMessage != null && vm.items.isEmpty) {
-                  return EmptyState(message: vm.errorMessage!);
+                  return EmptyState(
+                    message: vm.errorMessage!,
+                    actionLabel: 'Reintentar',
+                    onAction: vm.load,
+                  );
                 }
                 if (vm.items.isEmpty) {
-                  return const EmptyState(message: 'No hay registros.');
+                  return EmptyState(
+                    message: 'Aún no tienes puestos registrados.',
+                    actionLabel: 'Reintentar',
+                    onAction: vm.load,
+                  );
                 }
                 return RefreshIndicator(
                   onRefresh: vm.load,
@@ -109,9 +117,6 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
       showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => ChangeNotifierProvider.value(
-          value: context.read<PuestoViewModel>(),
-          child: PuestoFormScreen(item: item),
-        ),
+        builder: (_) => PuestoFormScreen(item: item),
       );
 }

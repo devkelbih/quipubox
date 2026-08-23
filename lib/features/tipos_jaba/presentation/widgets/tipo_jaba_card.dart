@@ -12,7 +12,7 @@ import '../../domain/entities/tipos_jaba.dart';
 import '../../domain/enums/tipo_material_jaba.dart';
 
 class TipoJabaCard extends StatelessWidget {
-  final TipoJaba item;
+  final TiposJaba item;
   final VoidCallback onEdit;
   final VoidCallback onChangeStatus;
 

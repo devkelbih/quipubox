@@ -21,8 +21,13 @@ class AppStatusStyle {
     BuildContext context,
     AppStatusType type,
   ) {
-    final scheme = Theme.of(context).colorScheme;
+    return fromScheme(Theme.of(context).colorScheme, type);
+  }
 
+  static AppStatusStyle fromScheme(
+    ColorScheme scheme,
+    AppStatusType type,
+  ) {
     return switch (type) {
       AppStatusType.success => AppStatusStyle(
         foreground: scheme.onPrimaryContainer,

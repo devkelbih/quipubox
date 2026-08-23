@@ -13,7 +13,7 @@ class CreateTipoJabaUseCase {
     required this.currentSession,
   });
 
-  Future<TipoJaba> call(TipoJaba tipoJaba) {
+  Future<TiposJaba> call(TiposJaba tipoJaba) {
     final idEmpresa = currentSession.currentCompanyId;
 
     if (idEmpresa == null) {

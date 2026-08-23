@@ -25,8 +25,8 @@ class AppCardHeader extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     final style = status != null
-        ? AppStatusStyle.of(
-            context,
+        ? AppStatusStyle.fromScheme(
+            scheme,
             status!.type,
           )
         : null;

@@ -71,11 +71,19 @@ class _CamionListScreenState extends State<CamionListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(message: vm.errorMessage!);
+                return EmptyState(
+                  message: vm.errorMessage!,
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState(message: 'Aún no tienes camiones registrados.');
+                return EmptyState(
+                  message: 'Aún no tienes camiones registrados.',
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               return RefreshIndicator(
@@ -110,15 +118,10 @@ class _CamionListScreenState extends State<CamionListScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ChangeNotifierProvider.value(
-          value: context.read<CamionViewModel>(),
-          child: AppFormSheet(
-            title: item == null ? 'Nuevo camión' : 'Editar camión',
-            child: CamionFormScreen(item: item),
-          ),
-        );
-      },
+      builder: (_) => AppFormSheet(
+        title: item == null ? 'Nuevo camión' : 'Editar camión',
+        child: CamionFormScreen(item: item),
+      ),
     );
   }
 

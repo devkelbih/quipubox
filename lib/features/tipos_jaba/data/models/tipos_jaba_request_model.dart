@@ -13,7 +13,7 @@ class TipoJabaRequestModel {
     this.descripcion,
   });
 
-  factory TipoJabaRequestModel.fromEntity(TipoJaba item) {
+  factory TipoJabaRequestModel.fromEntity(TiposJaba item) {
     return TipoJabaRequestModel(
       idEmpresa: item.idEmpresa,
       nombre: item.nombre,

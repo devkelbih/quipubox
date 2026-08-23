@@ -3,6 +3,18 @@ import 'package:flutter/material.dart';
 class AppColors {
   const AppColors._();
 
+  // ========= Marca (Quipubox Logo & Brand) =========
+
+  static const Color navy = Color(0xFF0B2340);
+  static const Color navyLight = Color(0xFF16406E);
+
+  static const Color teal = Color(0xFF17ABA6);
+  static const Color tealLight = Color(0xFF3FC7C2);
+
+  static const Color primary = navy;
+  static const Color primaryLight = navyLight;
+  static const Color accent = teal;
+  static const Color accentLight = tealLight;
 
   // ========= Estados =========
 
@@ -28,3 +40,4 @@ class AppColors {
   static const Color scaffoldDark = Color(0xFF0A1420);
   static const Color surfaceDark = Color(0xFF141F2D);
 }
+

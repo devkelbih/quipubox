@@ -8,7 +8,7 @@ class TipoJabaRepositoryImpl implements TipoJabaRepository {
   TipoJabaRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<TipoJaba> create(TipoJaba tipoJaba) async {
+  Future<TiposJaba> create(TiposJaba tipoJaba) async {
     final request = TipoJabaRequestModel.fromEntity(tipoJaba);
 
     final model = await remoteDataSource.create(request);
@@ -16,13 +16,13 @@ class TipoJabaRepositoryImpl implements TipoJabaRepository {
   }
 
   @override
-  Future<List<TipoJaba>> getAll() async {
+  Future<List<TiposJaba>> getAll() async {
     final models = await remoteDataSource.getAll();
     return models.map((model) => model.toEntity()).toList();
   }
 
   @override
-  Future<TipoJaba> update(TipoJaba tipoJaba) async {
+  Future<TiposJaba> update(TiposJaba tipoJaba) async {
     final request = TipoJabaRequestModel.fromEntity(tipoJaba);
 
     final model = await remoteDataSource.update(tipoJaba.id!, request: request);

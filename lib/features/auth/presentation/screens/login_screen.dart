@@ -5,8 +5,8 @@ import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

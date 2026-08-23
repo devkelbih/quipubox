@@ -1,9 +1,9 @@
 import '../entities/tipos_jaba.dart';
 
 abstract class TipoJabaRepository {
-  Future<List<TipoJaba>> getAll();
-  Future<TipoJaba> create(TipoJaba tipoJaba);
-  Future<TipoJaba> update(TipoJaba tipoJaba);
+  Future<List<TiposJaba>> getAll();
+  Future<TiposJaba> create(TiposJaba tipoJaba);
+  Future<TiposJaba> update(TiposJaba tipoJaba);
 
   Future<bool> changeStatus({
     required int id,

@@ -1,67 +1,47 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 class AppTheme {
   const AppTheme._();
-
-  static const Color white = Colors.white;
-
-  // Paleta extraída del logo Quipubox
-  static const Color navy = Color(0xFF0B2340); // azul marino del cubo/logo
-  static const Color navyLight = Color(0xFF16406E); // variante más clara para dark mode / hover
-  static const Color teal = Color(0xFF17ABA6); // turquesa de las líneas del quipu
-  static const Color tealLight = Color(0xFF3FC7C2); // turquesa claro para acentos en dark mode
-
-  static const Color primary = navy;
-  static const Color primaryLight = navyLight;
-  static const Color accent = teal;
-  static const Color accentLight = tealLight;
-
-  static const Color error = Color(0xFFD32F2F);
-  static const Color errorDark = Color(0xFFFF6B6B);
-
-  static const Color scaffoldLight = Color(0xFFF4F7FA);
-  static const Color surfaceLight = Color(0xFFFFFFFF);
-
-  static const Color scaffoldDark = Color(0xFF0A1420);
-  static const Color surfaceDark = Color(0xFF141F2D);
 
   static final ThemeData light = _buildLight();
   static final ThemeData dark = _buildDark();
 
   static ThemeData _buildLight() {
     final scheme = ColorScheme.fromSeed(
-      seedColor: primary,
+      seedColor: AppColors.primary,
       brightness: Brightness.light,
     ).copyWith(
-      primary: teal,
-      onPrimary: white,
-      secondary: navy,
-      onSecondary: white,
-      tertiary: teal,
-      onTertiary: white,
-      surface: surfaceLight,
+      primary: AppColors.teal,
+      onPrimary: AppColors.white,
+      secondary: AppColors.navy,
+      onSecondary: AppColors.white,
+      tertiary: AppColors.teal,
+      onTertiary: AppColors.white,
+      surface: AppColors.surfaceLight,
       onSurface: const Color(0xFF17212B),
-      error: error,
-      onError: white,
+      error: AppColors.error,
+      onError: AppColors.white,
       outline: const Color(0xFFD5DEE8),
       outlineVariant: const Color(0xFFE3EAF1),
     );
 
     return _baseTheme(scheme).copyWith(
       brightness: Brightness.light,
-      scaffoldBackgroundColor: scaffoldLight,
+      scaffoldBackgroundColor: AppColors.scaffoldLight,
       appBarTheme: _appBarTheme(
-        background: navy,
-        foreground: white,
+        background: AppColors.navy,
+        foreground: AppColors.white,
       ),
       inputDecorationTheme: _inputTheme(
         scheme: scheme,
-        fillColor: surfaceLight,
-        focusColor: teal,
+        fillColor: AppColors.surfaceLight,
+        focusColor: AppColors.teal,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: teal,
-        linearTrackColor: teal.withValues(alpha: 0.16),
+        color: AppColors.teal,
+        linearTrackColor: AppColors.teal.withValues(alpha: 0.16),
         circularTrackColor: scheme.outlineVariant,
         strokeWidth: 4,
       ),
@@ -70,18 +50,18 @@ class AppTheme {
 
   static ThemeData _buildDark() {
     final scheme = ColorScheme.fromSeed(
-      seedColor: tealLight,
+      seedColor: AppColors.tealLight,
       brightness: Brightness.dark,
     ).copyWith(
-      primary: tealLight,
+      primary: AppColors.tealLight,
       onPrimary: const Color(0xFF06211F),
-      secondary: navyLight,
-      onSecondary: white,
-      tertiary: tealLight,
+      secondary: AppColors.navyLight,
+      onSecondary: AppColors.white,
+      tertiary: AppColors.tealLight,
       onTertiary: const Color(0xFF06211F),
-      surface: surfaceDark,
+      surface: AppColors.surfaceDark,
       onSurface: const Color(0xFFE8EEF5),
-      error: errorDark,
+      error: AppColors.errorDark,
       onError: const Color(0xFF101418),
       outline: const Color(0xFF3B4653),
       outlineVariant: const Color(0xFF2B3542),
@@ -89,19 +69,19 @@ class AppTheme {
 
     return _baseTheme(scheme).copyWith(
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: scaffoldDark,
+      scaffoldBackgroundColor: AppColors.scaffoldDark,
       appBarTheme: _appBarTheme(
-        background: scaffoldDark,
+        background: AppColors.scaffoldDark,
         foreground: const Color(0xFFE8EEF5),
       ),
       inputDecorationTheme: _inputTheme(
         scheme: scheme,
-        fillColor: surfaceDark,
-        focusColor: tealLight,
+        fillColor: AppColors.surfaceDark,
+        focusColor: AppColors.tealLight,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: tealLight,
-        linearTrackColor: tealLight.withValues(alpha: 0.18),
+        color: AppColors.tealLight,
+        linearTrackColor: AppColors.tealLight.withValues(alpha: 0.18),
         circularTrackColor: scheme.outlineVariant,
         strokeWidth: 4,
       ),
@@ -253,7 +233,7 @@ class AppTheme {
             ? const Color(0xFF26313D)
             : const Color(0xFF17212B),
         contentTextStyle: const TextStyle(
-          color: white,
+          color: AppColors.white,
           fontWeight: FontWeight.w700,
         ),
         shape: RoundedRectangleBorder(

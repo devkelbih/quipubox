@@ -11,12 +11,9 @@ import 'package:quipubox/features/usuarios/presentation/widgets/usuario_roles_fo
 import 'package:quipubox/features/usuarios/presentation/widgets/usuario_sede_form.dart';
 
 class UsuariosFormScreen extends StatefulWidget {
-  final Usuario? usuario;
+  final Usuario? item;
 
-  const UsuariosFormScreen({
-    super.key,
-    this.usuario,
-  });
+  const UsuariosFormScreen({super.key, this.item});
 
   @override
   State<UsuariosFormScreen> createState() => _UsuariosFormScreenState();
@@ -46,25 +43,22 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
     super.initState();
 
     _nombresController = TextEditingController(
-      text: widget.usuario?.nombres ?? '',
+      text: widget.item?.nombres ?? '',
     );
 
     _apellidosController = TextEditingController(
-      text: widget.usuario?.apellidos ?? '',
+      text: widget.item?.apellidos ?? '',
     );
 
     _telefonoController = TextEditingController(
-      text: widget.usuario?.telefono ?? '',
+      text: widget.item?.telefono ?? '',
     );
 
-    _emailController = TextEditingController(
-      text: widget.usuario?.email ?? '',
-    );
+    _emailController = TextEditingController(text: widget.item?.email ?? '');
 
-    _selectedSede = widget.usuario?.sede;
+    _selectedSede = widget.item?.sede;
 
-    _selectedRoleIds =
-        widget.usuario?.roles.map((role) => role.id).toSet() ?? {};
+    _selectedRoleIds = widget.item?.roles.map((role) => role.id).toSet() ?? {};
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RolesViewModel>().load();
@@ -85,11 +79,7 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.usuario == null
-              ? 'Nuevo usuario'
-              : 'Editar usuario',
-        ),
+        title: Text(widget.item == null ? 'Nuevo usuario' : 'Editar usuario'),
       ),
       body: Form(
         key: _formKey,

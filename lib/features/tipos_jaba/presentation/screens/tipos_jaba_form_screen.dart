@@ -8,7 +8,7 @@ import '../../domain/enums/tipo_material_jaba.dart';
 import '../viewmodels/tipos_jaba_viewmodel.dart';
 
 class TipoJabaFormScreen extends StatefulWidget {
-  final TipoJaba? item;
+  final TiposJaba? item;
 
   const TipoJabaFormScreen({super.key, this.item});
 
@@ -148,7 +148,7 @@ class _TipoJabaFormScreenState extends State<TipoJabaFormScreen> {
     final vm = context.read<TipoJabaViewModel>();
     final item = widget.item;
 
-    final tipoJaba = TipoJaba(
+    final tipoJaba = TiposJaba(
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,

@@ -43,11 +43,19 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
                 }
 
                 if (vm.errorMessage != null && vm.items.isEmpty) {
-                  return EmptyState(message: vm.errorMessage!);
+                  return EmptyState(
+                    message: vm.errorMessage!,
+                    actionLabel: 'Reintentar',
+                    onAction: vm.load,
+                  );
                 }
 
                 if (vm.items.isEmpty) {
-                  return const EmptyState(message: 'No hay lugares operativos.');
+                  return EmptyState(
+                    message: 'Aún no tienes lugares operativos registrados.',
+                    actionLabel: 'Reintentar',
+                    onAction: vm.load,
+                  );
                 }
 
                 return RefreshIndicator(
@@ -96,10 +104,7 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => ChangeNotifierProvider.value(
-        value: context.read<LugarOperativoViewModel>(),
-        child: LugarOperativoFormScreen(item: item),
-      ),
+      builder: (_) => LugarOperativoFormScreen(item: item),
     );
   }
 }

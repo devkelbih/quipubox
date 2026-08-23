@@ -1,6 +1,6 @@
 import '../enums/tipo_material_jaba.dart';
 
-class TipoJaba {
+class TiposJaba {
   final int? id;
   final int? idEmpresa;
   final bool estado;
@@ -8,7 +8,7 @@ class TipoJaba {
   final TipoMaterialJaba tipoMaterial;
   final String? descripcion;
 
-  const TipoJaba({
+  const TiposJaba({
     this.id,
     this.idEmpresa,
     this.estado = true,
@@ -17,7 +17,7 @@ class TipoJaba {
     this.descripcion,
   });
 
-  TipoJaba copyWith({
+  TiposJaba copyWith({
     int? id,
     int? idEmpresa,
     bool? estado,
@@ -25,7 +25,7 @@ class TipoJaba {
     TipoMaterialJaba? tipoMaterial,
     String? descripcion,
   }) {
-    return TipoJaba(
+    return TiposJaba(
       id: id ?? this.id,
       idEmpresa: idEmpresa ?? this.idEmpresa,
       estado: estado ?? this.estado,

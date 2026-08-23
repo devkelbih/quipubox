@@ -29,7 +29,7 @@ class TipoJabaModel {
       descripcion: json['descripcion']?.toString(),
     );
   }
-  TipoJaba toEntity() => TipoJaba(
+  TiposJaba toEntity() => TiposJaba(
     id: id,
     idEmpresa: idEmpresa,
     estado: estado,

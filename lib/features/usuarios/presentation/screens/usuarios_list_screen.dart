@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:quipubox/core/navigation/app_routes.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
-import 'package:quipubox/features/usuarios/presentation/screens/usuarios_form_screen.dart';
 
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
@@ -112,13 +113,9 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
   }
 
   Future<void> _openForm(BuildContext context, {Usuario? item}) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider.value(
-          value: context.read<UsuarioViewModel>(),
-          child: UsuariosFormScreen(usuario: item),
-        ),
-      ),
+    context.push(
+      AppRoutes.usuariosForm, // Se usa la constante limpia
+      extra: item,
     );
   }
 

@@ -112,21 +112,17 @@ class _SedeListScreenState extends State<SedeListScreen> {
     );
   }
 
+
   Future<void> _openForm(BuildContext context, {Sede? item}) async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ChangeNotifierProvider.value(
-          value: context.read<SedeViewModel>(),
-          child: AppFormSheet(
-            title: item == null ? 'Nueva sede' : 'Editar sede',
-            child: SedeFormScreen(item: item),
-          ),
-        );
-      },
+      builder: (_) => AppFormSheet(
+        title: item == null ? 'Nueva sede' : 'Editar sede',
+        child: SedeFormScreen(item: item),
+      ),
     );
   }
 

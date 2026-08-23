@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   static const String heroImage =
       'https://www.agroperu.pe/wp-content/uploads/2024/10/agroperu-informa_gore-cusco-entrega-jabas-productores-palta-paruro.jpg';
@@ -16,11 +16,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: Image.asset(
-        'assets/logo.png',
-        height: 36,
-        fit: BoxFit.contain,
-      ),
+      title: Image.asset('assets/logo.png', height: 36, fit: BoxFit.contain),
       actions: const [
         Padding(
           padding: EdgeInsets.only(right: 12),
@@ -67,7 +63,6 @@ class _HeroPanel extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          /*Image.network(HomePage.heroImage, fit: BoxFit.cover),*/
           FlutterLogo(size: 200),
           Container(
             decoration: BoxDecoration(
@@ -251,7 +246,7 @@ class _DeliveriesSection extends StatelessWidget {
     return const Column(
       children: [
         _DeliveryCard(
-          imageUrl: HomePage.heroImage,
+          imageUrl: HomeScreen.heroImage,
           title: 'Entrega palta Hass',
           route: 'Mala a Mercado Mayorista',
           detail: '120 jabas · Puesto 338 · Hace 18 min',
@@ -260,7 +255,7 @@ class _DeliveriesSection extends StatelessWidget {
         ),
         SizedBox(height: 14),
         _DeliveryCard(
-          imageUrl: HomePage.crateImage,
+          imageUrl: HomeScreen.crateImage,
           title: 'Retorno de jabas',
           route: 'Cliente Rosa a Cañete',
           detail: '50/80 jabas recibidas · Pendiente 30',

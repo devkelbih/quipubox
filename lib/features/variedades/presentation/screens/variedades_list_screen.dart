@@ -71,12 +71,18 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(message: vm.errorMessage!);
+                return EmptyState(
+                  message: vm.errorMessage!,
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   message: 'Aún no tienes variedades registradas.',
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
                 );
               }
 
@@ -112,15 +118,10 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ChangeNotifierProvider.value(
-          value: context.read<VariedadViewModel>(),
-          child: AppFormSheet(
-            title: item == null ? 'Nueva variedad' : 'Editar variedad',
-            child: VariedadFormScreen(item: item),
-          ),
-        );
-      },
+      builder: (_) => AppFormSheet(
+        title: item == null ? 'Nueva variedad' : 'Editar variedad',
+        child: VariedadFormScreen(item: item),
+      ),
     );
   }
 

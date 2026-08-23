@@ -71,12 +71,18 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
-                return EmptyState(message: vm.errorMessage!);
+                return EmptyState(
+                  message: vm.errorMessage!,
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
+                );
               }
 
               if (vm.items.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   message: 'Aún no tienes tipos de jaba registrados.',
+                  actionLabel: 'Reintentar',
+                  onAction: vm.load,
                 );
               }
 
@@ -106,25 +112,20 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
     );
   }
 
-  Future<void> _openForm(BuildContext context, {TipoJaba? item}) async {
+  Future<void> _openForm(BuildContext context, {TiposJaba? item}) async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ChangeNotifierProvider.value(
-          value: context.read<TipoJabaViewModel>(),
-          child: AppFormSheet(
-            title: item == null ? 'Nuevo tipo de jaba' : 'Editar tipo de jaba',
-            child: TipoJabaFormScreen(item: item),
-          ),
-        );
-      },
+      builder: (_) => AppFormSheet(
+        title: item == null ? 'Nuevo tipo de jaba' : 'Editar tipo de jaba',
+        child: TipoJabaFormScreen(item: item),
+      ),
     );
   }
 
-  Future<void> _confirmChangeStatus(BuildContext context, TipoJaba item) async {
+  Future<void> _confirmChangeStatus(BuildContext context, TiposJaba item) async {
     final newStatus = !item.estado;
 
     final confirmed = await showDialog<bool>(

@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../viewmodels/settings_viewmodel.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
