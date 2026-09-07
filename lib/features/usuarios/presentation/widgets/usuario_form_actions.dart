@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 class UsuarioFormActions extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
-  final VoidCallback onBack;
-  final VoidCallback onContinue;
+  final bool isSaving;
+  final VoidCallback? onBack;
+  final VoidCallback? onContinue;
 
   const UsuarioFormActions({
     super.key,
     required this.currentStep,
     required this.totalSteps,
-    required this.onBack,
-    required this.onContinue,
+    required this.isSaving,
+    this.onBack,
+    this.onContinue,
   });
 
   bool get isFirstStep => currentStep == 0;
@@ -28,11 +30,7 @@ class UsuarioFormActions extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
         decoration: BoxDecoration(
           color: colorScheme.surface,
-          border: Border(
-            top: BorderSide(
-              color: colorScheme.outlineVariant,
-            ),
-          ),
+          border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
         ),
         child: Row(
           children: [
@@ -57,14 +55,18 @@ class UsuarioFormActions extends StatelessWidget {
             Expanded(
               child: FilledButton.icon(
                 onPressed: onContinue,
-                icon: Icon(
-                  isLastStep
-                      ? Icons.check_rounded
-                      : Icons.arrow_forward_rounded,
-                ),
-                label: Text(
-                  isLastStep ? 'Guardar' : 'Continuar',
-                ),
+                icon: isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(
+                        isLastStep
+                            ? Icons.check_rounded
+                            : Icons.arrow_forward_rounded,
+                      ),
+                label: Text(isLastStep ? 'Guardar' : 'Continuar'),
               ),
             ),
           ],

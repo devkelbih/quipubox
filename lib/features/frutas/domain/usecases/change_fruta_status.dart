@@ -8,7 +8,7 @@ class ChangeFrutaStatusUseCase {
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {
-      throw const AppException('No se encontró el ID del camión.');
+      throw const AppException('No se encontró el ID de la fruta.');
     }
     return repository.changeStatus(id: id, estado: estado);
   }

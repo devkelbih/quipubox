@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:quipubox/core/ui/feedback/app_toast.dart';
 import 'package:quipubox/features/usuarios/domain/entities/usuario.dart';
 import 'package:quipubox/features/roles/presentation/viewmodels/roles_viewmodel.dart';
 import 'package:quipubox/features/sedes/domain/entities/sede.dart';
+import 'package:quipubox/features/usuarios/presentation/viewmodels/usuarios_viewmodel.dart';
 import 'package:quipubox/features/usuarios/presentation/widgets/usuario_datos_form.dart';
 import 'package:quipubox/features/usuarios/presentation/widgets/usuario_form_actions.dart';
 import 'package:quipubox/features/usuarios/presentation/widgets/usuario_form_stepper.dart';
@@ -37,6 +39,8 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
   late final TextEditingController _apellidosController;
   late final TextEditingController _telefonoController;
   late final TextEditingController _emailController;
+
+  bool get _isEditing => widget.item != null;
 
   @override
   void initState() {
@@ -77,6 +81,8 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<UsuarioViewModel>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.item == null ? 'Nuevo usuario' : 'Editar usuario'),
@@ -89,7 +95,7 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
               currentStep: _currentStep,
               completedSteps: _completedSteps,
               errorSteps: _errorSteps,
-              onStepTapped: _handleStepTapped,
+              onStepTapped: vm.isSaving ? null : _handleStepTapped,
             ),
 
             Expanded(
@@ -102,8 +108,9 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
             UsuarioFormActions(
               currentStep: _currentStep,
               totalSteps: _totalSteps,
-              onBack: _handleStepCancel,
-              onContinue: _handleStepContinue,
+              onBack: vm.isSaving ? null : _handleStepCancel,
+              onContinue: vm.isSaving ? null : _handleStepContinue,
+              isSaving: vm.isSaving,
             ),
           ],
         ),
@@ -216,7 +223,6 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
   }
 
   void _handleStepTapped(int step) {
-    // Permite volver a cualquier paso ya alcanzado.
     if (step <= _currentStep) {
       setState(() {
         _currentStep = step;
@@ -225,7 +231,6 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
       return;
     }
 
-    // Para avanzar, primero validamos el paso actual.
     switch (_currentStep) {
       case 0:
         if (!_validateDatos()) {
@@ -299,7 +304,7 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
     return isValid;
   }
 
-  void _guardar() {
+  Future<void> _guardar() async {
     final datosValidos = _validateDatos();
     final sedeValida = _validateSede();
     final rolesValidos = _validateRoles();
@@ -308,6 +313,44 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
       return;
     }
 
-    // Aquí irá posteriormente la lógica para guardar.
+    final usuarioViewModel = context.read<UsuarioViewModel>();
+    final rolesViewModel = context.read<RolesViewModel>();
+
+    final rolesSeleccionados = rolesViewModel.roles
+        .where((role) => _selectedRoleIds.contains(role.id))
+        .toList();
+
+    final apellidos = _apellidosController.text.trim();
+    final telefono = _telefonoController.text.trim();
+
+    final usuario = Usuario(
+      id: widget.item?.id,
+      nombres: _nombresController.text.trim(),
+      apellidos: apellidos.isEmpty ? null : apellidos,
+      telefono: telefono.isEmpty ? null : telefono,
+      email: _emailController.text.trim(),
+      sede: _selectedSede!,
+      roles: rolesSeleccionados,
+      estado: widget.item?.estado ?? true,
+    );
+
+    final ok = _isEditing
+        ? await usuarioViewModel.update(usuario)
+        : await usuarioViewModel.create(usuario);
+
+    if (!mounted) return;
+
+    AppToast.show(
+      ok
+          ? _isEditing
+                ? 'Usuario actualizado correctamente.'
+                : 'Usuario registrado correctamente.'
+          : usuarioViewModel.errorMessage ?? 'No se pudo guardar el usuario.',
+      type: ok ? ToastType.success : ToastType.error,
+    );
+
+    if (ok) {
+      Navigator.of(context).pop(true);
+    }
   }
 }

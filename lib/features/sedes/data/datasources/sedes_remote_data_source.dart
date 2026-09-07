@@ -26,6 +26,7 @@ class SedeRemoteDataSource {
   }
 
   Future<SedeModel> update(int id, {required SedeRequestModel request}) async {
+    await Future.delayed(const Duration(seconds: 3));
     final response = await apiClient.put(
       '/sedes/$id',
       body: request.toUpdateJson(),

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
-
-import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
-import '../../../../core/ui/sheets/app_form_sheet.dart';
+import '../../../../core/ui/sheets/app_bottom_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/camion.dart';
 import '../viewmodels/camiones_viewmodel.dart';
@@ -113,54 +111,35 @@ class _CamionListScreenState extends State<CamionListScreen> {
   }
 
   Future<void> _openForm(BuildContext context, {Camion? item}) async {
-    await showModalBottomSheet<void>(
+    await AppBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => AppFormSheet(
-        title: item == null ? 'Nuevo camión' : 'Editar camión',
+      title: item == null ? 'Nuevo camión' : 'Editar camión',
+      initialChildSize: 0.45,
+      maxChildSize: 0.6,
+      builder: (context, controller) => SingleChildScrollView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        padding: const EdgeInsets.all(20),
         child: CamionFormScreen(item: item),
       ),
     );
   }
 
   Future<void> _confirmChangeStatus(BuildContext context, Camion item) async {
-    final newStatus = !item.estado;
+    if (item.id == null) return;
+    final vm = context.read<CamionViewModel>();
 
-    final confirmed = await showDialog<bool>(
+    await ChangeStatusDialog.showAndAction(
       context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return ChangeStatusDialog(
-          newStatus: newStatus,
-          title: newStatus ? 'Activar camión' : 'Desactivar camión',
-          message: newStatus
-              ? 'El camión "${item.placa}" volverá a estar disponible.'
-              : 'El camión "${item.placa}" dejará de estar disponible.',
-          confirmText: newStatus ? 'Activar' : 'Desactivar',
-        );
-      },
-    );
-
-    if (confirmed != true || !context.mounted) return;
-
-    final viewModel = context.read<CamionViewModel>();
-
-    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
-
-    if (!context.mounted) return;
-
-    AppToast.show(
-      ok
-          ? newStatus
-                ? 'Camión activado correctamente.'
-                : 'Camión desactivado correctamente.'
-          : viewModel.errorMessage ??
-                (newStatus
-                    ? 'No se pudo activar el camión.'
-                    : 'No se pudo desactivar el camión.'),
-      type: ok ? ToastType.success : ToastType.error,
+      currentStatus: item.estado,
+      article: 'El',
+      entityName: 'Camión',
+      itemName: item.placa,
+      onConfirm: (newStatus) =>
+          vm.changeStatus(id: item.id!, estado: newStatus),
+      getErrorMessage: () => vm.errorMessage,
     );
   }
 }

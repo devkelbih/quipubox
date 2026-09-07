@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/navigation/app_routes.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
-
-import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
@@ -120,44 +118,18 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
   }
 
   Future<void> _confirmChangeStatus(BuildContext context, Usuario item) async {
-    final newStatus = !item.estado;
-    final name = item.nombreCompleto.isNotEmpty
-        ? item.nombreCompleto
-        : 'Usuario #${item.id}';
+    if (item.id == null) return;
+    final vm = context.read<UsuarioViewModel>();
 
-    final confirmed = await showDialog<bool>(
+    await ChangeStatusDialog.showAndAction(
       context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return ChangeStatusDialog(
-          newStatus: newStatus,
-          title: newStatus ? 'Activar usuario' : 'Desactivar usuario',
-          message: newStatus
-              ? 'El usuario "$name" volverá a tener acceso al sistema.'
-              : 'El usuario "$name" dejará de tener acceso al sistema.',
-          confirmText: newStatus ? 'Activar' : 'Desactivar',
-        );
-      },
-    );
-
-    if (confirmed != true || !context.mounted) return;
-
-    final viewModel = context.read<UsuarioViewModel>();
-
-    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
-
-    if (!context.mounted) return;
-
-    AppToast.show(
-      ok
-          ? newStatus
-                ? 'Usuario activado correctamente.'
-                : 'Usuario desactivado correctamente.'
-          : viewModel.errorMessage ??
-                (newStatus
-                    ? 'No se pudo activar el usuario.'
-                    : 'No se pudo desactivar el usuario.'),
-      type: ok ? ToastType.success : ToastType.error,
+      currentStatus: item.estado,
+      article: 'El',
+      entityName: 'Usuario',
+      itemName: item.nombreCompleto,
+      onConfirm: (newStatus) =>
+          vm.changeStatus(id: item.id!, estado: newStatus),
+      getErrorMessage: () => vm.errorMessage,
     );
   }
 }

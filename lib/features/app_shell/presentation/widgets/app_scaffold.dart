@@ -48,8 +48,7 @@ class AppScaffold extends StatelessWidget {
           absorbing: isSigningOut,
           child: Scaffold(
             appBar: AppBar(
-              title:
-                  title, // Pasa directamente el Widget, limpio y sin ternarios
+              title: title, // Pasa directamente el Widget, limpio y sin ternarios
               leading: Builder(
                 builder: (drawerContext) {
                   return IconButton(
@@ -62,7 +61,10 @@ class AppScaffold extends StatelessWidget {
               bottom: appBarBottom,
             ),
             drawer: const AppDrawer(),
-            body: body,
+            body: SafeArea(
+              top: false, // El AppBar ya protege la parte superior
+              child: body,
+            ),
           ),
         ),
         if (isSigningOut)

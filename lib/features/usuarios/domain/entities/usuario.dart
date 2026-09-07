@@ -1,11 +1,10 @@
-import '../../../company/domain/entities/empresa.dart';
 import '../../../roles/domain/entities/role.dart';
 import '../../../sedes/domain/entities/sede.dart';
 
 class Usuario {
   final int? id;
 
-  final Empresa empresa;
+  final int? idEmpresa;
   final Sede sede;
   final List<Role> roles;
 
@@ -21,29 +20,25 @@ class Usuario {
 
   const Usuario({
     this.id,
-    required this.empresa,
+    this.idEmpresa,
     required this.sede,
     required this.roles,
     required this.nombres,
-    required this.apellidos,
+    this.apellidos,
     this.telefono,
     required this.email,
     this.googleUid,
     this.avatarUrl,
-    required this.estado,
+    this.estado = true,
   });
 
   String get nombreCompleto => '$nombres ${apellidos ?? ''}'.trim();
-
-  int get idEmpresa => empresa.id;
-
-  int get idSede => sede.id!;
 
   List<int> get roleIds => roles.map((e) => e.id).toList();
 
   Usuario copyWith({
     int? id,
-    Empresa? empresa,
+    int? idEmpresa,
     Sede? sede,
     List<Role>? roles,
     String? nombres,
@@ -56,7 +51,7 @@ class Usuario {
   }) {
     return Usuario(
       id: id ?? this.id,
-      empresa: empresa ?? this.empresa,
+      idEmpresa: idEmpresa ?? this.idEmpresa,
       sede: sede ?? this.sede,
       roles: roles ?? this.roles,
       nombres: nombres ?? this.nombres,

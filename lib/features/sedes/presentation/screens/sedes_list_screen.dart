@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
-
-import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
-import '../../../../core/ui/sheets/app_form_sheet.dart';
+import '../../../../core/ui/sheets/app_bottom_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/sede.dart';
 import '../viewmodels/sedes_viewmodel.dart';
@@ -112,56 +110,36 @@ class _SedeListScreenState extends State<SedeListScreen> {
     );
   }
 
-
   Future<void> _openForm(BuildContext context, {Sede? item}) async {
-    await showModalBottomSheet<void>(
+    await AppBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => AppFormSheet(
-        title: item == null ? 'Nueva sede' : 'Editar sede',
+      title: item == null ? 'Nueva sede' : 'Editar sede',
+      initialChildSize: 0.5,
+      maxChildSize: 0.65,
+      builder: (context, controller) => SingleChildScrollView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        padding: const EdgeInsets.all(20),
         child: SedeFormScreen(item: item),
       ),
     );
   }
 
   Future<void> _confirmChangeStatus(BuildContext context, Sede item) async {
-    final newStatus = !item.estado;
+    if (item.id == null) return;
+    final vm = context.read<SedeViewModel>();
 
-    final confirmed = await showDialog<bool>(
+    await ChangeStatusDialog.showAndAction(
       context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return ChangeStatusDialog(
-          newStatus: newStatus,
-          title: newStatus ? 'Activar sede' : 'Desactivar sede',
-          message: newStatus
-              ? 'La sede "${item.nombre}" volverá a estar disponible para nuevas operaciones.'
-              : 'La sede "${item.nombre}" dejará de estar disponible para nuevas operaciones.',
-          confirmText: newStatus ? 'Activar' : 'Desactivar',
-        );
-      },
-    );
-
-    if (confirmed != true || !context.mounted) return;
-
-    final viewModel = context.read<SedeViewModel>();
-
-    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
-
-    if (!context.mounted) return;
-
-    AppToast.show(
-      ok
-          ? newStatus
-                ? 'Sede activada correctamente.'
-                : 'Sede desactivada correctamente.'
-          : viewModel.errorMessage ??
-                (newStatus
-                    ? 'No se pudo activar la sede.'
-                    : 'No se pudo desactivar la sede.'),
-      type: ok ? ToastType.success : ToastType.error,
+      currentStatus: item.estado,
+      article: 'La',
+      entityName: 'Sede',
+      itemName: item.nombre,
+      onConfirm: (newStatus) =>
+          vm.changeStatus(id: item.id!, estado: newStatus),
+      getErrorMessage: () => vm.errorMessage,
     );
   }
 }

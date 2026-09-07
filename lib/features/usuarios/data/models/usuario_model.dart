@@ -62,7 +62,7 @@ class UsuarioModel {
   Usuario toEntity() {
     return Usuario(
       id: id,
-      empresa: empresa.toEntity(),
+      idEmpresa: empresa.id,
       sede: sede.toEntity(),
       roles: roles.map((e) => e.toEntity()).toList(),
       nombres: nombres,

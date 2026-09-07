@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
-
-import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
-import '../../../../core/ui/sheets/app_form_sheet.dart';
+import '../../../../core/ui/sheets/app_bottom_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/fruta.dart';
 import '../viewmodels/frutas_viewmodel.dart';
@@ -115,123 +113,67 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
   }
 
   Future<void> _openForm(BuildContext context, {Fruta? item}) async {
-    await showModalBottomSheet<void>(
+    await AppBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => AppFormSheet(
-        title: item == null ? 'Nueva fruta' : 'Editar fruta',
+      title: item == null ? 'Nueva fruta' : 'Editar fruta',
+      initialChildSize: 0.40,
+      maxChildSize: 0.45,
+      builder: (context, controller) => SingleChildScrollView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ), // Permite deslizar si el contenido no cabe en ese 45%
+        padding: const EdgeInsets.all(20),
         child: FrutaFormScreen(item: item),
       ),
     );
   }
 
   Future<void> _showVariedades(BuildContext context, Fruta item) async {
-    await showModalBottomSheet<void>(
+    await AppBottomSheet.show(
       context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return SafeArea(
-          child: DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: .45,
-            maxChildSize: .80,
-            builder: (_, controller) {
-              return Material(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 12),
+      title: 'Variedades de ${item.nombre}',
+      initialChildSize: 0.30,
+      maxChildSize: 0.4,
+      builder: (context, controller) {
+        final variedades = item.variedades ?? [];
 
-                    Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+        if (variedades.isEmpty) {
+          return const Center(child: Text('No hay variedades disponibles.'));
+        }
 
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text(
-                        'Variedades de ${item.nombre}',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-
-                    Expanded(
-                      child: ListView.separated(
-                        controller: controller,
-                        itemCount: item.variedades?.length ?? 0,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (_, index) {
-                          final variedad = item.variedades![index];
-
-                          return ListTile(
-                            leading: const Icon(Icons.grain_rounded),
-                            title: Text(variedad.nombre),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+        return ListView.separated(
+          controller: controller,
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ), // Garantiza el scroll si hay muchas variedades
+          itemCount: variedades.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (_, index) {
+            final variedad = variedades[index];
+            return ListTile(
+              leading: const Icon(Icons.grain_rounded),
+              title: Text(variedad.nombre),
+            );
+          },
         );
       },
     );
   }
 
   Future<void> _confirmChangeStatus(BuildContext context, Fruta item) async {
-    final newStatus = !item.estado;
+    if (item.id == null) return;
+    final vm = context.read<FrutaViewModel>();
 
-    final confirmed = await showDialog<bool>(
+    await ChangeStatusDialog.showAndAction(
       context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return ChangeStatusDialog(
-          newStatus: newStatus,
-          title: newStatus ? 'Activar fruta' : 'Desactivar fruta',
-          message: newStatus
-              ? 'La fruta "${item.nombre}" volverá a estar disponible para nuevas operaciones.'
-              : 'La fruta "${item.nombre}" dejará de estar disponible para nuevas operaciones.',
-          confirmText: newStatus ? 'Activar' : 'Desactivar',
-        );
-      },
-    );
-
-    if (confirmed != true || !context.mounted) return;
-
-    final id = item.id;
-
-    if (id == null) {
-      AppToast.show('No se encontró el ID de la fruta.', type: ToastType.error);
-      return;
-    }
-
-    final viewModel = context.read<FrutaViewModel>();
-    final ok = await viewModel.changeStatus(id: id, estado: newStatus);
-
-    if (!context.mounted) return;
-
-    AppToast.show(
-      ok
-          ? newStatus
-                ? 'Fruta activada correctamente.'
-                : 'Fruta desactivada correctamente.'
-          : viewModel.errorMessage ??
-                (newStatus
-                    ? 'No se pudo activar la fruta.'
-                    : 'No se pudo desactivar la fruta.'),
-      type: ok ? ToastType.success : ToastType.error,
+      currentStatus: item.estado,
+      article: 'La',
+      entityName: 'Fruta',
+      itemName: item.nombre,
+      onConfirm: (newStatus) =>
+          vm.changeStatus(id: item.id!, estado: newStatus),
+      getErrorMessage: () => vm.errorMessage,
     );
   }
 }

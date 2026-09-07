@@ -22,9 +22,7 @@ class UsuarioDatosForm extends StatelessWidget {
         TextFormField(
           controller: nombresController,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Nombres',
-          ),
+          decoration: const InputDecoration(labelText: 'Nombres'),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'Ingresa los nombres';
@@ -39,9 +37,7 @@ class UsuarioDatosForm extends StatelessWidget {
         TextFormField(
           controller: apellidosController,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Apellidos',
-          ),
+          decoration: const InputDecoration(labelText: 'Apellidos'),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'Ingresa los apellidos';
@@ -58,10 +54,9 @@ class UsuarioDatosForm extends StatelessWidget {
           keyboardType: TextInputType.phone,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(9),
           ],
-          decoration: const InputDecoration(
-            labelText: 'Teléfono',
-          ),
+          decoration: const InputDecoration(labelText: 'Teléfono'),
           validator: (value) {
             final telefono = value?.trim() ?? '';
 
@@ -70,8 +65,8 @@ class UsuarioDatosForm extends StatelessWidget {
               return null;
             }
 
-            if (!RegExp(r'^\d+$').hasMatch(telefono)) {
-              return 'Ingresa un teléfono válido';
+            if (telefono.length != 9) {
+              return 'El teléfono debe tener 9 dígitos';
             }
 
             return null;
@@ -83,9 +78,7 @@ class UsuarioDatosForm extends StatelessWidget {
         TextFormField(
           controller: emailController,
           keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
-            labelText: 'Correo electrónico',
-          ),
+          decoration: const InputDecoration(labelText: 'Correo electrónico'),
           validator: (value) {
             final email = value?.trim() ?? '';
 
@@ -93,9 +86,7 @@ class UsuarioDatosForm extends StatelessWidget {
               return 'Ingresa el correo electrónico';
             }
 
-            final emailRegex = RegExp(
-              r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-            );
+            final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
             if (!emailRegex.hasMatch(email)) {
               return 'Ingresa un correo electrónico válido';

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
-
-import '../../../../core/ui/feedback/app_toast.dart';
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
-import '../../../../core/ui/sheets/app_form_sheet.dart';
+import '../../../../core/ui/sheets/app_bottom_sheet.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../domain/entities/calidad.dart';
 import '../viewmodels/calidades_viewmodel.dart';
@@ -113,55 +111,35 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
   }
 
   Future<void> _openForm(BuildContext context, {Calidad? item}) async {
-    await showModalBottomSheet<void>(
+    await AppBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => AppFormSheet(
-        title: item == null ? 'Nueva calidad' : 'Editar calidad',
+      title: item == null ? 'Nueva calidad' : 'Editar calidad',
+      initialChildSize: 0.3,
+      maxChildSize: 0.5,
+      builder: (context, controller) => SingleChildScrollView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        padding: const EdgeInsets.all(20),
         child: CalidadFormScreen(item: item),
       ),
     );
   }
 
   Future<void> _confirmChangeStatus(BuildContext context, Calidad item) async {
-    final newStatus = !item.estado;
+    if (item.id == null) return;
 
-    final confirmed = await showDialog<bool>(
+    final vm = context.read<CalidadViewModel>();
+    await ChangeStatusDialog.showAndAction(
       context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return ChangeStatusDialog(
-          newStatus: newStatus,
-          title: newStatus ? 'Activar calidad' : 'Desactivar calidad',
-          message: newStatus
-              ? 'La calidad "${item.nombre}" volverá a estar disponible para nuevas operaciones.'
-              : 'La calidad "${item.nombre}" dejará de estar disponible para nuevas operaciones.',
-          confirmText: newStatus ? 'Activar' : 'Desactivar',
-        );
-      },
-    );
-
-    if (confirmed != true || !context.mounted) return;
-
-
-    final viewModel = context.read<CalidadViewModel>();
-    final ok = await viewModel.changeStatus(id: item.id!, estado: newStatus);
-
-    if (!context.mounted) return;
-
-    AppToast.show(
-      ok
-          ? newStatus
-              ? 'Calidad activada correctamente.'
-              : 'Calidad desactivada correctamente.'
-          : viewModel.errorMessage ??
-              (newStatus
-                  ? 'No se pudo activar la calidad.'
-                  : 'No se pudo desactivar la calidad.'),
-      type: ok ? ToastType.success : ToastType.error,
+      currentStatus: item.estado,
+      article: 'la',
+      entityName: 'Calidad',
+      itemName: item.nombre,
+      onConfirm: (newStatus) =>
+          vm.changeStatus(id: item.id!, estado: newStatus),
+      getErrorMessage: () => vm.errorMessage,
     );
   }
 }
-
