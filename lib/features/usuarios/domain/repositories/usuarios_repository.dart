@@ -7,4 +7,7 @@ abstract class UsuarioRepository {
   Future<Usuario> update(Usuario usuario);
 
   Future<bool> changeStatus({required int id, required bool estado});
+  Future<void> addRole({required int usuarioId, required int roleId});
+
+  Future<void> removeRole({required int usuarioId, required int roleId});
 }

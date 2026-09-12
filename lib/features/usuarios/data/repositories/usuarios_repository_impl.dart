@@ -1,5 +1,6 @@
 import 'package:quipubox/features/usuarios/data/datasources/usuarios_remote_data_source.dart';
 import 'package:quipubox/features/usuarios/data/models/usuario_request_model.dart';
+import 'package:quipubox/features/usuarios/data/models/usuario_role_request_model.dart';
 import 'package:quipubox/features/usuarios/domain/entities/usuario.dart';
 import 'package:quipubox/features/usuarios/domain/repositories/usuarios_repository.dart';
 
@@ -17,7 +18,6 @@ class UsuarioRepositoryImpl implements UsuarioRepository {
 
   @override
   Future<Usuario> create(Usuario usuario) async {
-
     final request = UsuarioRequestModel.fromEntity(usuario);
     final model = await remoteDataSource.create(request);
 
@@ -34,7 +34,18 @@ class UsuarioRepositoryImpl implements UsuarioRepository {
 
   @override
   Future<bool> changeStatus({required int id, required bool estado}) {
-
     return remoteDataSource.changeStatus(id: id, estado: estado);
+  }
+
+  @override
+  Future<void> addRole({required int usuarioId, required int roleId}) {
+    final request = UsuarioRoleRequestModel(idRolUsuario: roleId);
+
+    return remoteDataSource.addRole(usuarioId: usuarioId, request: request);
+  }
+
+  @override
+  Future<void> removeRole({required int usuarioId, required int roleId}) {
+    return remoteDataSource.removeRole(usuarioId: usuarioId, roleId: roleId);
   }
 }

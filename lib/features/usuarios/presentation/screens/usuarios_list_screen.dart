@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import 'package:quipubox/core/navigation/app_routes.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
+import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
+import 'package:quipubox/features/roles/domain/entities/role.dart';
+import 'package:quipubox/features/roles/presentation/viewmodels/roles_viewmodel.dart';
+import 'package:quipubox/features/usuarios/presentation/widgets/usuario_roles_sheet.dart';
+
 import '../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../../core/ui/states/empty_state.dart';
 import '../../../app_shell/presentation/widgets/app_scaffold.dart';
@@ -23,9 +29,11 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => context.read<UsuarioViewModel>().load(),
-    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UsuarioViewModel>().load();
+      context.read<RolesViewModel>().load();
+    });
   }
 
   @override
@@ -34,6 +42,7 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
     final activeCount = vm.items.where((e) => e.estado).length;
     final inactiveCount = vm.items.length - activeCount;
+
     final filteredItems = switch (_statusFilter) {
       StatusSummaryValue.all => vm.items,
       StatusSummaryValue.active => vm.items.where((e) => e.estado).toList(),
@@ -41,7 +50,7 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
     };
 
     return AppScaffold(
-      title: Text('Usuarios'),
+      title: const Text('Usuarios'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_rounded),
@@ -97,6 +106,7 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
                           onEdit: () => _openForm(context, item: item),
                           onChangeStatus: () =>
                               _confirmChangeStatus(context, item),
+                          onManageRoles: () => _showRoles(context, item),
                         ),
                       ),
                     ),
@@ -111,14 +121,12 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
   }
 
   Future<void> _openForm(BuildContext context, {Usuario? item}) async {
-    context.push(
-      AppRoutes.usuariosForm, // Se usa la constante limpia
-      extra: item,
-    );
+    context.push(AppRoutes.usuariosForm, extra: item);
   }
 
   Future<void> _confirmChangeStatus(BuildContext context, Usuario item) async {
     if (item.id == null) return;
+
     final vm = context.read<UsuarioViewModel>();
 
     await ChangeStatusDialog.showAndAction(
@@ -131,5 +139,71 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
           vm.changeStatus(id: item.id!, estado: newStatus),
       getErrorMessage: () => vm.errorMessage,
     );
+  }
+
+  Future<void> _showRoles(BuildContext context, Usuario item) async {
+    await AppBottomSheet.show(
+      context: context,
+      title: 'Gestionar roles',
+      initialChildSize: 0.40,
+      maxChildSize: 0.70,
+      builder: (sheetContext, controller) {
+        return Consumer2<UsuarioViewModel, RolesViewModel>(
+          builder: (context, usuarioVm, rolesVm, _) {
+            if (rolesVm.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (rolesVm.errorMessage != null && rolesVm.roles.isEmpty) {
+              return EmptyState(
+                message: rolesVm.errorMessage!,
+                actionLabel: 'Reintentar',
+                onAction: rolesVm.load,
+              );
+            }
+
+            final currentUsuario = usuarioVm.items.firstWhere(
+              (e) => e.id == item.id,
+              orElse: () => item,
+            );
+
+            return UsuarioRolesSheet(
+              usuario: currentUsuario,
+              roles: rolesVm.roles,
+              controller: controller,
+              processingRoleId: usuarioVm.processingRoleId,
+              onAddRole: (role) =>
+                  _addRole(context, usuario: currentUsuario, role: role),
+              onRemoveRole: (role) =>
+                  _removeRole(context, usuario: currentUsuario, role: role),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _addRole(
+    BuildContext context, {
+    required Usuario usuario,
+    required Role role,
+  }) async {
+    if (usuario.id == null) return;
+
+    final vm = context.read<UsuarioViewModel>();
+
+    await vm.addRole(usuarioId: usuario.id!, role: role);
+  }
+
+  Future<void> _removeRole(
+    BuildContext context, {
+    required Usuario usuario,
+    required Role role,
+  }) async {
+    if (usuario.id == null) return;
+
+    final vm = context.read<UsuarioViewModel>();
+
+    await vm.removeRole(usuarioId: usuario.id!, roleId: role.id);
   }
 }

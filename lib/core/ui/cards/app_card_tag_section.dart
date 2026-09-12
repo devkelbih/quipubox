@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
 
+/// Widget reutilizable que muestra una sección con:
+/// - Un ícono dentro de un contenedor con fondo redondeado (a la izquierda).
+/// - Una etiqueta de texto (label) arriba.
+/// - Una lista de "tags" que se acomodan en varias líneas.
+/// - Opcionalmente, permite interacción mediante [onTap].
+///
+/// Ejemplo no interactivo:
+/// [ Icon ]   Roles
+///            [tag] [tag] [tag]
+///            [tag] [tag]
+///
+/// Ejemplo interactivo:
+/// [ Icon ]   Roles                                      >
+///            [tag] [tag] [tag]
+///            [tag] [tag]
 class AppCardTagSection extends StatelessWidget {
   final IconData icon;
   final String label;
   final List<Widget> tags;
+  final VoidCallback? onTap;
 
   const AppCardTagSection({
     super.key,
     required this.icon,
     required this.label,
     required this.tags,
+    this.onTap,
   });
 
   @override
@@ -17,41 +34,74 @@ class AppCardTagSection extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: scheme.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          alignment: Alignment.center,
-          child: Icon(icon, size: 18, color: scheme.primary),
-        ),
+    final isClickable = onTap != null;
 
-        const SizedBox(width: 12),
-
-        Expanded(
-          child: Column(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: scheme.primary,
                 ),
               ),
 
-              const SizedBox(height: 6),
+              const SizedBox(width: 12),
 
-              Wrap(spacing: 6, runSpacing: 6, children: tags),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: tags,
+                    ),
+                  ],
+                ),
+              ),
+
+              if (isClickable)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      size: 30,
+                      color: scheme.primary,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

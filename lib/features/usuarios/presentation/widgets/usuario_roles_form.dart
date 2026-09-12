@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:quipubox/core/ui/tags/app_tag.dart';
+import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
 import 'package:quipubox/features/roles/domain/entities/role.dart';
 
 class UsuarioRolesForm extends StatelessWidget {
@@ -19,153 +19,183 @@ class UsuarioRolesForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Roles del Usuario',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        Text(
+          'Roles del usuario',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
 
         const SizedBox(height: 8),
 
+        Text(
+          'Los roles determinan las funciones que el usuario puede '
+          'realizar dentro de la aplicación. Puedes asignar uno o '
+          'varios roles según sus responsabilidades.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            height: 1.4,
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
         if (roles.isEmpty)
-          const Text(
+          Text(
             'No hay roles disponibles.',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           )
         else
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: roles.map((role) {
-              final isSelected = selectedRoleIds.contains(role.id);
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                for (int index = 0; index < roles.length; index++) ...[
+                  _buildRoleTile(context, roles[index]),
 
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      final updatedRoleIds = Set<int>.from(selectedRoleIds);
-
-                      if (isSelected) {
-                        updatedRoleIds.remove(role.id);
-                      } else {
-                        updatedRoleIds.add(role.id);
-                      }
-
-                      onChanged(updatedRoleIds);
-                    },
-                    child: AppTag(
-                      label: role.nombre,
-                      size: AppTagSize.large,
-                      selected: isSelected,
-                    ),
-                  ),
-
-                  if (role.descripcion != null &&
-                      role.descripcion!.trim().isNotEmpty)
-                    const SizedBox(width: 4),
-                  Builder(
-                    builder: (iconContext) {
-                      return SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: IconButton(
-                          icon: const Icon(Icons.info_outline, size: 17),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          visualDensity: VisualDensity.compact,
-                          onPressed: () {
-                            _showRolePopup(iconContext, role);
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                  if (index < roles.length - 1)
+                    Divider(height: 1, color: colorScheme.outlineVariant),
                 ],
-              );
-            }).toList(),
+              ],
+            ),
           ),
 
         if (hasError) ...[
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Selecciona al menos un rol.',
-            style: TextStyle(color: Colors.red, fontSize: 12),
+            style: TextStyle(color: colorScheme.error, fontSize: 12),
           ),
         ],
       ],
     );
   }
 
-  void _showRolePopup(BuildContext context, Role role) {
-    final RenderBox button = context.findRenderObject() as RenderBox;
+  Widget _buildRoleTile(BuildContext context, Role role) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isSelected = selectedRoleIds.contains(role.id);
 
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-
-    final Offset position = button.localToGlobal(
-      Offset.zero,
-      ancestor: overlay,
-    );
-
-    final RelativeRect positionRect = RelativeRect.fromRect(
-      Rect.fromLTWH(
-        position.dx,
-        position.dy,
-        button.size.width,
-        button.size.height,
-      ),
-      Offset.zero & overlay.size,
-    );
-
-    showMenu<void>(
-      context: context,
-      position: positionRect,
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      items: [
-        PopupMenuItem<void>(
-          enabled: true,
+    return Material(
+      color: isSelected
+          ? colorScheme.primaryContainer.withValues(alpha: 0.35)
+          : colorScheme.surface,
+      child: InkWell(
+        onTap: () => _toggleRole(role),
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 260),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.badge_outlined,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        role.nombre,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+          child: Row(
+            children: [
+              _buildSelectionIndicator(context, isSelected),
 
-                const SizedBox(height: 8),
+              const SizedBox(width: 12),
 
-                Text(
-                  role.descripcion!.trim(),
-                  style: const TextStyle(fontSize: 13, height: 1.4),
+              Expanded(
+                child: Text(
+                  role.nombre,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
-              ],
-            ),
+              ),
+
+              IconButton(
+                onPressed: () => _showRoleDescription(context, role),
+                icon: const Icon(Icons.info_outline_rounded, size: 20),
+                tooltip: 'Ver descripción',
+                color: colorScheme.onSurfaceVariant,
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildSelectionIndicator(BuildContext context, bool isSelected) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      width: 22,
+      height: 22,
+      decoration: BoxDecoration(
+        color: isSelected ? colorScheme.primary : Colors.transparent,
+        border: Border.all(
+          color: isSelected ? colorScheme.primary : colorScheme.outline,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: isSelected
+          ? Icon(Icons.check_rounded, size: 16, color: colorScheme.onPrimary)
+          : null,
+    );
+  }
+
+  void _toggleRole(Role role) {
+    final updatedRoleIds = Set<int>.from(selectedRoleIds);
+
+    if (updatedRoleIds.contains(role.id)) {
+      updatedRoleIds.remove(role.id);
+    } else {
+      updatedRoleIds.add(role.id);
+    }
+
+    onChanged(updatedRoleIds);
+  }
+
+  Future<void> _showRoleDescription(BuildContext context, Role role) async {
+    final description = role.descripcion?.trim();
+
+    if (description == null || description.isEmpty) {
+      return;
+    }
+
+    await AppBottomSheet.show<void>(
+      context: context,
+      title: role.nombre,
+      initialChildSize: 0.3,
+      minChildSize: 0.25,
+      maxChildSize: 0.4,
+      builder: (context, scrollController) {
+        return SingleChildScrollView(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.badge_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Text(
+                  description,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(height: 1.5),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

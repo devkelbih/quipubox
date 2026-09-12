@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 ///
 /// Ejemplos:
 ///
-/// 🌱  Variedades
+///  Variedades
 ///     8 registradas
 ///
-/// 📄  Descripción
+///  Descripción
 ///     Fruta cítrica de pulpa amarilla.
 ///
-/// 🚚  Capacidad
+///  Capacidad
 ///     25 TN
 /// ===============================================================
 class AppCardInfoRow extends StatelessWidget {

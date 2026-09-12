@@ -1,7 +1,9 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:quipubox/features/roles/presentation/viewmodels/roles_viewmodel.dart';
+import 'package:quipubox/features/usuarios/domain/usecases/add_usuario_role.dart';
 import 'package:quipubox/features/usuarios/domain/usecases/change_usuario_status.dart';
+import 'package:quipubox/features/usuarios/domain/usecases/remove_usuario_role.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/network_checker.dart';
@@ -230,13 +232,23 @@ class AdminModule {
       create: (context) =>
           ChangeUsuarioStatusUseCase(context.read<UsuarioRepository>()),
     ),
+    Provider<AddUsuarioRoleUseCase>(
+      create: (context) =>
+          AddUsuarioRoleUseCase(context.read<UsuarioRepository>()),
+    ),
 
+    Provider<RemoveUsuarioRoleUseCase>(
+      create: (context) =>
+          RemoveUsuarioRoleUseCase(context.read<UsuarioRepository>()),
+    ),
     ChangeNotifierProvider<UsuarioViewModel>(
       create: (context) => UsuarioViewModel(
         getItemsUseCase: context.read<GetUsuariosUseCase>(),
         createUseCase: context.read<CreateUsuarioUseCase>(),
         updateUseCase: context.read<UpdateUsuarioUseCase>(),
         changeStatusUseCase: context.read<ChangeUsuarioStatusUseCase>(),
+        addRoleUseCase: context.read<AddUsuarioRoleUseCase>(),
+        removeRoleUseCase: context.read<RemoveUsuarioRoleUseCase>(),
       ),
     ),
 

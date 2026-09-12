@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
 
 import 'package:quipubox/features/sedes/domain/entities/sede.dart';
 import 'package:quipubox/features/sedes/presentation/viewmodels/sedes_viewmodel.dart';
@@ -23,13 +24,36 @@ class UsuarioSedeForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Sede del usuario',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        ),
+
+        const SizedBox(height: 8),
+
+        Text(
+          'La sede define el contexto operativo del usuario. '
+          'Permite determinar la información, módulos y operaciones '
+          'que corresponden a su ubicación y actividad dentro de la empresa.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            height: 1.4,
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
         InkWell(
           onTap: () => _selectSede(context),
           borderRadius: BorderRadius.circular(12),
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: 'Sede',
-              errorText: hasError ? 'Selecciona una sede para continuar.' : null,
+              errorText: hasError
+                  ? 'Selecciona una sede para continuar.'
+                  : null,
             ),
             child: Row(
               children: [
@@ -72,54 +96,35 @@ class UsuarioSedeForm extends StatelessWidget {
 
     if (sedesActivas.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No hay sedes activas disponibles.'),
-        ),
+        const SnackBar(content: Text('No hay sedes activas disponibles.')),
       );
 
       return;
     }
 
-    final selected = await showModalBottomSheet<Sede>(
+    final selected = await AppBottomSheet.show<Sede>(
       context: context,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (context) {
+      title: 'Seleccionar sede',
+      initialChildSize: 0.40,
+      minChildSize: 0.30,
+      maxChildSize: 0.5,
+      builder: (context, scrollController) {
         return ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            const Padding(
-              padding: EdgeInsets.only(
-                left: 4,
-                bottom: 12,
-              ),
-              child: Text(
-                'Seleccionar sede',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            ...sedesActivas.map((sede) {
+              final isSelected = selectedSede?.id == sede.id;
 
-            ...sedesActivas.map(
-              (sede) {
-                final isSelected = selectedSede?.id == sede.id;
-
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                  ),
-                  title: Text(sede.nombre),
-                  trailing: isSelected
-                      ? const Icon(Icons.check_rounded)
-                      : null,
-                  onTap: () {
-                    Navigator.of(context).pop(sede);
-                  },
-                );
-              },
-            ),
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(sede.nombre),
+                trailing: isSelected ? const Icon(Icons.check_rounded) : null,
+                onTap: () {
+                  Navigator.of(context).pop(sede);
+                },
+              );
+            }),
           ],
         );
       },
