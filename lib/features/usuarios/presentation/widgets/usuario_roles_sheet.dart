@@ -8,6 +8,7 @@ class UsuarioRolesSheet extends StatefulWidget {
   final List<Role> roles;
   final ScrollController controller;
 
+  final bool isSaving;
   final int? processingRoleId;
 
   final ValueChanged<Role>? onAddRole;
@@ -18,6 +19,7 @@ class UsuarioRolesSheet extends StatefulWidget {
     required this.usuario,
     required this.roles,
     required this.controller,
+    required this.isSaving,
     this.processingRoleId,
     this.onAddRole,
     this.onRemoveRole,
@@ -58,30 +60,38 @@ class _UsuarioRolesSheetState extends State<UsuarioRolesSheet> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return ListView(
-      controller: widget.controller,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+    return Column(
       children: [
-        if (widget.roles.isEmpty)
-          Text(
-            'No hay roles disponibles.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          )
-        else ...[
-          if (_assignedRoles.isNotEmpty) ...[
-            _buildSectionTitle(context, 'Roles asignados'),
-            const SizedBox(height: 8),
-            _buildRolesGroup(context, _assignedRoles, isAssigned: true),
-          ],
-          if (_otherRoles.isNotEmpty) ...[
-            if (_assignedRoles.isNotEmpty) const SizedBox(height: 20),
-            _buildSectionTitle(context, 'Otros roles'),
-            const SizedBox(height: 8),
-            _buildRolesGroup(context, _otherRoles, isAssigned: false),
-          ],
-        ],
+        if (widget.isSaving) const LinearProgressIndicator(),
+
+        Expanded(
+          child: ListView(
+            controller: widget.controller,
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+            children: [
+              if (widget.roles.isEmpty)
+                Text(
+                  'No hay roles disponibles.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                )
+              else ...[
+                if (_assignedRoles.isNotEmpty) ...[
+                  _buildSectionTitle(context, 'Roles asignados'),
+                  const SizedBox(height: 8),
+                  _buildRolesGroup(context, _assignedRoles, isAssigned: true),
+                ],
+                if (_otherRoles.isNotEmpty) ...[
+                  if (_assignedRoles.isNotEmpty) const SizedBox(height: 20),
+                  _buildSectionTitle(context, 'Otros roles'),
+                  const SizedBox(height: 8),
+                  _buildRolesGroup(context, _otherRoles, isAssigned: false),
+                ],
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }

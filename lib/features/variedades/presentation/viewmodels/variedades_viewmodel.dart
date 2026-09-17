@@ -1,6 +1,4 @@
 import 'package:quipubox/core/state/base_state_viewmodel.dart';
-import 'package:quipubox/features/frutas/domain/entities/fruta.dart';
-import 'package:quipubox/features/frutas/domain/usecases/get_frutas.dart';
 import 'package:quipubox/features/variedades/domain/usecases/change_variedad_status.dart';
 
 import '../../domain/entities/variedad.dart';
@@ -10,21 +8,18 @@ import '../../domain/usecases/update_variedad.dart';
 
 class VariedadViewModel extends BaseStateViewModel {
   final GetVariedadesUseCase getItemsUseCase;
-  final GetFrutasUseCase getFrutasUseCase;
   final CreateVariedadUseCase createUseCase;
   final UpdateVariedadUseCase updateUseCase;
   final ChangeVariedadStatusUseCase changeStatusUseCase;
 
   VariedadViewModel({
     required this.getItemsUseCase,
-    required this.getFrutasUseCase,
     required this.createUseCase,
     required this.updateUseCase,
     required this.changeStatusUseCase,
   });
 
   List<Variedad> items = [];
-  List<Fruta> frutas = [];
 
   Future<void> load() async {
     final result = await run<List<Variedad>>(
@@ -34,18 +29,6 @@ class VariedadViewModel extends BaseStateViewModel {
 
     if (result != null) {
       items = result;
-      notifyListeners();
-    }
-  }
-
-  Future<void> loadFormData() async {
-    final result = await run<List<Fruta>>(
-      state: ViewModelActionState.loading,
-      action: getFrutasUseCase.call,
-    );
-
-    if (result != null) {
-      frutas = result;
       notifyListeners();
     }
   }

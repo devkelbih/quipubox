@@ -84,6 +84,20 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
                 );
               }
 
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes variedades activas.'
+                      : 'No tienes variedades inactivas.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(
+                      () => _statusFilter = StatusSummaryValue.all,
+                    );
+                  },
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(

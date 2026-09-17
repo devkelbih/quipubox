@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
 
+import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
 import 'package:quipubox/features/sedes/domain/entities/sede.dart';
 import 'package:quipubox/features/sedes/presentation/viewmodels/sedes_viewmodel.dart';
 
 class UsuarioSedeForm extends StatelessWidget {
-  final Sede? selectedSede;
-  final ValueChanged<Sede> onChanged;
+  final int? selectedSedeId;
+  final ValueChanged<int> onChanged;
   final bool hasError;
 
   const UsuarioSedeForm({
     super.key,
-    required this.selectedSede,
+    required this.selectedSedeId,
     required this.onChanged,
     this.hasError = false,
   });
@@ -20,6 +20,14 @@ class UsuarioSedeForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final sedeViewModel = context.watch<SedeViewModel>();
+
+    final selectedSede = selectedSedeId == null
+        ? null
+        : sedeViewModel.items.cast<Sede?>().firstWhere(
+            (sede) => sede?.id == selectedSedeId,
+            orElse: () => null,
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,14 +90,6 @@ class UsuarioSedeForm extends StatelessWidget {
   Future<void> _selectSede(BuildContext context) async {
     final sedeViewModel = context.read<SedeViewModel>();
 
-    if (sedeViewModel.items.isEmpty && !sedeViewModel.isLoading) {
-      await sedeViewModel.load();
-    }
-
-    if (!context.mounted) {
-      return;
-    }
-
     final sedesActivas = sedeViewModel.items
         .where((sede) => sede.estado)
         .toList();
@@ -114,7 +114,7 @@ class UsuarioSedeForm extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             ...sedesActivas.map((sede) {
-              final isSelected = selectedSede?.id == sede.id;
+              final isSelected = selectedSedeId == sede.id;
 
               return ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -134,6 +134,6 @@ class UsuarioSedeForm extends StatelessWidget {
       return;
     }
 
-    onChanged(selected);
+    onChanged(selected.id!);
   }
 }

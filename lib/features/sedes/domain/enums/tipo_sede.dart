@@ -1,42 +1,17 @@
 enum TipoSede {
-  origen,
-  destino,
-  ambos;
+  origen('origen', 'Origen'),
+  destino('destino', 'Destino'),
+  ambos('ambos', 'Ambos');
+
+  final String value;
+  final String label;
+
+  const TipoSede(this.value, this.label);
 
   static TipoSede fromValue(String value) {
-    switch (value.toLowerCase().trim()) {
-      case 'origen':
-        return TipoSede.origen;
-      case 'destino':
-        return TipoSede.destino;
-      case 'ambos':
-        return TipoSede.ambos;
-      default:
-        throw Exception('Tipo de sede no válido: $value');
-    }
-  }
-}
-
-extension TipoSedeX on TipoSede {
-  String get value {
-    switch (this) {
-      case TipoSede.origen:
-        return 'origen';
-      case TipoSede.destino:
-        return 'destino';
-      case TipoSede.ambos:
-        return 'ambos';
-    }
-  }
-
-  String get label {
-    switch (this) {
-      case TipoSede.origen:
-        return 'Origen';
-      case TipoSede.destino:
-        return 'Destino';
-      case TipoSede.ambos:
-        return 'Ambos';
-    }
+    return TipoSede.values.firstWhere(
+      (e) => e.value.toLowerCase() == value.toLowerCase().trim(),
+      orElse: () => throw Exception('Tipo de sede no válido: $value'),
+    );
   }
 }

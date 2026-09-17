@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
+import '../../../frutas/presentation/viewmodels/frutas_viewmodel.dart';
 import '../../domain/entities/variedad.dart';
 import '../viewmodels/variedades_viewmodel.dart';
 
@@ -32,13 +33,15 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
     final item = widget.item;
 
     _nombreController = TextEditingController(text: item?.nombre ?? '');
+
     _descripcionController = TextEditingController(
       text: item?.descripcion ?? '',
     );
+
     _idFruta = item?.idFruta;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VariedadViewModel>().loadFormData();
+      context.read<FrutaViewModel>().load();
     });
   }
 
@@ -51,10 +54,11 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<VariedadViewModel>();
+    final variedadVm = context.watch<VariedadViewModel>();
+    final frutaVm = context.watch<FrutaViewModel>();
     final isOnline = context.watch<ConnectivityViewModel>().isOnline;
 
-    final canSubmit = !vm.isSaving && isOnline;
+    final canSubmit = !variedadVm.isSaving && isOnline;
 
     return Form(
       key: _formKey,
@@ -62,26 +66,29 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DropdownButtonFormField<int>(
-            initialValue: vm.frutas.any((e) => e.id == _idFruta)
+            initialValue: frutaVm.items.any((e) => e.id == _idFruta)
                 ? _idFruta
                 : null,
             decoration: const InputDecoration(
               labelText: 'Fruta',
               prefixIcon: Icon(Icons.eco_rounded),
             ),
-            items: vm.frutas.map((fruta) {
+            items: frutaVm.items.map((fruta) {
               return DropdownMenuItem<int>(
                 value: fruta.id,
                 child: Text(fruta.nombre),
               );
             }).toList(),
-            onChanged: vm.isSaving
+            onChanged: variedadVm.isSaving
                 ? null
                 : (value) {
                     setState(() => _idFruta = value);
                   },
             validator: (value) {
-              if (value == null) return 'Selecciona una fruta';
+              if (value == null) {
+                return 'Selecciona una fruta';
+              }
+
               return null;
             },
           ),
@@ -89,7 +96,7 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
 
           TextFormField(
             controller: _nombreController,
-            enabled: !vm.isSaving,
+            enabled: !variedadVm.isSaving,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
               labelText: 'Nombre de la variedad',
@@ -100,6 +107,7 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
               if (value == null || value.trim().isEmpty) {
                 return 'Ingresa el nombre de la variedad';
               }
+
               return null;
             },
           ),
@@ -107,7 +115,7 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
 
           TextFormField(
             controller: _descripcionController,
-            enabled: !vm.isSaving,
+            enabled: !variedadVm.isSaving,
             textCapitalization: TextCapitalization.sentences,
             minLines: 2,
             maxLines: 4,
@@ -121,7 +129,7 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
 
           FilledButton.icon(
             onPressed: canSubmit ? _submit : null,
-            icon: vm.isSaving
+            icon: variedadVm.isSaving
                 ? const SizedBox(
                     width: 18,
                     height: 18,
@@ -153,8 +161,6 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
     final vm = context.read<VariedadViewModel>();
     final item = widget.item;
 
-    _selectedFrutaName(vm);
-
     final variedad = Variedad(
       id: item?.id,
       idEmpresa: item?.idEmpresa,
@@ -179,18 +185,14 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
       type: ok ? ToastType.success : ToastType.error,
     );
 
-    if (ok) Navigator.pop(context);
-  }
-
-  String? _selectedFrutaName(VariedadViewModel vm) {
-    for (final fruta in vm.frutas) {
-      if (fruta.id == _idFruta) return fruta.nombre;
+    if (ok) {
+      Navigator.pop(context);
     }
-    return null;
   }
 
   String? _nullIfEmpty(String value) {
     final clean = value.trim();
+
     return clean.isEmpty ? null : clean;
   }
 }

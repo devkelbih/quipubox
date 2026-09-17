@@ -84,6 +84,17 @@ class _SedeListScreenState extends State<SedeListScreen> {
                 );
               }
 
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes sedes activas.'
+                      : 'No tienes sedes inactivas.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(() => _statusFilter = StatusSummaryValue.all);
+                  },
+                );
+              }
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(

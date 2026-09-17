@@ -129,7 +129,6 @@ class CatalogosModule {
     ChangeNotifierProvider<VariedadViewModel>(
       create: (context) => VariedadViewModel(
         getItemsUseCase: context.read<GetVariedadesUseCase>(),
-        getFrutasUseCase: context.read<GetFrutasUseCase>(),
         createUseCase: context.read<CreateVariedadUseCase>(),
         updateUseCase: context.read<UpdateVariedadUseCase>(),
         changeStatusUseCase: context.read<ChangeVariedadStatusUseCase>(),

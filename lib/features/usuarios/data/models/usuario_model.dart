@@ -1,12 +1,13 @@
-import '../../../company/data/models/empresa_model.dart';
 import '../../../roles/data/models/role_model.dart';
 import '../../../sedes/data/models/sede_model.dart';
 import '../../domain/entities/usuario.dart';
 
 class UsuarioModel {
   final int id;
-  final EmpresaModel empresa;
-  final SedeModel sede;
+  final int idEmpresa;
+  final int idSede;
+
+  final SedeModel? sede;
   final List<RoleModel> roles;
 
   final String nombres;
@@ -21,8 +22,9 @@ class UsuarioModel {
 
   const UsuarioModel({
     required this.id,
-    required this.empresa,
-    required this.sede,
+    required this.idEmpresa,
+    required this.idSede,
+    this.sede,
     required this.roles,
     required this.nombres,
     this.apellidos,
@@ -33,21 +35,20 @@ class UsuarioModel {
     required this.estado,
   });
 
+  /// Convierte el JSON recibido desde la API
+  /// hacia un modelo de infraestructura.
   factory UsuarioModel.fromJson(Map<String, dynamic> json) {
-    final empresaJson = json['empresas'] is Map
-        ? Map<String, dynamic>.from(json['empresas'] as Map)
-        : <String, dynamic>{};
-
     final sedeJson = json['sedes'] is Map
         ? Map<String, dynamic>.from(json['sedes'] as Map)
-        : <String, dynamic>{};
+        : null;
 
     final rolesJson = _readRoles(json);
 
     return UsuarioModel(
       id: _readInt(json['id_usuario'] ?? json['id']),
-      empresa: EmpresaModel.fromJson(empresaJson),
-      sede: SedeModel.fromJson(sedeJson),
+      idEmpresa: _readInt(json['id_empresa']),
+      idSede: _readInt(json['id_sede']),
+      sede: sedeJson != null ? SedeModel.fromJson(sedeJson) : null,
       roles: rolesJson.map(RoleModel.fromJson).toList(),
       nombres: json['nombres']?.toString() ?? '',
       apellidos: _readNullableString(json['apellidos']),
@@ -59,11 +60,14 @@ class UsuarioModel {
     );
   }
 
+  /// Convierte el modelo hacia la entidad
+  /// utilizada por la capa Domain.
   Usuario toEntity() {
     return Usuario(
       id: id,
-      idEmpresa: empresa.id,
-      sede: sede.toEntity(),
+      idEmpresa: idEmpresa,
+      idSede: idSede,
+      sede: sede?.toEntity(),
       roles: roles.map((e) => e.toEntity()).toList(),
       nombres: nombres,
       apellidos: apellidos,
@@ -80,11 +84,17 @@ class UsuarioModel {
 
     return data
         .whereType<Map>()
-        .map((e) => UsuarioModel.fromJson(Map<String, dynamic>.from(e)))
+        .map(
+          (e) => UsuarioModel.fromJson(
+            Map<String, dynamic>.from(e),
+          ),
+        )
         .toList();
   }
 
-  static List<Map<String, dynamic>> _readRoles(Map<String, dynamic> json) {
+  static List<Map<String, dynamic>> _readRoles(
+    Map<String, dynamic> json,
+  ) {
     final raw = json['usuarios_roles'] is List
         ? json['usuarios_roles'] as List
         : const [];
@@ -93,7 +103,9 @@ class UsuarioModel {
       final itemMap = Map<String, dynamic>.from(item);
 
       if (itemMap['roles_usuarios'] is Map) {
-        return Map<String, dynamic>.from(itemMap['roles_usuarios'] as Map);
+        return Map<String, dynamic>.from(
+          itemMap['roles_usuarios'] as Map,
+        );
       }
 
       return <String, dynamic>{};
@@ -116,3 +128,4 @@ class UsuarioModel {
     return text;
   }
 }
+

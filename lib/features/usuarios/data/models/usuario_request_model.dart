@@ -22,7 +22,7 @@ class UsuarioRequestModel {
   factory UsuarioRequestModel.fromEntity(Usuario usuario) {
     return UsuarioRequestModel(
       idEmpresa: usuario.idEmpresa,
-      idSede: usuario.sede.id!,
+      idSede: usuario.idSede,
       nombres: usuario.nombres,
       apellidos: usuario.apellidos,
       telefono: usuario.telefono,
@@ -32,25 +32,25 @@ class UsuarioRequestModel {
   }
 
   Map<String, dynamic> toCreateJson() => {
-        if (idEmpresa != null) 'id_empresa': idEmpresa,
-        'id_sede': idSede,
-        'nombres': nombres.trim(),
-        if (apellidos != null && apellidos!.trim().isNotEmpty)
-          'apellidos': apellidos!.trim(),
-        if (telefono != null && telefono!.trim().isNotEmpty)
-          'telefono': telefono!.trim(),
-        'email': email.trim(),
-        'roles': roles,
-      };
+    if (idEmpresa != null) 'id_empresa': idEmpresa,
+    'id_sede': idSede,
+    'nombres': nombres.trim(),
+    if (apellidos != null && apellidos!.trim().isNotEmpty)
+      'apellidos': apellidos!.trim(),
+    if (telefono != null && telefono!.trim().isNotEmpty)
+      'telefono': telefono!.trim(),
+    'email': email.trim(),
+    'roles': roles,
+  };
 
   Map<String, dynamic> toUpdateJson() => {
-        'id_sede': idSede,
-        'nombres': nombres.trim(),
-        if (apellidos != null && apellidos!.trim().isNotEmpty)
-          'apellidos': apellidos!.trim(),
-        if (telefono != null && telefono!.trim().isNotEmpty)
-          'telefono': telefono!.trim(),
-        'email': email.trim(),
-        'roles': roles,
-      };
+    'id_sede': idSede,
+    'nombres': nombres.trim(),
+    if (apellidos != null && apellidos!.trim().isNotEmpty)
+      'apellidos': apellidos!.trim(),
+    if (telefono != null && telefono!.trim().isNotEmpty)
+      'telefono': telefono!.trim(),
+    'email': email.trim(),
+    'roles': roles,
+  };
 }

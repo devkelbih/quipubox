@@ -1,57 +1,61 @@
+import 'package:quipubox/features/sedes/domain/entities/sede.dart';
+
+import '../enums/lugar_operativo_tipos.dart';
+
 class LugarOperativo {
-  final int id;
-  final int idEmpresa;
+  final int? id;
+
+  final int? idEmpresa;
+
+  /// FK utilizada para crear y actualizar.
   final int idSede;
+
+  /// Relación opcional cargada desde el backend.
+  final Sede? sede;
+
   final bool estado;
 
   final String nombre;
-  final String? direccionReferencia;
-  final String? observaciones;
-  final String tipoLugar;
 
-  final LugarEmpresaResumen? empresa;
-  final LugarSedeResumen sede;
+  final String? direccionReferencia;
+
+  final String? observaciones;
+
+  final LugarOperativoTipos tipoLugar;
 
   const LugarOperativo({
-    required this.id,
-    required this.idEmpresa,
+    this.id,
+    this.idEmpresa,
     required this.idSede,
-    required this.estado,
+    this.sede,
+    this.estado = true,
     required this.nombre,
     this.direccionReferencia,
     this.observaciones,
     required this.tipoLugar,
-    this.empresa,
-    required this.sede,
   });
-}
 
-class LugarEmpresaResumen {
-  final int id;
-  final String nombreComercial;
-  final String? ruc;
-
-  const LugarEmpresaResumen({
-    required this.id,
-    required this.nombreComercial,
-    this.ruc,
-  });
-}
-
-class LugarSedeResumen {
-  final int id;
-  final String nombre;
-  final String? tipoSede;
-  final String? ciudad;
-  final String? departamento;
-  final bool estado;
-
-  const LugarSedeResumen({
-    required this.id,
-    required this.nombre,
-    this.tipoSede,
-    this.ciudad,
-    this.departamento,
-    required this.estado,
-  });
+  LugarOperativo copyWith({
+    int? id,
+    int? idEmpresa,
+    int? idSede,
+    Sede? sede,
+    bool? estado,
+    String? nombre,
+    String? direccionReferencia,
+    String? observaciones,
+    LugarOperativoTipos? tipoLugar,
+  }) {
+    return LugarOperativo(
+      id: id ?? this.id,
+      idEmpresa: idEmpresa ?? this.idEmpresa,
+      idSede: idSede ?? this.idSede,
+      sede: sede ?? this.sede,
+      estado: estado ?? this.estado,
+      nombre: nombre ?? this.nombre,
+      direccionReferencia: direccionReferencia ?? this.direccionReferencia,
+      observaciones: observaciones ?? this.observaciones,
+      tipoLugar: tipoLugar ?? this.tipoLugar,
+    );
+  }
 }

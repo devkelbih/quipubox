@@ -84,6 +84,20 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
                 );
               }
 
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes tipos de jaba activos.'
+                      : 'No tienes tipos de jaba inactivos.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(
+                      () => _statusFilter = StatusSummaryValue.all,
+                    );
+                  },
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(

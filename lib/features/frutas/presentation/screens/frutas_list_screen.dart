@@ -84,6 +84,20 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
                 );
               }
 
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes frutas activas.'
+                      : 'No tienes frutas inactivas.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(
+                      () => _statusFilter = StatusSummaryValue.all,
+                    );
+                  },
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(

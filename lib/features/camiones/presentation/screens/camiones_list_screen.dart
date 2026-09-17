@@ -84,6 +84,20 @@ class _CamionListScreenState extends State<CamionListScreen> {
                 );
               }
 
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes camiones activos.'
+                      : 'No tienes camiones inactivos.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(
+                      () => _statusFilter = StatusSummaryValue.all,
+                    );
+                  },
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(

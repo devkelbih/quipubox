@@ -19,18 +19,10 @@ class CreateUsuarioUseCase {
       throw const AppException('No se encontró la empresa del usuario.');
     }
 
-    if (usuario.sede.id == null) {
-      throw const AppException('No se encontró el ID de la sede.');
-    }
-
     if (usuario.roles.isEmpty) {
-      throw const AppException(
-        'Debes asignar al menos un rol al usuario.',
-      );
+      throw const AppException('Debes asignar al menos un rol al usuario.');
     }
 
-    return repository.create(
-      usuario.copyWith(idEmpresa: idEmpresa),
-    );
+    return repository.create(usuario.copyWith(idEmpresa: idEmpresa));
   }
 }

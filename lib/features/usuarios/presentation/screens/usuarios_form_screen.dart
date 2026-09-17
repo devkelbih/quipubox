@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:quipubox/core/ui/feedback/app_toast.dart';
 import 'package:quipubox/features/usuarios/domain/entities/usuario.dart';
 import 'package:quipubox/features/roles/presentation/viewmodels/roles_viewmodel.dart';
-import 'package:quipubox/features/sedes/domain/entities/sede.dart';
+import 'package:quipubox/features/sedes/presentation/viewmodels/sedes_viewmodel.dart';
 import 'package:quipubox/features/usuarios/presentation/viewmodels/usuarios_viewmodel.dart';
 import 'package:quipubox/features/usuarios/presentation/widgets/usuario_datos_form.dart';
 import 'package:quipubox/features/usuarios/presentation/widgets/usuario_form_actions.dart';
@@ -31,7 +31,8 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
   final Set<int> _completedSteps = {};
   final Set<int> _errorSteps = {};
 
-  Sede? _selectedSede;
+  /// FK de la sede seleccionada.
+  int? _idSede;
 
   Set<int> _selectedRoleIds = {};
 
@@ -60,11 +61,16 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
 
     _emailController = TextEditingController(text: widget.item?.email ?? '');
 
-    _selectedSede = widget.item?.sede;
+    // Conservamos el FK directamente.
+    _idSede = widget.item?.idSede;
 
     _selectedRoleIds = widget.item?.roles.map((role) => role.id).toSet() ?? {};
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      // Ambos catálogos se cargan al entrar al formulario.
+      context.read<SedeViewModel>().load();
       context.read<RolesViewModel>().load();
     });
   }
@@ -145,11 +151,11 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
 
   Widget _buildSede() {
     return UsuarioSedeForm(
-      selectedSede: _selectedSede,
+      selectedSedeId: _idSede,
       hasError: _errorSteps.contains(1),
-      onChanged: (sede) {
+      onChanged: (idSede) {
         setState(() {
-          _selectedSede = sede;
+          _idSede = idSede;
 
           _errorSteps.remove(1);
           _completedSteps.add(1);
@@ -273,7 +279,7 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
   }
 
   bool _validateSede() {
-    final isValid = _selectedSede != null;
+    final isValid = _idSede != null;
 
     setState(() {
       if (isValid) {
@@ -325,11 +331,11 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
 
     final usuario = Usuario(
       id: widget.item?.id,
+      idSede: _idSede!,
       nombres: _nombresController.text.trim(),
       apellidos: apellidos.isEmpty ? null : apellidos,
       telefono: telefono.isEmpty ? null : telefono,
       email: _emailController.text.trim(),
-      sede: _selectedSede!,
       roles: rolesSeleccionados,
       estado: widget.item?.estado ?? true,
     );

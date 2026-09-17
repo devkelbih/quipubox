@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:quipubox/core/navigation/app_routes.dart';
+import 'package:quipubox/core/ui/feedback/app_toast.dart';
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
 import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
 import 'package:quipubox/features/roles/domain/entities/role.dart';
@@ -49,6 +50,8 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
       StatusSummaryValue.inactive => vm.items.where((e) => !e.estado).toList(),
     };
 
+    final isSavingUser = vm.isSaving && vm.processingRoleId == null;
+
     return AppScaffold(
       title: const Text('Usuarios'),
       actions: [
@@ -68,8 +71,9 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
       ),
       body: Column(
         children: [
-          if (vm.isSaving || vm.isDeleting || vm.isChangingStatus)
+          if (isSavingUser || vm.isDeleting || vm.isChangingStatus)
             const LinearProgressIndicator(),
+
           Expanded(
             child: () {
               if (vm.isLoading) {
@@ -86,9 +90,23 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
               if (vm.items.isEmpty) {
                 return EmptyState(
-                  message: 'Aún no tienes usuarios registradas.',
+                  message: 'Aún no tienes usuarios registrados.',
                   actionLabel: 'Reintentar',
                   onAction: vm.load,
+                );
+              }
+
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes usuarios activos.'
+                      : 'No tienes usuarios inactivos.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(
+                      () => _statusFilter = StatusSummaryValue.all,
+                    );
+                  },
                 );
               }
 
@@ -171,6 +189,7 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
               usuario: currentUsuario,
               roles: rolesVm.roles,
               controller: controller,
+              isSaving: usuarioVm.isSaving,
               processingRoleId: usuarioVm.processingRoleId,
               onAddRole: (role) =>
                   _addRole(context, usuario: currentUsuario, role: role),
@@ -192,7 +211,16 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
     final vm = context.read<UsuarioViewModel>();
 
-    await vm.addRole(usuarioId: usuario.id!, role: role);
+    final ok = await vm.addRole(usuarioId: usuario.id!, role: role);
+
+    if (!mounted) return;
+
+    AppToast.show(
+      ok
+          ? 'Rol agregado correctamente.'
+          : vm.errorMessage ?? 'No se pudo agregar el rol.',
+      type: ok ? ToastType.success : ToastType.error,
+    );
   }
 
   Future<void> _removeRole(
@@ -204,6 +232,15 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
     final vm = context.read<UsuarioViewModel>();
 
-    await vm.removeRole(usuarioId: usuario.id!, roleId: role.id);
+    final ok = await vm.removeRole(usuarioId: usuario.id!, roleId: role.id);
+
+    if (!mounted) return;
+
+    AppToast.show(
+      ok
+          ? 'Rol quitado correctamente.'
+          : vm.errorMessage ?? 'No se pudo quitar el rol.',
+      type: ok ? ToastType.success : ToastType.error,
+    );
   }
 }

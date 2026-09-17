@@ -84,6 +84,20 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
                 );
               }
 
+              if (filteredItems.isEmpty) {
+                return EmptyState(
+                  message: _statusFilter == StatusSummaryValue.active
+                      ? 'No tienes calidades activas.'
+                      : 'No tienes calidades inactivas.',
+                  actionLabel: 'Mostrar todos',
+                  onAction: () {
+                    setState(
+                      () => _statusFilter = StatusSummaryValue.all,
+                    );
+                  },
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(

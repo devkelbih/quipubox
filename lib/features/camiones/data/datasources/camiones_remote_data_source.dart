@@ -16,13 +16,6 @@ class CamionRemoteDataSource {
     ).map(CamionModel.fromJson).toList();
   }
 
-  // TODO: Solo como ejemplo, aun no implementado
-  Future<CamionModel> getById(int id) async {
-    final response = await apiClient.get('/camiones/$id');
-
-    return CamionModel.fromJson(ResponseParser.extractObject(response));
-  }
-
   Future<CamionModel> create(CamionRequestModel request) async {
     final response = await apiClient.post(
       '/camiones',

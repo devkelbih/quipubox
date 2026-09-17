@@ -26,7 +26,6 @@ class Fruta {
   /// Cantidad total de variedades asociadas.
   int get totalVariedades => variedades?.length ?? 0;
 
-
   Fruta copyWith({
     int? id,
     int? idEmpresa,

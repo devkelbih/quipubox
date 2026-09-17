@@ -27,7 +27,7 @@ import '../../../features/lugares_operativos/data/datasources/lugares_operativos
 import '../../../features/lugares_operativos/data/repositories/lugares_operativos_repository_impl.dart';
 import '../../../features/lugares_operativos/domain/repositories/lugares_operativos_repository.dart';
 import '../../../features/lugares_operativos/domain/usecases/create_lugar_operativo.dart';
-import '../../../features/lugares_operativos/domain/usecases/delete_lugar_operativo.dart';
+import '../../../features/lugares_operativos/domain/usecases/change_lugar_operativo_status.dart';
 import '../../../features/lugares_operativos/domain/usecases/get_lugares_operativos.dart';
 import '../../../features/lugares_operativos/domain/usecases/update_lugar_operativo.dart';
 import '../../../features/lugares_operativos/presentation/viewmodels/lugares_operativos_viewmodel.dart';
@@ -120,6 +120,8 @@ class AdminModule {
           RolesViewModel(getRolesUseCase: context.read<GetRolesUseCase>()),
     ),
     // Lugares operativos
+
+    // Lugares operativos
     Provider<LugarOperativoRemoteDataSource>(
       create: (context) =>
           LugarOperativoRemoteDataSource(context.read<ApiClient>()),
@@ -137,8 +139,10 @@ class AdminModule {
     ),
 
     Provider<CreateLugarOperativoUseCase>(
-      create: (context) =>
-          CreateLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
+      create: (context) => CreateLugarOperativoUseCase(
+        repository: context.read<LugarOperativoRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
     ),
 
     Provider<UpdateLugarOperativoUseCase>(
@@ -146,9 +150,10 @@ class AdminModule {
           UpdateLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
     ),
 
-    Provider<DeleteLugarOperativoUseCase>(
-      create: (context) =>
-          DeleteLugarOperativoUseCase(context.read<LugarOperativoRepository>()),
+    Provider<ChangeStatusLugarOperativoUseCase>(
+      create: (context) => ChangeStatusLugarOperativoUseCase(
+        context.read<LugarOperativoRepository>(),
+      ),
     ),
 
     ChangeNotifierProvider<LugarOperativoViewModel>(
@@ -156,11 +161,9 @@ class AdminModule {
         getItemsUseCase: context.read<GetLugaresOperativosUseCase>(),
         createUseCase: context.read<CreateLugarOperativoUseCase>(),
         updateUseCase: context.read<UpdateLugarOperativoUseCase>(),
-        deleteUseCase: context.read<DeleteLugarOperativoUseCase>(),
-        networkChecker: context.read<NetworkChecker>(),
+        changeStatusUseCase: context.read<ChangeStatusLugarOperativoUseCase>(),
       ),
     ),
-
     // Puestos
     Provider<PuestoRemoteDataSource>(
       create: (context) => PuestoRemoteDataSource(context.read<ApiClient>()),

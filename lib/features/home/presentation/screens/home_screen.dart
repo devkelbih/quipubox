@@ -149,9 +149,9 @@ class _QuickActions extends StatelessWidget {
         SizedBox(width: 10),
         Expanded(
           child: _QuickAction(
-            icon: Icons.inventory_2_outlined,
-            label: 'Jabas',
-            route: AppRoutes.tiposJaba,
+            icon: Icons.map_rounded,
+            label: 'Operativos',
+            route: AppRoutes.lugaresOperativos,
           ),
         ),
       ],

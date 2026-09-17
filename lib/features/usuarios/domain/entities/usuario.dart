@@ -5,7 +5,14 @@ class Usuario {
   final int? id;
 
   final int? idEmpresa;
-  final Sede sede;
+
+  /// FK utilizada para crear y actualizar.
+  final int idSede;
+
+  /// Relación opcional cargada desde el backend.
+  final Sede? sede;
+
+  /// Relación muchos-a-muchos mediante usuarios_roles.
   final List<Role> roles;
 
   final String nombres;
@@ -21,7 +28,8 @@ class Usuario {
   const Usuario({
     this.id,
     this.idEmpresa,
-    required this.sede,
+    required this.idSede,
+    this.sede,
     required this.roles,
     required this.nombres,
     this.apellidos,
@@ -39,6 +47,7 @@ class Usuario {
   Usuario copyWith({
     int? id,
     int? idEmpresa,
+    int? idSede,
     Sede? sede,
     List<Role>? roles,
     String? nombres,
@@ -52,6 +61,7 @@ class Usuario {
     return Usuario(
       id: id ?? this.id,
       idEmpresa: idEmpresa ?? this.idEmpresa,
+      idSede: idSede ?? this.idSede,
       sede: sede ?? this.sede,
       roles: roles ?? this.roles,
       nombres: nombres ?? this.nombres,

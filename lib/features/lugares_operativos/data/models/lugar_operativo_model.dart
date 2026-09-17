@@ -1,85 +1,84 @@
 import '../../domain/entities/lugar_operativo.dart';
+import '../../domain/enums/lugar_operativo_tipos.dart';
+import '../../../sedes/data/models/sede_model.dart';
 
-class LugarOperativoModel extends LugarOperativo {
+class LugarOperativoModel {
+  final int id;
+  final int idEmpresa;
+
+  /// FK utilizada para crear y actualizar.
+  final int idSede;
+
+  /// Relación opcional cargada desde el backend.
+  final SedeModel? sede;
+
+  final bool estado;
+  final String nombre;
+  final String? direccionReferencia;
+  final String? observaciones;
+  final LugarOperativoTipos tipoLugar;
+
   const LugarOperativoModel({
-    required super.id,
-    required super.idEmpresa,
-    required super.idSede,
-    required super.estado,
-    required super.nombre,
-    super.direccionReferencia,
-    super.observaciones,
-    required super.tipoLugar,
-    super.empresa,
-    required super.sede,
+    required this.id,
+    required this.idEmpresa,
+    required this.idSede,
+    this.sede,
+    required this.estado,
+    required this.nombre,
+    this.direccionReferencia,
+    this.observaciones,
+    required this.tipoLugar,
   });
 
+  /// Convierte el JSON recibido desde la API
+  /// hacia un modelo de infraestructura.
+  ///
+  /// Responsabilidades:
+  /// - Procesar respuestas HTTP del backend.
+  /// - Procesar datos serializados del almacenamiento local.
+  /// - Normalizar tipos y valores nulos.
+  ///
+  /// Flujo típico:
+  /// JSON -> Model
   factory LugarOperativoModel.fromJson(Map<String, dynamic> json) {
-    final empresa = json['empresas'] is Map<String, dynamic>
-        ? json['empresas'] as Map<String, dynamic>
-        : <String, dynamic>{};
-
-    final sede = json['sedes'] is Map<String, dynamic>
-        ? json['sedes'] as Map<String, dynamic>
-        : <String, dynamic>{};
+    final sedeJson = json['sedes'];
 
     return LugarOperativoModel(
-      id: json['id_lugar'] as int? ?? 0,
-      idEmpresa: json['id_empresa'] as int? ?? 0,
-      idSede: json['id_sede'] as int? ?? 0,
+      id: json['id_lugar'] as int,
+      idEmpresa: json['id_empresa'] as int,
+      idSede: json['id_sede'] as int,
+      sede: sedeJson is Map<String, dynamic>
+          ? SedeModel.fromJson(sedeJson)
+          : null,
       estado: json['estado'] == true,
       nombre: json['nombre']?.toString() ?? '',
-      direccionReferencia: _cleanNullable(json['direccion_referencia']),
-      observaciones: _cleanNullable(json['observaciones']),
-      tipoLugar: json['tipo_lugar']?.toString() ?? 'otro',
-      empresa: empresa.isEmpty
-          ? null
-          : LugarEmpresaResumen(
-              id: empresa['id_empresa'] as int? ?? 0,
-              nombreComercial:
-                  empresa['nombre_comercial']?.toString() ?? 'Sin empresa',
-              ruc: _cleanNullable(empresa['ruc']),
-            ),
-      sede: LugarSedeResumen(
-        id: sede['id_sede'] as int? ?? json['id_sede'] as int? ?? 0,
-        nombre: sede['nombre']?.toString() ?? 'Sede sin nombre',
-        tipoSede: _cleanNullable(sede['tipo_sede']),
-        ciudad: _cleanNullable(sede['ciudad']),
-        departamento: _cleanNullable(sede['departamento']),
-        estado: sede['estado'] == true,
+      direccionReferencia: json['direccion_referencia']?.toString(),
+      observaciones: json['observaciones']?.toString(),
+      tipoLugar: LugarOperativoTipos.fromValue(
+        json['tipo_lugar']?.toString() ?? '',
       ),
     );
   }
 
-  static List<LugarOperativoModel> listFrom(dynamic response) {
-    if (response is List) {
-      return response
-          .whereType<Map<String, dynamic>>()
-          .map(LugarOperativoModel.fromJson)
-          .toList();
-    }
-
-    if (response is Map<String, dynamic> && response['data'] is List) {
-      return (response['data'] as List)
-          .whereType<Map<String, dynamic>>()
-          .map(LugarOperativoModel.fromJson)
-          .toList();
-    }
-
-    if (response is Map<String, dynamic>) {
-      return [LugarOperativoModel.fromJson(response)];
-    }
-
-    return [];
-  }
-
-  static String? _cleanNullable(dynamic value) {
-    final text = value?.toString().trim();
-
-    if (text == null || text.isEmpty || text.toLowerCase() == 'null') {
-      return null;
-    }
-
-    return text;
+  /// Convierte el modelo de infraestructura
+  /// hacia la entidad de dominio.
+  ///
+  /// La capa Domain nunca debe depender
+  /// de modelos pertenecientes a la capa Data.
+  ///
+  /// Flujo típico:
+  /// API -> Model -> Entity
+  LugarOperativo toEntity() {
+    return LugarOperativo(
+      id: id,
+      idEmpresa: idEmpresa,
+      idSede: idSede,
+      sede: sede?.toEntity(),
+      estado: estado,
+      nombre: nombre,
+      direccionReferencia: direccionReferencia,
+      observaciones: observaciones,
+      tipoLugar: tipoLugar,
+    );
   }
 }
