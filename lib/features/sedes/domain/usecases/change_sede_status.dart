@@ -3,8 +3,7 @@ import '../repositories/sedes_repository.dart';
 
 class ChangeSedeStatusUseCase {
   final SedeRepository repository;
-
-  ChangeSedeStatusUseCase(this.repository);
+  ChangeSedeStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

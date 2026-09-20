@@ -7,7 +7,7 @@ import 'package:quipubox/features/usuarios/domain/repositories/usuarios_reposito
 class UsuarioRepositoryImpl implements UsuarioRepository {
   final UsuarioRemoteDataSource remoteDataSource;
 
-  UsuarioRepositoryImpl(this.remoteDataSource);
+  UsuarioRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<List<Usuario>> getAll() async {

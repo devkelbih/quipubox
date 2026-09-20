@@ -4,7 +4,7 @@ import 'package:quipubox/features/calidades/domain/repositories/calidad_reposito
 class ChangeCalidadStatusUseCase {
   final CalidadRepository repository;
 
-  ChangeCalidadStatusUseCase(this.repository);
+  ChangeCalidadStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

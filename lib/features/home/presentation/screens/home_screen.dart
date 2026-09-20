@@ -133,9 +133,9 @@ class _QuickActions extends StatelessWidget {
         SizedBox(width: 10),
         Expanded(
           child: _QuickAction(
-            icon: Icons.groups_outlined,
-            label: 'Usuarios',
-            route: AppRoutes.usuarios,
+            icon: Icons.home_work_outlined,
+            label: 'puestos',
+            route: AppRoutes.puestos,
           ),
         ),
         SizedBox(width: 10),

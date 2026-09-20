@@ -10,7 +10,7 @@ class LugarOperativoViewModel extends BaseStateViewModel {
   final GetLugaresOperativosUseCase getItemsUseCase;
   final CreateLugarOperativoUseCase createUseCase;
   final UpdateLugarOperativoUseCase updateUseCase;
-  final ChangeStatusLugarOperativoUseCase changeStatusUseCase;
+  final ChangeLugarOperativoStatusUseCase changeStatusUseCase;
 
   LugarOperativoViewModel({
     required this.getItemsUseCase,

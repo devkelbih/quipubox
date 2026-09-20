@@ -5,7 +5,8 @@ import '../models/role_model.dart';
 
 class RolesRemoteDataSource {
   final ApiClient apiClient;
-  RolesRemoteDataSource(this.apiClient);
+
+  RolesRemoteDataSource({required this.apiClient});
   Future<List<RoleModel>> getAll() async {
     final response = await apiClient.get('/roles-usuarios');
     return ResponseParser.extractList(

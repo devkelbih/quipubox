@@ -7,7 +7,8 @@ import '../models/lugar_operativo_request_model.dart';
 class LugarOperativoRemoteDataSource {
   final ApiClient apiClient;
 
-  LugarOperativoRemoteDataSource(this.apiClient);
+  LugarOperativoRemoteDataSource({required this.apiClient});
+
 
   Future<List<LugarOperativoModel>> getAll() async {
     final response = await apiClient.get('/lugares-operativos');

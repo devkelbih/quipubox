@@ -3,6 +3,7 @@ import '../repositories/roles_repository.dart';
 
 class GetRolesUseCase {
   final RolesRepository repository;
-  GetRolesUseCase(this.repository);
+
+  GetRolesUseCase({required this.repository});
   Future<List<Role>> call() => repository.getAll();
 }

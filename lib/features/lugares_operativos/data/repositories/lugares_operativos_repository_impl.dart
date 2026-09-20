@@ -6,7 +6,8 @@ import '../datasources/lugares_operativos_remote_data_source.dart';
 
 class LugarOperativoRepositoryImpl implements LugarOperativoRepository {
   final LugarOperativoRemoteDataSource remoteDataSource;
-  LugarOperativoRepositoryImpl(this.remoteDataSource);
+
+  LugarOperativoRepositoryImpl({required this.remoteDataSource});
   @override
   Future<List<LugarOperativo>> getAll() async {
     final lugaresOperativos = await remoteDataSource.getAll();

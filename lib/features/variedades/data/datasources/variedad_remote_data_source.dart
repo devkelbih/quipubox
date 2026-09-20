@@ -7,7 +7,8 @@ import '../models/variedad_request_model.dart';
 class VariedadRemoteDataSource {
   final ApiClient apiClient;
 
-  VariedadRemoteDataSource(this.apiClient);
+  VariedadRemoteDataSource({required this.apiClient});
+
 
   Future<List<VariedadModel>> getAll() async {
     final response = await apiClient.get('/variedades');

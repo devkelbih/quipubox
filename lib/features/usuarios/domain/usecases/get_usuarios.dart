@@ -3,6 +3,7 @@ import '../repositories/usuarios_repository.dart';
 
 class GetUsuariosUseCase {
   final UsuarioRepository repository;
-  GetUsuariosUseCase(this.repository);
+
+  GetUsuariosUseCase({required this.repository});
   Future<List<Usuario>> call() => repository.getAll();
 }

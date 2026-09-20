@@ -4,7 +4,8 @@ import '../datasources/roles_remote_data_source.dart';
 
 class RolesRepositoryImpl implements RolesRepository {
   final RolesRemoteDataSource remoteDataSource;
-  RolesRepositoryImpl(this.remoteDataSource);
+
+  RolesRepositoryImpl({required this.remoteDataSource});
   @override
   Future<List<Role>> getAll() async {
     final models = await remoteDataSource.getAll();

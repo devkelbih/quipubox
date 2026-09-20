@@ -6,24 +6,24 @@ import '../../domain/usecases/get_sedes.dart';
 import '../../domain/usecases/update_sede.dart';
 
 class SedeViewModel extends BaseStateViewModel {
-  final GetSedesUseCase getItemsUseCase;
-  final CreateSedeUseCase createUseCase;
-  final UpdateSedeUseCase updateUseCase;
-  final ChangeSedeStatusUseCase changeStatusUseCase;
-
-  SedeViewModel({
-    required this.getItemsUseCase,
-    required this.createUseCase,
-    required this.updateUseCase,
-    required this.changeStatusUseCase,
-  });
+  final GetSedesUseCase getSedesUseCase;
+  final CreateSedeUseCase createSedeUseCase;
+  final UpdateSedeUseCase updateSedeUseCase;
+  final ChangeSedeStatusUseCase changeSedeStatusUseCase;
 
   List<Sede> items = [];
+
+  SedeViewModel({
+    required this.getSedesUseCase,
+    required this.createSedeUseCase,
+    required this.updateSedeUseCase,
+    required this.changeSedeStatusUseCase,
+  });
 
   Future<void> load() async {
     final result = await run<List<Sede>>(
       state: ViewModelActionState.loading,
-      action: getItemsUseCase.call,
+      action: getSedesUseCase.call,
     );
 
     if (result != null) {
@@ -35,7 +35,7 @@ class SedeViewModel extends BaseStateViewModel {
   Future<bool> create(Sede sede) async {
     final result = await run<Sede>(
       state: ViewModelActionState.saving,
-      action: () => createUseCase(sede),
+      action: () => createSedeUseCase(sede),
     );
 
     if (result == null) return false;
@@ -48,7 +48,7 @@ class SedeViewModel extends BaseStateViewModel {
   Future<bool> update(Sede sede) async {
     final result = await run<Sede>(
       state: ViewModelActionState.saving,
-      action: () => updateUseCase(sede),
+      action: () => updateSedeUseCase(sede),
     );
 
     if (result == null) return false;
@@ -66,7 +66,7 @@ class SedeViewModel extends BaseStateViewModel {
   Future<bool> changeStatus({required int id, required bool estado}) async {
     final confirmedStatus = await run<bool>(
       state: ViewModelActionState.changingStatus,
-      action: () => changeStatusUseCase(id: id, estado: estado),
+      action: () => changeSedeStatusUseCase(id: id, estado: estado),
     );
 
     if (confirmedStatus == null) return false;

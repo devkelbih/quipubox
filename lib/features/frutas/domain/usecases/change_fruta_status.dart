@@ -4,7 +4,7 @@ import 'package:quipubox/features/frutas/domain/repositories/fruta_repository.da
 class ChangeFrutaStatusUseCase {
   final FrutaRepository repository;
 
-  ChangeFrutaStatusUseCase(this.repository);
+  ChangeFrutaStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

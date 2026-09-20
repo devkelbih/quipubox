@@ -4,7 +4,7 @@ import 'package:quipubox/features/tipos_jaba/domain/repositories/tipos_jaba_repo
 class ChangeTipoJabaStatusUseCase {
   final TipoJabaRepository repository;
 
-  ChangeTipoJabaStatusUseCase(this.repository);
+  ChangeTipoJabaStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

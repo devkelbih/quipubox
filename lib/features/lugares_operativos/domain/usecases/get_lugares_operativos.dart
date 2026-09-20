@@ -3,6 +3,7 @@ import '../repositories/lugares_operativos_repository.dart';
 
 class GetLugaresOperativosUseCase {
   final LugarOperativoRepository repository;
-  GetLugaresOperativosUseCase(this.repository);
+
+  GetLugaresOperativosUseCase({required this.repository});
   Future<List<LugarOperativo>> call() => repository.getAll();
 }

@@ -7,7 +7,7 @@ import '../models/usuario_role_request_model.dart';
 class UsuarioRemoteDataSource {
   final ApiClient apiClient;
 
-  UsuarioRemoteDataSource(this.apiClient);
+  UsuarioRemoteDataSource({required this.apiClient});
 
   Future<List<UsuarioModel>> getAll() async {
     final response = await apiClient.get('/usuarios');

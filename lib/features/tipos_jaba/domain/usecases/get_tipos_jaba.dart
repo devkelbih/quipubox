@@ -3,6 +3,7 @@ import '../repositories/tipos_jaba_repository.dart';
 
 class GetTiposJabaUseCase {
   final TipoJabaRepository repository;
-  GetTiposJabaUseCase(this.repository);
+
+  GetTiposJabaUseCase({required this.repository});
   Future<List<TiposJaba>> call() => repository.getAll();
 }

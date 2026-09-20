@@ -4,7 +4,7 @@ import '../repositories/calidad_repository.dart';
 class GetCalidadesUseCase {
   final CalidadRepository repository;
 
-  GetCalidadesUseCase(this.repository);
+  GetCalidadesUseCase({required this.repository});
 
   Future<List<Calidad>> call() => repository.getAll();
 }

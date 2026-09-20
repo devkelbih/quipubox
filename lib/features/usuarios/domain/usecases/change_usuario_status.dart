@@ -4,7 +4,7 @@ import 'package:quipubox/features/usuarios/domain/repositories/usuarios_reposito
 class ChangeUsuarioStatusUseCase {
   final UsuarioRepository repository;
 
-  ChangeUsuarioStatusUseCase(this.repository);
+  ChangeUsuarioStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

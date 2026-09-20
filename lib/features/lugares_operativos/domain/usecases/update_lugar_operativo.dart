@@ -6,7 +6,7 @@ import '../repositories/lugares_operativos_repository.dart';
 class UpdateLugarOperativoUseCase {
   final LugarOperativoRepository repository;
 
-  UpdateLugarOperativoUseCase(this.repository);
+  UpdateLugarOperativoUseCase({required this.repository});
 
   Future<LugarOperativo> call(LugarOperativo lugarOperativo) {
     if (lugarOperativo.id == null) {

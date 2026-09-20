@@ -1,3 +1,9 @@
-import '../../data/models/puesto_request_model.dart';
 import '../entities/puesto.dart';
-abstract class PuestoRepository { Future<List<Puesto>> getAll(); Future<Puesto> create(PuestoRequestModel request); Future<Puesto> update(int id, {required PuestoRequestModel request}); Future<void> delete(int id); }
+
+abstract class PuestoRepository {
+  Future<List<Puesto>> getAll();
+  Future<Puesto> create(Puesto puesto);
+  Future<Puesto> update(Puesto puesto);
+
+  Future<bool> changeStatus({required int id, required bool estado});
+}

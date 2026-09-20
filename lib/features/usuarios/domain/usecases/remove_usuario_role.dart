@@ -5,27 +5,17 @@ import '../repositories/usuarios_repository.dart';
 class RemoveUsuarioRoleUseCase {
   final UsuarioRepository repository;
 
-  RemoveUsuarioRoleUseCase(this.repository);
+  RemoveUsuarioRoleUseCase({required this.repository});
 
-  Future<void> call({
-    required int usuarioId,
-    required int roleId,
-  }) {
+  Future<void> call({required int usuarioId, required int roleId}) {
     if (usuarioId <= 0) {
-      throw const AppException(
-        'No se encontró el ID del usuario.',
-      );
+      throw const AppException('No se encontró el ID del usuario.');
     }
 
     if (roleId <= 0) {
-      throw const AppException(
-        'No se encontró el ID del rol.',
-      );
+      throw const AppException('No se encontró el ID del rol.');
     }
 
-    return repository.removeRole(
-      usuarioId: usuarioId,
-      roleId: roleId,
-    );
+    return repository.removeRole(usuarioId: usuarioId, roleId: roleId);
   }
 }

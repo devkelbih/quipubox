@@ -7,7 +7,7 @@ import '../models/calidad_request_model.dart';
 class CalidadRemoteDataSource {
   final ApiClient apiClient;
 
-  CalidadRemoteDataSource(this.apiClient);
+  CalidadRemoteDataSource({required this.apiClient});
 
   Future<List<CalidadModel>> getAll() async {
     final response = await apiClient.get('/calidades');

@@ -6,7 +6,7 @@ import '../repositories/fruta_repository.dart';
 class UpdateFrutaUseCase {
   final FrutaRepository repository;
 
-  UpdateFrutaUseCase(this.repository);
+  UpdateFrutaUseCase({required this.repository});
 
   Future<Fruta> call(Fruta fruta) {
     if (fruta.id == null) {

@@ -7,7 +7,7 @@ import '../models/fruta_request_model.dart';
 class FrutaRemoteDataSource {
   final ApiClient apiClient;
 
-  FrutaRemoteDataSource(this.apiClient);
+  FrutaRemoteDataSource({required this.apiClient});
 
   Future<List<FrutaModel>> getAll() async {
     final response = await apiClient.get('/frutas');

@@ -6,7 +6,8 @@ import '../repositories/variedad_repository.dart';
 class UpdateVariedadUseCase {
   final VariedadRepository repository;
 
-  UpdateVariedadUseCase(this.repository);
+  UpdateVariedadUseCase({required this.repository});
+
 
   Future<Variedad> call(Variedad variedad) {
     if (variedad.id == null) {

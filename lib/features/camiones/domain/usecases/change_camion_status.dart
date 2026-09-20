@@ -1,11 +1,10 @@
-
 import 'package:quipubox/core/exceptions/app_exception.dart';
 import 'package:quipubox/features/camiones/domain/repositories/camiones_repository.dart';
 
 class ChangeCamionStatusUseCase {
   final CamionRepository repository;
 
-  ChangeCamionStatusUseCase(this.repository);
+  ChangeCamionStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

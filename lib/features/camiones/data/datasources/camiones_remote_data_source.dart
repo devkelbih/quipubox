@@ -6,7 +6,8 @@ import '../models/camion_request_model.dart';
 
 class CamionRemoteDataSource {
   final ApiClient apiClient;
-  CamionRemoteDataSource(this.apiClient);
+
+  CamionRemoteDataSource({required this.apiClient});
 
   Future<List<CamionModel>> getAll() async {
     final response = await apiClient.get('/camiones');

@@ -6,7 +6,8 @@ import '../models/sede_request_model.dart';
 
 class SedeRemoteDataSource {
   final ApiClient apiClient;
-  SedeRemoteDataSource(this.apiClient);
+
+  SedeRemoteDataSource({required this.apiClient});
 
   Future<List<SedeModel>> getAll() async {
     final response = await apiClient.get('/sedes');

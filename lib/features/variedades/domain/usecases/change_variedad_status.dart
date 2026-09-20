@@ -3,8 +3,7 @@ import 'package:quipubox/features/variedades/domain/repositories/variedad_reposi
 
 class ChangeVariedadStatusUseCase {
   final VariedadRepository repository;
-
-  ChangeVariedadStatusUseCase(this.repository);
+  ChangeVariedadStatusUseCase({required this.repository});
 
   Future<bool> call({required int id, required bool estado}) {
     if (id <= 0) {

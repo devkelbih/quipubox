@@ -6,7 +6,7 @@ import '../repositories/usuarios_repository.dart';
 class UpdateUsuarioUseCase {
   final UsuarioRepository repository;
 
-  UpdateUsuarioUseCase(this.repository);
+  UpdateUsuarioUseCase({required this.repository});
 
   Future<Usuario> call(Usuario usuario) {
     if (usuario.id == null || usuario.id! <= 0) {
