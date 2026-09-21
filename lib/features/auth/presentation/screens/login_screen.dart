@@ -12,8 +12,8 @@ class LoginScreen extends StatelessWidget {
     AppBottomSheet.show(
       context: context,
       title: 'Iniciar sesión',
-      initialChildSize: 0.30,
-      minChildSize: 0.20,
+      initialChildSize: 0.35,
+      minChildSize: 0.25,
       maxChildSize: 0.40,
       builder: (context, scrollController) {
         return SingleChildScrollView(

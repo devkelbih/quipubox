@@ -38,7 +38,7 @@ class _AppDrawerState extends State<AppDrawer> {
     }
 
     _isNavigating = true;
-
+  
     Navigator.of(context).pop();
 
     await Future<void>.delayed(const Duration(milliseconds: 180));
@@ -50,7 +50,14 @@ class _AppDrawerState extends State<AppDrawer> {
 
     try {
       if (mounted) {
-        context.go(route);
+        if (route == AppRoutes.home) {
+          context.go(AppRoutes.home);
+        } else {
+          if (currentRoute != AppRoutes.home) {
+            context.go(AppRoutes.home);
+          }
+          context.push(route);
+        }
       }
     } finally {
       if (mounted) {

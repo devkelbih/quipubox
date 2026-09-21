@@ -133,8 +133,9 @@ class _LugarOperativoListScreenState extends State<LugarOperativoListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: item == null ? 'Nuevo lugar operativo' : 'Editar lugar operativo',
-      initialChildSize: 0.5,
-      maxChildSize: 0.65,
+      minChildSize: 0.5,
+      initialChildSize: 0.65,
+      maxChildSize: 0.7,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(

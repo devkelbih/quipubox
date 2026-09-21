@@ -128,8 +128,9 @@ class _VariedadListScreenState extends State<VariedadListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: item == null ? 'Nueva variedad' : 'Editar variedad',
-      initialChildSize: 0.3,
-      maxChildSize: 0.5,
+      minChildSize: 0.4,
+      initialChildSize: 0.5,
+      maxChildSize: 0.55,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(

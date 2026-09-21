@@ -169,7 +169,7 @@ class UsuarioRolesForm extends StatelessWidget {
       title: role.nombre,
       initialChildSize: 0.3,
       minChildSize: 0.25,
-      maxChildSize: 0.4,
+      maxChildSize: 0.35,
       builder: (context, scrollController) {
         return SingleChildScrollView(
           controller: scrollController,

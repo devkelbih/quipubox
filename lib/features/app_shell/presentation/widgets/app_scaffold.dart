@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/navigation/app_exit_handler.dart';
 import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'drawer/app_drawer.dart';
 
@@ -42,39 +43,46 @@ class AppScaffold extends StatelessWidget {
       (vm) => vm.isSigningOut,
     );
 
-    return Stack(
-      children: [
-        AbsorbPointer(
-          absorbing: isSigningOut,
-          child: Scaffold(
-            appBar: AppBar(
-              title: title, // Pasa directamente el Widget, limpio y sin ternarios
-              leading: Builder(
-                builder: (drawerContext) {
-                  return IconButton(
-                    icon: const Icon(Icons.menu_rounded),
-                    onPressed: () => Scaffold.of(drawerContext).openDrawer(),
-                  );
-                },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        AppExitHandler.handlePop(context);
+      },
+      child: Stack(
+        children: [
+          AbsorbPointer(
+            absorbing: isSigningOut,
+            child: Scaffold(
+              appBar: AppBar(
+                title: title, // Pasa directamente el Widget, limpio y sin ternarios
+                leading: Builder(
+                  builder: (drawerContext) {
+                    return IconButton(
+                      icon: const Icon(Icons.menu_rounded),
+                      onPressed: () => Scaffold.of(drawerContext).openDrawer(),
+                    );
+                  },
+                ),
+                actions: actions,
+                bottom: appBarBottom,
               ),
-              actions: actions,
-              bottom: appBarBottom,
-            ),
-            drawer: const AppDrawer(),
-            body: SafeArea(
-              top: false, // El AppBar ya protege la parte superior
-              child: body,
+              drawer: const AppDrawer(),
+              body: SafeArea(
+                top: false, // El AppBar ya protege la parte superior
+                child: body,
+              ),
             ),
           ),
-        ),
-        if (isSigningOut)
-          const Positioned.fill(
-            child: _BlockingLoaderOverlay(
-              text: 'Cerrando sesión...',
-              message: 'Espera un momento.',
+          if (isSigningOut)
+            const Positioned.fill(
+              child: _BlockingLoaderOverlay(
+                text: 'Cerrando sesión...',
+                message: 'Espera un momento.',
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

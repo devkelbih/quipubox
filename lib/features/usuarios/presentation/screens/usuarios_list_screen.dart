@@ -163,7 +163,8 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: 'Gestionar roles',
-      initialChildSize: 0.40,
+      minChildSize: 0.4,
+      initialChildSize: 0.55,
       maxChildSize: 0.70,
       builder: (sheetContext, controller) {
         return Consumer2<UsuarioViewModel, RolesViewModel>(

@@ -130,8 +130,9 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: item == null ? 'Nueva fruta' : 'Editar fruta',
-      initialChildSize: 0.40,
-      maxChildSize: 0.45,
+      minChildSize: 0.4,
+      initialChildSize: 0.45,
+      maxChildSize: 0.5,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(

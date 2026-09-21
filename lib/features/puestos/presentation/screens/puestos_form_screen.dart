@@ -11,10 +11,7 @@ import '../viewmodels/puestos_viewmodel.dart';
 class PuestoFormScreen extends StatefulWidget {
   final Puesto? item;
 
-  const PuestoFormScreen({
-    super.key,
-    this.item,
-  });
+  const PuestoFormScreen({super.key, this.item});
 
   @override
   State<PuestoFormScreen> createState() => _PuestoFormScreenState();
@@ -41,9 +38,7 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
       text: item?.numeroPuesto ?? '',
     );
 
-    _referenciaController = TextEditingController(
-      text: item?.referencia ?? '',
-    );
+    _referenciaController = TextEditingController(text: item?.referencia ?? '');
 
     _idLugar = item?.idLugar;
     _lugarSeleccionado = item?.lugarOperativo;
@@ -72,12 +67,6 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
       return lugar.estado || lugar.id == _idLugar;
     }).toList();
 
-    final lugarSeleccionado =
-        _lugarSeleccionado ??
-        (_idLugar == null
-            ? null
-            : lugarVm.items.where((e) => e.id == _idLugar).firstOrNull);
-
     return Form(
       key: _formKey,
       child: Column(
@@ -103,9 +92,8 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
           const SizedBox(height: 14),
 
           DropdownButtonFormField<int>(
-            initialValue: lugaresDisponibles.any(
-              (lugar) => lugar.id == _idLugar,
-            )
+            initialValue:
+                lugaresDisponibles.any((lugar) => lugar.id == _idLugar)
                 ? _idLugar
                 : null,
             isExpanded: true,
@@ -124,9 +112,7 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
                     children: [
                       TextSpan(
                         text: lugar.nombre.trim(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       if (sedeNombre.isNotEmpty) ...[
                         const TextSpan(text: '\n'),
@@ -185,20 +171,10 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
                 ? const SizedBox(
                     width: 18,
                     height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(
-                    _isEditing
-                        ? Icons.save_rounded
-                        : Icons.add_rounded,
-                  ),
-            label: Text(
-              _isEditing
-                  ? 'Guardar cambios'
-                  : 'Registrar puesto',
-            ),
+                : Icon(_isEditing ? Icons.save_rounded : Icons.add_rounded),
+            label: Text(_isEditing ? 'Guardar cambios' : 'Registrar puesto'),
           ),
 
           if (!isOnline) ...[
@@ -227,14 +203,12 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
     final idLugar = _idLugar;
 
     if (idLugar == null) {
-      AppToast.show(
-        'Selecciona un lugar operativo.',
-        type: ToastType.error,
-      );
+      AppToast.show('Selecciona un lugar operativo.', type: ToastType.error);
       return;
     }
 
-    final lugar = _lugarSeleccionado ??
+    final lugar =
+        _lugarSeleccionado ??
         lugarVm.items.where((e) => e.id == idLugar).firstOrNull;
 
     if (lugar == null) {
@@ -255,17 +229,15 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
       referencia: _nullIfEmpty(_referenciaController.text),
     );
 
-    final ok = _isEditing
-        ? await vm.update(puesto)
-        : await vm.create(puesto);
+    final ok = _isEditing ? await vm.update(puesto) : await vm.create(puesto);
 
     if (!mounted) return;
 
     AppToast.show(
       ok
           ? _isEditing
-              ? 'Puesto actualizado correctamente.'
-              : 'Puesto registrado correctamente.'
+                ? 'Puesto actualizado correctamente.'
+                : 'Puesto registrado correctamente.'
           : vm.errorMessage ?? 'No se pudo guardar el puesto.',
       type: ok ? ToastType.success : ToastType.error,
     );

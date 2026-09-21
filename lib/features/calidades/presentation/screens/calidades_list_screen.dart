@@ -128,7 +128,8 @@ class _CalidadListScreenState extends State<CalidadListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: item == null ? 'Nueva calidad' : 'Editar calidad',
-      initialChildSize: 0.3,
+      minChildSize: 0.4,
+      initialChildSize: 0.45,
       maxChildSize: 0.5,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,

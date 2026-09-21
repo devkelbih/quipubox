@@ -128,8 +128,9 @@ class _TipoJabaListScreenState extends State<TipoJabaListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: item == null ? 'Nuevo tipo de jaba' : 'Editar tipo de jaba',
-      initialChildSize: 0.3,
-      maxChildSize: 0.5,
+      minChildSize: 0.45,
+      initialChildSize: 0.5,
+      maxChildSize: 0.55,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(

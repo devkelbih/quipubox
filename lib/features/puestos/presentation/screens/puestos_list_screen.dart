@@ -199,8 +199,9 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
     await AppBottomSheet.show(
       context: context,
       title: item == null ? 'Nuevo puesto' : 'Editar puesto',
-      initialChildSize: 0.45,
-      maxChildSize: 0.5,
+      minChildSize: 0.4,
+      initialChildSize: 0.5,
+      maxChildSize: 0.55,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(
