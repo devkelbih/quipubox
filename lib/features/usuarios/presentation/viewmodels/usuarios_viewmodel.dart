@@ -2,11 +2,11 @@ import 'package:quipubox/core/state/base_state_viewmodel.dart';
 
 import '../../../roles/domain/entities/role.dart';
 import '../../domain/entities/usuario.dart';
-import '../../domain/usecases/add_usuario_role.dart';
+import '../../domain/usecases/user_roles/add_usuario_role.dart';
 import '../../domain/usecases/change_usuario_status.dart';
 import '../../domain/usecases/create_usuario.dart';
 import '../../domain/usecases/get_usuarios.dart';
-import '../../domain/usecases/remove_usuario_role.dart';
+import '../../domain/usecases/user_roles/remove_usuario_role.dart';
 import '../../domain/usecases/update_usuario.dart';
 
 class UsuarioViewModel extends BaseStateViewModel {
@@ -29,7 +29,6 @@ class UsuarioViewModel extends BaseStateViewModel {
   List<Usuario> items = [];
 
   /// ID del rol que actualmente está siendo agregado o eliminado.
-  ///
   /// La UI utiliza este valor para mostrar el indicador de progreso
   /// únicamente sobre la acción correspondiente.
   int? processingRoleId;

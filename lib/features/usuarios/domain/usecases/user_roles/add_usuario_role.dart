@@ -1,11 +1,11 @@
 import 'package:quipubox/core/exceptions/app_exception.dart';
 
-import '../repositories/usuarios_repository.dart';
+import '../../repositories/usuarios_repository.dart';
 
-class RemoveUsuarioRoleUseCase {
+class AddUsuarioRoleUseCase {
   final UsuarioRepository repository;
 
-  RemoveUsuarioRoleUseCase({required this.repository});
+  AddUsuarioRoleUseCase({required this.repository});
 
   Future<void> call({required int usuarioId, required int roleId}) {
     if (usuarioId <= 0) {
@@ -16,6 +16,6 @@ class RemoveUsuarioRoleUseCase {
       throw const AppException('No se encontró el ID del rol.');
     }
 
-    return repository.removeRole(usuarioId: usuarioId, roleId: roleId);
+    return repository.addRole(usuarioId: usuarioId, roleId: roleId);
   }
 }

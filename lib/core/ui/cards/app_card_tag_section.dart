@@ -1,20 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Widget reutilizable que muestra una sección con:
-/// - Un ícono dentro de un contenedor con fondo redondeado (a la izquierda).
-/// - Una etiqueta de texto (label) arriba.
-/// - Una lista de "tags" que se acomodan en varias líneas.
-/// - Opcionalmente, permite interacción mediante [onTap].
-///
-/// Ejemplo no interactivo:
-/// [ Icon ]   Roles
-///            [tag] [tag] [tag]
-///            [tag] [tag]
-///
-/// Ejemplo interactivo:
-/// [ Icon ]   Roles                                      >
-///            [tag] [tag] [tag]
-///            [tag] [tag]
 class AppCardTagSection extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -44,8 +29,9 @@ class AppCardTagSection extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center, // <-- Cambiado a center para alinear todo verticalmente
             children: [
+              // Ícono izquierdo
               Container(
                 width: 34,
                 height: 34,
@@ -63,9 +49,11 @@ class AppCardTagSection extends StatelessWidget {
 
               const SizedBox(width: 12),
 
+              // Contenido central (Label y Tags)
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min, // Evita que la columna ocupe más espacio del necesario
                   children: [
                     Text(
                       label,
@@ -74,9 +62,7 @@ class AppCardTagSection extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-
                     const SizedBox(height: 6),
-
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
@@ -86,18 +72,15 @@ class AppCardTagSection extends StatelessWidget {
                 ),
               ),
 
-              if (isClickable)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.chevron_right_rounded,
-                      size: 30,
-                      color: scheme.primary,
-                    ),
-                  ),
+              // Flecha derecha
+              if (isClickable) ...[
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 30,
+                  color: scheme.primary,
                 ),
+              ],
             ],
           ),
         ),

@@ -38,7 +38,7 @@ class UsuarioCard extends StatelessWidget {
     final avatarUrl = item.avatarUrl?.trim().isNotEmpty == true
         ? item.avatarUrl
         : null;
-
+    final status = AppStatus.active(item.estado);
     return AppCard(
       header: AppCardHeader(
         icon: avatarUrl != null
@@ -46,7 +46,8 @@ class UsuarioCard extends StatelessWidget {
             : const Icon(Icons.person_rounded),
         title: title,
         subtitle: subtitle,
-        badge: AppStatusBadge(status: AppStatus.active(item.estado)),
+        status: status,
+        badge: AppStatusBadge(status: status),
       ),
       body: AppCardBody(
         child: AppCardTagSection(

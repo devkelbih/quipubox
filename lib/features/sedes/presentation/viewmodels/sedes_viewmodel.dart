@@ -6,24 +6,24 @@ import '../../domain/usecases/get_sedes.dart';
 import '../../domain/usecases/update_sede.dart';
 
 class SedeViewModel extends BaseStateViewModel {
-  final GetSedesUseCase getSedesUseCase;
+  final GetSedesUseCase getItemsUseCase;
   final CreateSedeUseCase createSedeUseCase;
   final UpdateSedeUseCase updateSedeUseCase;
-  final ChangeSedeStatusUseCase changeSedeStatusUseCase;
+  final ChangeSedeStatusUseCase changeStatusUseCase;
 
   List<Sede> items = [];
 
   SedeViewModel({
-    required this.getSedesUseCase,
+    required this.getItemsUseCase,
     required this.createSedeUseCase,
     required this.updateSedeUseCase,
-    required this.changeSedeStatusUseCase,
+    required this.changeStatusUseCase,
   });
 
   Future<void> load() async {
     final result = await run<List<Sede>>(
       state: ViewModelActionState.loading,
-      action: getSedesUseCase.call,
+      action: getItemsUseCase.call,
     );
 
     if (result != null) {
@@ -66,7 +66,7 @@ class SedeViewModel extends BaseStateViewModel {
   Future<bool> changeStatus({required int id, required bool estado}) async {
     final confirmedStatus = await run<bool>(
       state: ViewModelActionState.changingStatus,
-      action: () => changeSedeStatusUseCase(id: id, estado: estado),
+      action: () => changeStatusUseCase(id: id, estado: estado),
     );
 
     if (confirmedStatus == null) return false;

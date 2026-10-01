@@ -43,10 +43,10 @@ class SedesModule {
 
     ChangeNotifierProvider<SedeViewModel>(
       create: (context) => SedeViewModel(
-        getSedesUseCase: context.read(),
+        getItemsUseCase: context.read(),
         createSedeUseCase: context.read(),
         updateSedeUseCase: context.read(),
-        changeSedeStatusUseCase: context.read(),
+        changeStatusUseCase: context.read(),
       ),
     ),
   ];

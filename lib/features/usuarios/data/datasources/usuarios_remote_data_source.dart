@@ -30,8 +30,6 @@ class UsuarioRemoteDataSource {
     int id, {
     required UsuarioRequestModel request,
   }) async {
-    await Future.delayed(const Duration(seconds: 3));
-
     final response = await apiClient.put(
       '/usuarios/$id/full',
       body: request.toUpdateJson(),

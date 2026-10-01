@@ -4,11 +4,11 @@ import 'package:provider/single_child_widget.dart';
 import 'package:quipubox/features/usuarios/data/datasources/usuarios_remote_data_source.dart';
 import 'package:quipubox/features/usuarios/data/repositories/usuarios_repository_impl.dart';
 import 'package:quipubox/features/usuarios/domain/repositories/usuarios_repository.dart';
-import 'package:quipubox/features/usuarios/domain/usecases/add_usuario_role.dart';
+import 'package:quipubox/features/usuarios/domain/usecases/user_roles/add_usuario_role.dart';
 import 'package:quipubox/features/usuarios/domain/usecases/change_usuario_status.dart';
 import 'package:quipubox/features/usuarios/domain/usecases/create_usuario.dart';
 import 'package:quipubox/features/usuarios/domain/usecases/get_usuarios.dart';
-import 'package:quipubox/features/usuarios/domain/usecases/remove_usuario_role.dart';
+import 'package:quipubox/features/usuarios/domain/usecases/user_roles/remove_usuario_role.dart';
 import 'package:quipubox/features/usuarios/domain/usecases/update_usuario.dart';
 import 'package:quipubox/features/usuarios/presentation/viewmodels/usuarios_viewmodel.dart';
 
