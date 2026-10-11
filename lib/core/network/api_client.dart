@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../common/string_extensions.dart';
 import '../config/app_config.dart';
 import '../exceptions/app_exception.dart';
 import 'network_checker.dart';
@@ -165,9 +166,9 @@ class ApiClient {
 
   /// Interpreta la respuesta del backend.
   dynamic _parse(http.Response response) {
-    final raw = response.body.trim();
+    final raw = response.body.value;
 
-    final decoded = raw.isEmpty ? null : jsonDecode(raw);
+    final decoded = raw.hasText ? jsonDecode(raw) : null;
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return decoded;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/common/string_extensions.dart';
 import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../domain/entities/camion.dart';
@@ -34,9 +35,9 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
     final item = widget.item;
 
     if (item != null) {
-      _placaController.text = item.placa;
-      _descripcionController.text = item.descripcion ?? '';
-      _observacionesController.text = item.observaciones ?? '';
+      _placaController.text = item.placa.value;
+      _descripcionController.text = item.descripcion.orEmpty;
+      _observacionesController.text = item.observaciones.orEmpty;
     }
   }
 
@@ -69,7 +70,7 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
               prefixIcon: Icon(Icons.pin_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa la placa del camión.';
               }
               return null;
@@ -168,9 +169,9 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
-      placa: _placaController.text.trim().toUpperCase(),
-      descripcion: _emptyToNull(_descripcionController.text),
-      observaciones: _emptyToNull(_observacionesController.text),
+      placa: _placaController.text.value.toUpperCase(),
+      descripcion: StringUtils.emptyToNull(_descripcionController.text),
+      observaciones: StringUtils.emptyToNull(_observacionesController.text),
     );
 
     final vm = context.read<CamionViewModel>();
@@ -193,10 +194,5 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
     if (ok) {
       Navigator.pop(context);
     }
-  }
-
-  String? _emptyToNull(String value) {
-    final text = value.trim();
-    return text.isEmpty ? null : text;
   }
 }

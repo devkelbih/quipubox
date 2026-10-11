@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/clientes/data/models/cliente_puesto_model.dart';
 import 'package:quipubox/features/clientes/data/models/cliente_sede_model.dart';
 
@@ -45,11 +46,11 @@ class ClienteModel {
     return ClienteModel(
       id: _readInt(json['id_cliente'] ?? json['id']),
       idEmpresa: _readInt(json['id_empresa']),
-      nombres: json['nombres']?.toString() ?? '',
-      apellidos: _readNullableString(json['apellidos']),
-      apodo: _readNullableString(json['apodo']),
-      telefono: _readNullableString(json['telefono']),
-      observaciones: _readNullableString(json['observaciones']),
+      nombres: json['nombres']?.toString().orEmpty ?? '',
+      apellidos: json['apellidos']?.toString().value,
+      apodo: json['apodo']?.toString().value,
+      telefono: json['telefono']?.toString().value,
+      observaciones: json['observaciones']?.toString().value,
       estado: json['estado'] == true,
       sedes: sedesJson
           .whereType<Map>()
@@ -103,16 +104,6 @@ class ClienteModel {
   static int _readInt(dynamic value) {
     if (value is int) return value;
 
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
-
-  static String? _readNullableString(dynamic value) {
-    final text = value?.toString().trim();
-
-    if (text == null || text.isEmpty) {
-      return null;
-    }
-
-    return text;
+    return int.tryParse(value?.toString().orEmpty ?? '') ?? 0;
   }
 }

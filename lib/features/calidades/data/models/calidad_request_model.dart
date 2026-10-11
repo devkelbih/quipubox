@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/calidad.dart';
 
 class CalidadRequestModel {
@@ -21,14 +23,12 @@ class CalidadRequestModel {
 
   Map<String, dynamic> toCreateJson() => {
         if (idEmpresa != null) 'id_empresa': idEmpresa,
-        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-        if (descripcion != null && descripcion!.trim().isNotEmpty)
-          'descripcion': descripcion!.trim(),
+        if (nombre.hasText) 'nombre': nombre.value,
+        if (descripcion.hasText) 'descripcion': descripcion.value,
       };
 
   Map<String, dynamic> toUpdateJson() => {
-        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-        if (descripcion != null && descripcion!.trim().isNotEmpty)
-          'descripcion': descripcion!.trim(),
+        if (nombre.hasText) 'nombre': nombre.value,
+        if (descripcion.hasText) 'descripcion': descripcion.value,
       };
 }

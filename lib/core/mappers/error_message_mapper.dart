@@ -1,3 +1,4 @@
+import '../common/string_extensions.dart';
 import '../exceptions/app_exception.dart';
 
 class ErrorMessageMapper {
@@ -6,14 +7,12 @@ class ErrorMessageMapper {
   static String map(Object error) {
     if (error is AppException) return error.message;
 
-    final message = error.toString().trim();
+    final message = error.toString().value;
 
     if (message.startsWith('Exception:')) {
-      return message.replaceFirst('Exception:', '').trim();
+      return message.replaceFirst('Exception:', '').value;
     }
 
-    return message.isEmpty
-        ? 'Ocurrió un error inesperado.'
-        : message;
+    return message.hasText ? message : 'Ocurrió un error inesperado.';
   }
 }

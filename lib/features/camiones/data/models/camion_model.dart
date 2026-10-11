@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/camion.dart';
 
 class CamionModel {
@@ -21,9 +23,9 @@ class CamionModel {
       id: json['id_camion'] as int,
       idEmpresa: json['id_empresa'] as int,
       estado: json['estado'] == true,
-      placa: json['placa']?.toString() ?? '',
-      descripcion: json['descripcion']?.toString(),
-      observaciones: json['observaciones']?.toString(),
+      placa: json['placa']?.toString().orEmpty ?? '',
+      descripcion: json['descripcion']?.toString().value,
+      observaciones: json['observaciones']?.toString().value,
     );
   }
   Camion toEntity() => Camion(

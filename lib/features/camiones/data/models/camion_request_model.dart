@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/camion.dart';
 
 class CamionRequestModel {
@@ -25,21 +27,17 @@ class CamionRequestModel {
   Map<String, dynamic> toCreateJson() {
     return {
       if (idEmpresa != null) 'id_empresa': idEmpresa,
-      'placa': placa.trim(),
-      if (_hasText(descripcion)) 'descripcion': descripcion!.trim(),
-      if (_hasText(observaciones)) 'observaciones': observaciones!.trim(),
+      'placa': placa.value,
+      if (descripcion.hasText) 'descripcion': descripcion.value,
+      if (observaciones.hasText) 'observaciones': observaciones.value,
     };
   }
 
   Map<String, dynamic> toUpdateJson() {
     return {
-      'placa': placa.trim(),
-      if (_hasText(descripcion)) 'descripcion': descripcion!.trim(),
-      if (_hasText(observaciones)) 'observaciones': observaciones!.trim(),
+      'placa': placa.value,
+      if (descripcion.hasText) 'descripcion': descripcion.value,
+      if (observaciones.hasText) 'observaciones': observaciones.value,
     };
-  }
-
-  static bool _hasText(String? value) {
-    return value != null && value.trim().isNotEmpty;
   }
 }

@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 enum TipoRelacionClienteSede {
   emisor('emisor', 'Emisor'),
 
@@ -12,7 +14,7 @@ enum TipoRelacionClienteSede {
 
   static TipoRelacionClienteSede fromValue(String value) {
     return TipoRelacionClienteSede.values.firstWhere(
-      (e) => e.value.toLowerCase() == value.toLowerCase().trim(),
+      (e) => e.value.toLowerCase() == value.value.toLowerCase(),
       orElse: () => throw Exception(
         'Tipo de relación de cliente con sede no válido: $value',
       ),

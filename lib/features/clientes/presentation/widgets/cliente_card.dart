@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -33,18 +34,15 @@ class ClienteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombreCompleto.trim().isEmpty
-        ? 'Cliente #${item.id ?? '-'}'
-        : item.nombreCompleto.trim();
+    final title = item.nombreCompleto.hasText
+        ? item.nombreCompleto.value
+        : 'Cliente #${item.id ?? '-'}';
 
-    final apodo = item.apodo?.trim();
-    final hasApodo = apodo?.isNotEmpty == true;
-
-    final telefono = item.telefono?.trim();
-    final hasTelefono = telefono?.isNotEmpty == true;
+    final apodo = item.apodo.value;
+    final telefono = item.telefono.value;
 
     // El subtítulo es exclusivamente para el apodo
-    final subtitle = hasApodo ? apodo : null;
+    final subtitle = apodo;
 
     final status = AppStatus.active(item.estado);
 
@@ -60,11 +58,11 @@ class ClienteCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (hasTelefono) ...[
+            if (telefono != null) ...[
               AppCardInfoRow(
                 icon: Icons.phone_rounded,
                 label: 'Teléfono',
-                value: telefono!,
+                value: telefono,
               ),
               const SizedBox(height: 10),
             ],
@@ -75,8 +73,8 @@ class ClienteCard extends StatelessWidget {
                 label: 'Sedes',
                 onTap: onManageSedes ?? () {},
                 tags: item.sedes.map((clienteSede) {
-                  final sedeNombre = clienteSede.sede?.nombre.trim();
-                  final nombre = sedeNombre?.isNotEmpty == true
+                  final sedeNombre = clienteSede.sede?.nombre.value;
+                  final nombre = sedeNombre.hasText
                       ? sedeNombre!
                       : 'Sede #${clienteSede.idSede}';
 
@@ -97,8 +95,8 @@ class ClienteCard extends StatelessWidget {
                 tags: item.puestos.map((clientePuesto) {
                   final puesto = clientePuesto.puesto;
 
-                  final lugarNombre = puesto?.lugarOperativo?.nombre.trim();
-                  final rawLugar = lugarNombre?.isNotEmpty == true
+                  final lugarNombre = puesto?.lugarOperativo?.nombre.value;
+                  final rawLugar = lugarNombre.hasText
                       ? lugarNombre!
                       : 'Lugar #${puesto?.idLugar ?? clientePuesto.idPuesto}';
 
@@ -107,8 +105,8 @@ class ClienteCard extends StatelessWidget {
                       ? '${rawLugar.substring(0, 20)}...'
                       : rawLugar;
 
-                  final numeroPuesto = puesto?.numeroPuesto.trim();
-                  final numero = numeroPuesto?.isNotEmpty == true
+                  final numeroPuesto = puesto?.numeroPuesto.value;
+                  final numero = numeroPuesto.hasText
                       ? numeroPuesto!
                       : '#${clientePuesto.idPuesto}';
 

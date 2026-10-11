@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -26,12 +27,10 @@ class FrutaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombre.trim().isEmpty
-        ? 'Fruta #${item.id ?? '-'}'
-        : item.nombre;
-    final descripcion = item.descripcion?.trim().isNotEmpty == true
-        ? item.descripcion
-        : null;
+    final title = item.nombre.hasText
+        ? item.nombre.value
+        : 'Fruta #${item.id ?? '-'}';
+    final descripcion = item.descripcion.value;
     final totalVariedades = item.totalVariedades;
     final variedadesText = switch (totalVariedades) {
       0 => 'Sin variedades registradas',

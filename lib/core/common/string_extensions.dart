@@ -1,10 +1,15 @@
-/// Extensiones para trabajar con String no nulos.
-///
-/// Su objetivo es facilitar el consumo de texto ya existente,
-/// mejorando la legibilidad del código sin modificar el valor original.
+// Extensiones utilitarias para trabajar con cadenas de texto (`String` y `String?`).
+// Su propósito es simplificar la validación, limpieza y transformación de texto
+// en todo el proyecto (Formularios, Entidades, Modelos JSON), evitando código repetitivo.
+
+export 'string_utils.dart';
+
+/// Extensiones para trabajar con `String` obligatorios (no nulos).
 extension StringExtension on String {
-  /// Indica si el texto contiene caracteres distintos de espacios.
-  ///
+  /// Indica si el texto contiene caracteres reales (ignora espacios vacíos).
+  /// 
+  /// **Útil para:** Validar campos requeridos en formularios o entidades.
+  /// 
   /// Ejemplo:
   /// ```dart
   /// 'Hola'.hasText // true
@@ -12,8 +17,10 @@ extension StringExtension on String {
   /// ```
   bool get hasText => trim().isNotEmpty;
 
-  /// Devuelve el texto sin espacios al inicio ni al final.
-  ///
+  /// Devuelve el texto aplicando un `trim()` automático (sin espacios a los lados).
+  /// 
+  /// **Útil para:** Limpiar textos antes de asignarlos o mostrarlos.
+  /// 
   /// Ejemplo:
   /// ```dart
   /// '  Hola  '.value // 'Hola'
@@ -21,29 +28,30 @@ extension StringExtension on String {
   String get value => trim();
 }
 
-/// Extensiones para trabajar con String que pueden ser nulos.
-///
-/// Permiten consumir datos provenientes de la API o la base de datos
-/// de forma segura y consistente.
+/// Extensiones para trabajar con `String?` opcionales (que pueden ser nulos).
 extension NullableStringExtension on String? {
-  /// Indica si el texto existe y contiene caracteres distintos de espacios.
-  ///
+  /// Indica si el texto no es nulo y contiene caracteres reales (ignora espacios).
+  /// 
+  /// **Útil para:** Validaciones seguras sin necesidad de escribir 
+  /// `if (texto != null && texto!.trim().isNotEmpty)`.
+  /// 
   /// Ejemplo:
   /// ```dart
-  /// nombre.hasText
+  /// String? nombre;
+  /// nombre.hasText // false
   /// ```
   bool get hasText => this != null && this!.trim().isNotEmpty;
 
-  /// Devuelve el texto limpio (trim).
-  ///
-  /// Si el valor es `null` o queda vacío después del `trim`,
-  /// devuelve `null`.
-  ///
+  /// Limpia los espacios (`trim`) y maneja la nulidad de forma inteligente.
+  /// 
+  /// **Útil para:** Modelos y Request Models (DTOs). Si el texto queda vacío o es nulo, 
+  /// devuelve `null` automáticamente para evitar enviar strings vacíos `""` a la API o BD.
+  /// 
   /// Ejemplo:
   /// ```dart
   /// '  Hola '.value // 'Hola'
-  /// '   '.value     // null
-  /// null.value      // null
+  /// '     '.value // null
+  /// null.value    // null
   /// ```
   String? get value {
     final text = this?.trim();
@@ -55,11 +63,14 @@ extension NullableStringExtension on String? {
     return text;
   }
 
-  /// Devuelve el texto limpio o una cadena vacía si no existe.
-  ///
+  /// Devuelve el texto limpio, o una cadena vacía `''` si es nulo o vacío.
+  /// 
+  /// **Útil para:** Pintar textos en la interfaz de usuario (Widgets de Flutter) 
+  /// donde no puedes permitir valores `null`.
+  /// 
   /// Ejemplo:
   /// ```dart
-  /// descripcion.orEmpty
+  /// descripcion.orEmpty // Devuelve el texto o '' si era null
   /// ```
   String get orEmpty => value ?? '';
 }

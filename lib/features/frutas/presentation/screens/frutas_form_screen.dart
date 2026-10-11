@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/common/string_extensions.dart';
 import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../domain/entities/fruta.dart';
@@ -29,9 +30,9 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
 
     final item = widget.item;
 
-    _nombreController = TextEditingController(text: item?.nombre ?? '');
+    _nombreController = TextEditingController(text: item?.nombre.orEmpty);
     _descripcionController = TextEditingController(
-      text: item?.descripcion ?? '',
+      text: item?.descripcion.orEmpty,
     );
   }
 
@@ -64,7 +65,7 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
               prefixIcon: Icon(Icons.eco_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el nombre de la fruta';
               }
               return null;
@@ -124,8 +125,8 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
-      nombre: _nombreController.text.trim(),
-      descripcion: _nullIfEmpty(_descripcionController.text),
+      nombre: _nombreController.text.value,
+      descripcion: StringUtils.emptyToNull(_descripcionController.text),
     );
 
     final ok = _isEditing ? await vm.update(fruta) : await vm.create(fruta);
@@ -142,10 +143,5 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
     );
 
     if (ok) Navigator.pop(context);
-  }
-
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-    return clean.isEmpty ? null : clean;
   }
 }

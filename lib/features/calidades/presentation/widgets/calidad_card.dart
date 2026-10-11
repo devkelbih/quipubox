@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -24,12 +25,10 @@ class CalidadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombre.trim().isEmpty
-        ? 'Calidad #${item.id ?? '-'}'
-        : item.nombre;
-    final descripcion = item.descripcion?.trim().isNotEmpty == true
-        ? item.descripcion
-        : null;
+    final title = item.nombre.hasText
+        ? item.nombre.value
+        : 'Calidad #${item.id ?? '-'}';
+    final descripcion = item.descripcion.value;
     final status = AppStatus.active(item.estado);
 
     return AppCard(

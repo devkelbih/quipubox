@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/common/string_extensions.dart';
 import '../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../core/ui/feedback/app_toast.dart';
 import '../../domain/entities/calidad.dart';
@@ -32,9 +33,9 @@ class _CalidadFormScreenState extends State<CalidadFormScreen> {
 
     final item = widget.item;
 
-    _nombreController = TextEditingController(text: item?.nombre ?? '');
+    _nombreController = TextEditingController(text: item?.nombre.orEmpty);
     _descripcionController = TextEditingController(
-      text: item?.descripcion ?? '',
+      text: item?.descripcion.orEmpty,
     );
   }
 
@@ -67,7 +68,7 @@ class _CalidadFormScreenState extends State<CalidadFormScreen> {
               prefixIcon: Icon(Icons.workspace_premium_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el nombre de la calidad';
               }
               return null;
@@ -127,8 +128,8 @@ class _CalidadFormScreenState extends State<CalidadFormScreen> {
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
-      nombre: _nombreController.text.trim(),
-      descripcion: _nullIfEmpty(_descripcionController.text),
+      nombre: _nombreController.text.value,
+      descripcion: StringUtils.emptyToNull(_descripcionController.text),
     );
 
     final ok = _isEditing ? await vm.update(calidad) : await vm.create(calidad);
@@ -145,10 +146,5 @@ class _CalidadFormScreenState extends State<CalidadFormScreen> {
     );
 
     if (ok) Navigator.pop(context);
-  }
-
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-    return clean.isEmpty ? null : clean;
   }
 }

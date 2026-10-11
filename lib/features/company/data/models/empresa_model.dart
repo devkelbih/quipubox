@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/empresa.dart';
 
 class EmpresaModel {
@@ -68,11 +70,11 @@ class EmpresaModel {
   factory EmpresaModel.fromJson(Map<String, dynamic> json) {
     return EmpresaModel(
       id: json['id_empresa'] as int? ?? json['id'] as int? ?? 0,
-      razonSocial: json['razon_social']?.toString() ?? '',
-      nombreComercial: json['nombre_comercial']?.toString() ?? '',
-      ruc: json['ruc']?.toString() ?? '',
-      telefono: json['telefono']?.toString(),
-      direccion: json['direccion']?.toString(),
+      razonSocial: json['razon_social']?.toString().orEmpty ?? '',
+      nombreComercial: json['nombre_comercial']?.toString().orEmpty ?? '',
+      ruc: json['ruc']?.toString().orEmpty ?? '',
+      telefono: json['telefono']?.toString().value,
+      direccion: json['direccion']?.toString().value,
       estado: json['estado'] == true,
     );
   }

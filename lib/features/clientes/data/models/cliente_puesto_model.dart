@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 import '../../../puestos/data/models/puesto_model.dart';
 import '../../domain/entities/cliente_puesto.dart';
 import '../../domain/enums/secciones_cliente_puesto.dart';
@@ -50,7 +51,7 @@ class ClientePuestoModel {
       fechaInicio: _readDateTime(json['fecha_inicio']),
       fechaFin: _readDateTime(json['fecha_fin']),
       estado: json['estado'] == true,
-      observaciones: _readNullableString(json['observaciones']),
+      observaciones: json['observaciones']?.toString().value,
       seccion: json['seccion'] == null
           ? null
           : SeccionClientePuesto.fromValue(json['seccion'].toString()),
@@ -79,17 +80,7 @@ class ClientePuestoModel {
   static int _readInt(dynamic value) {
     if (value is int) return value;
 
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
-
-  static String? _readNullableString(dynamic value) {
-    final text = value?.toString().trim();
-
-    if (text == null || text.isEmpty) {
-      return null;
-    }
-
-    return text;
+    return int.tryParse(value?.toString().orEmpty ?? '') ?? 0;
   }
 
   static DateTime? _readDateTime(dynamic value) {

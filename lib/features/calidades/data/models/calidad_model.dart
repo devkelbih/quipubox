@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/calidad.dart';
 
 class CalidadModel {
@@ -19,8 +21,8 @@ class CalidadModel {
       id: json['id_calidad'] as int,
       idEmpresa: json['id_empresa'] as int,
       estado: json['estado'] == true,
-      nombre: json['nombre']?.toString() ?? '',
-      descripcion: json['descripcion']?.toString(),
+      nombre: json['nombre']?.toString().orEmpty ?? '',
+      descripcion: json['descripcion']?.toString().value,
     );
   }
   Calidad toEntity() => Calidad(

@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import 'cliente_puesto.dart';
 import 'cliente_sede.dart';
 
@@ -33,7 +35,7 @@ class Cliente {
     this.puestos = const [],
   });
 
-  String get nombreCompleto => '$nombres ${apellidos ?? ''}'.trim();
+  String get nombreCompleto => '$nombres ${apellidos.orEmpty}'.value;
 
   Cliente copyWith({
     int? id,

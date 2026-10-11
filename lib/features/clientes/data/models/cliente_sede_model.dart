@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 import '../../../sedes/data/models/sede_model.dart';
 import '../../domain/entities/cliente_sede.dart';
 import '../../domain/enums/tipos_relacion_cliente_sedes.dart';
@@ -44,7 +45,7 @@ class ClienteSedeModel {
       tipoRelacion: TipoRelacionClienteSede.fromValue(
         json['tipo_relacion']!.toString(),
       ),
-      observaciones: _readNullableString(json['observaciones']),
+      observaciones: json['observaciones']?.toString().value,
       estado: json['estado'] == true,
       createdAt: _readDateTime(json['created_at']),
     );
@@ -69,17 +70,7 @@ class ClienteSedeModel {
   static int _readInt(dynamic value) {
     if (value is int) return value;
 
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
-
-  static String? _readNullableString(dynamic value) {
-    final text = value?.toString().trim();
-
-    if (text == null || text.isEmpty) {
-      return null;
-    }
-
-    return text;
+    return int.tryParse(value?.toString().orEmpty ?? '') ?? 0;
   }
 
   static DateTime? _readDateTime(dynamic value) {

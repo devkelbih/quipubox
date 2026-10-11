@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 enum SeccionClientePuesto {
   a('A', 'A'),
   b('B', 'B'),
@@ -10,7 +12,7 @@ enum SeccionClientePuesto {
 
   static SeccionClientePuesto fromValue(String value) {
     return SeccionClientePuesto.values.firstWhere(
-      (e) => e.value.toLowerCase() == value.toLowerCase().trim(),
+      (e) => e.value.toLowerCase() == value.value.toLowerCase(),
       orElse: () => throw Exception(
         'Sección de cliente puesto no válida: $value',
       ),

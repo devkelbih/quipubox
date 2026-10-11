@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente_puesto.dart';
 
 class ClientePuestoRequestModel {
@@ -15,7 +16,6 @@ class ClientePuestoRequestModel {
 
   Map<String, dynamic> toCreateJson() => {
     'id_puesto': idPuesto,
-    if (seccion != null && seccion!.trim().isNotEmpty)
-      'seccion': seccion!.trim(),
+    if (seccion.hasText) 'seccion': seccion.value,
   };
 }

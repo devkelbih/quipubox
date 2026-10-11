@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/variedades/data/models/variedad_resumen_model.dart';
 
 import '../../domain/entities/fruta.dart';
@@ -39,8 +40,8 @@ class FrutaModel {
       id: json['id_fruta'] as int,
       idEmpresa: json['id_empresa'] as int,
       estado: json['estado'] == true,
-      nombre: json['nombre']?.toString() ?? '',
-      descripcion: json['descripcion']?.toString(),
+      nombre: json['nombre']?.toString().orEmpty ?? '',
+      descripcion: json['descripcion']?.toString().value,
       variedades: variedadesJson
           ?.map(
             (e) => VariedadResumenModel.fromJson(

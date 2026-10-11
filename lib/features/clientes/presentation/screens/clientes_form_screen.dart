@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/core/ui/feedback/app_toast.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente_puesto.dart';
@@ -57,21 +58,21 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
     super.initState();
 
     _nombresController = TextEditingController(
-      text: widget.item?.nombres ?? '',
+      text: widget.item?.nombres.orEmpty,
     );
 
     _apellidosController = TextEditingController(
-      text: widget.item?.apellidos ?? '',
+      text: widget.item?.apellidos.orEmpty,
     );
 
-    _apodoController = TextEditingController(text: widget.item?.apodo ?? '');
+    _apodoController = TextEditingController(text: widget.item?.apodo.orEmpty);
 
     _telefonoController = TextEditingController(
-      text: widget.item?.telefono ?? '',
+      text: widget.item?.telefono.orEmpty,
     );
 
     _observacionesController = TextEditingController(
-      text: widget.item?.observaciones ?? '',
+      text: widget.item?.observaciones.orEmpty,
     );
 
     _selectedSedes = {
@@ -417,11 +418,11 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
 
     final cliente = Cliente(
       id: widget.item?.id,
-      nombres: _nombresController.text.trim(),
-      apellidos: _optionalValue(_apellidosController),
-      apodo: _optionalValue(_apodoController),
-      telefono: _optionalValue(_telefonoController),
-      observaciones: _optionalValue(_observacionesController),
+      nombres: _nombresController.text.value,
+      apellidos: StringUtils.emptyToNull(_apellidosController.text),
+      apodo: StringUtils.emptyToNull(_apodoController.text),
+      telefono: StringUtils.emptyToNull(_telefonoController.text),
+      observaciones: StringUtils.emptyToNull(_observacionesController.text),
       estado: widget.item?.estado ?? true,
       sedes: clienteSedes,
       puestos: clientePuestos,
@@ -447,11 +448,5 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
     if (ok) {
       Navigator.of(context).pop(true);
     }
-  }
-
-  String? _optionalValue(TextEditingController controller) {
-    final value = controller.text.trim();
-
-    return value.isEmpty ? null : value;
   }
 }

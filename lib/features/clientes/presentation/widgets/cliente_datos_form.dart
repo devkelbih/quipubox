@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 class ClienteDatosForm extends StatelessWidget {
   final TextEditingController nombresController;
@@ -26,7 +27,7 @@ class ClienteDatosForm extends StatelessWidget {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'Nombres'),
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
+            if (!value.hasText) {
               return 'Ingresa los nombres';
             }
 
@@ -61,9 +62,9 @@ class ClienteDatosForm extends StatelessWidget {
           ],
           decoration: const InputDecoration(labelText: 'Teléfono'),
           validator: (value) {
-            final telefono = value?.trim() ?? '';
+            final telefono = value.orEmpty;
 
-            if (telefono.isEmpty) {
+            if (!telefono.hasText) {
               return null;
             }
 

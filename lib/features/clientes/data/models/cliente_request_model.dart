@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente.dart';
 
 class ClienteRequestModel {
@@ -34,28 +35,20 @@ class ClienteRequestModel {
 
   Map<String, dynamic> toCreateJson() => {
     if (idEmpresa != null) 'id_empresa': idEmpresa,
-    'nombres': nombres.trim(),
-    if (apellidos != null && apellidos!.trim().isNotEmpty)
-      'apellidos': apellidos!.trim(),
-    if (apodo != null && apodo!.trim().isNotEmpty)
-      'apodo': apodo!.trim(),
-    if (telefono != null && telefono!.trim().isNotEmpty)
-      'telefono': telefono!.trim(),
-    if (observaciones != null && observaciones!.trim().isNotEmpty)
-      'observaciones': observaciones!.trim(),
+    'nombres': nombres.value,
+    if (apellidos.hasText) 'apellidos': apellidos.value,
+    if (apodo.hasText) 'apodo': apodo.value,
+    if (telefono.hasText) 'telefono': telefono.value,
+    if (observaciones.hasText) 'observaciones': observaciones.value,
     'estado': estado,
   };
 
   Map<String, dynamic> toUpdateJson() => {
-    'nombres': nombres.trim(),
-    if (apellidos != null && apellidos!.trim().isNotEmpty)
-      'apellidos': apellidos!.trim(),
-    if (apodo != null && apodo!.trim().isNotEmpty)
-      'apodo': apodo!.trim(),
-    if (telefono != null && telefono!.trim().isNotEmpty)
-      'telefono': telefono!.trim(),
-    if (observaciones != null && observaciones!.trim().isNotEmpty)
-      'observaciones': observaciones!.trim(),
+    'nombres': nombres.value,
+    if (apellidos.hasText) 'apellidos': apellidos.value,
+    if (apodo.hasText) 'apodo': apodo.value,
+    if (telefono.hasText) 'telefono': telefono.value,
+    if (observaciones.hasText) 'observaciones': observaciones.value,
     'estado': estado,
   };
 }
