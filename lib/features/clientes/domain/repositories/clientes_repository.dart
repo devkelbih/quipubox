@@ -9,18 +9,6 @@ abstract class ClienteRepository {
   Future<Cliente> update(Cliente cliente);
   Future<bool> changeStatus({required int id, required bool estado});
 
-  Future<void> assignSede({
-    required int idCliente,
-    required int idSede,
-    required String tipoRelacion,
-  });
-  Future<void> assignPuesto({
-    required int idCliente,
-    required int idPuesto,
-    String? seccion,
-  });
-  Future<void> deletePuesto({required int idCliente, required int idPuesto});
-
   Future<ClienteSede> addClienteSede(ClienteSede clienteSede);
 
   Future<ClienteSede> updateClienteSedeRelation(ClienteSede clienteSede);

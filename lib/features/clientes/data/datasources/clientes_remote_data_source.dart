@@ -1,8 +1,8 @@
 import 'package:quipubox/core/network/response_parser.dart';
+import 'package:quipubox/features/clientes/data/models/cliente_full_request_model.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../models/cliente_model.dart';
-import '../models/cliente_request_model.dart';
 
 class ClienteRemoteDataSource {
   final ApiClient apiClient;
@@ -18,7 +18,7 @@ class ClienteRemoteDataSource {
     return data['estado'] == true;
   }
 
-  Future<ClienteModel> create(ClienteRequestModel request) async {
+  Future<ClienteModel> create(ClienteFullRequestModel request) async {
     final response = await apiClient.post(
       '/clientes/full',
       body: request.toCreateJson(),
@@ -29,7 +29,7 @@ class ClienteRemoteDataSource {
 
   Future<ClienteModel> update(
     int id, {
-    required ClienteRequestModel request,
+    required ClienteFullRequestModel request,
   }) async {
     final response = await apiClient.put(
       '/clientes/$id/full',
