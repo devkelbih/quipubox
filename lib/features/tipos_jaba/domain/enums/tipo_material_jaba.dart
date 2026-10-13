@@ -1,30 +1,21 @@
 enum TipoMaterialJaba {
-  madera,
-  plastico;
+  madera('madera', 'Madera'),
+  plastico('plastico', 'Plástico'),
+  carton('carton', 'Cartón');
 
-  String get value {
-    switch (this) {
-      case TipoMaterialJaba.madera:
-        return 'madera';
-      case TipoMaterialJaba.plastico:
-        return 'plastico';
-    }
-  }
+  final String value;
+  final String label;
 
-  String get label {
-    switch (this) {
-      case TipoMaterialJaba.madera:
-        return 'Madera';
-      case TipoMaterialJaba.plastico:
-        return 'Plástico';
-    }
-  }
+  const TipoMaterialJaba(this.value, this.label);
 
   static TipoMaterialJaba fromValue(String? value) {
     switch (value?.trim().toLowerCase()) {
       case 'plastico':
       case 'plástico':
         return TipoMaterialJaba.plastico;
+      case 'carton':
+      case 'cartón':
+        return TipoMaterialJaba.carton;
       case 'madera':
       default:
         return TipoMaterialJaba.madera;

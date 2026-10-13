@@ -68,12 +68,14 @@ class TipoJabaCard extends StatelessWidget {
     );
   }
 
-  static IconData _materialIcon(TipoMaterialJaba material) {
+static IconData _materialIcon(TipoMaterialJaba material) {
     switch (material) {
       case TipoMaterialJaba.madera:
         return Icons.forest_rounded;
       case TipoMaterialJaba.plastico:
         return Icons.inventory_2_rounded;
+      case TipoMaterialJaba.carton:
+        return Icons.archive_rounded;
     }
   }
 }

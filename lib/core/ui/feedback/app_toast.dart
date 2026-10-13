@@ -90,7 +90,7 @@ class _ToastOverlayState extends State<_ToastOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final top = MediaQuery.of(context).padding.top + 14;
+    final top = MediaQuery.of(context).padding.top;
     final colorScheme = Theme.of(context).colorScheme;
     final style = _ToastStyle.fromType(widget.type, colorScheme);
 

@@ -170,9 +170,9 @@ class ClienteSedesForm extends StatelessWidget {
     final result = await AppBottomSheet.show<_SedeAction>(
       context: context,
       title: sede.nombre,
-      initialChildSize: isSelected ? 0.48 : 0.38,
+      initialChildSize: isSelected ? 0.52 : 0.42,
       minChildSize: isSelected ? 0.40 : 0.30,
-      maxChildSize: isSelected ? 0.58 : 0.48,
+      maxChildSize: isSelected ? 0.55 : 0.45,
       builder: (context, scrollController) {
         return ListView(
           controller: scrollController,
