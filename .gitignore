@@ -10,24 +10,53 @@ api-qb/
 quipubox/.env
 .env
 
+# Archivos comprimidos de respaldo
+*.zip
+
 # ==========================================
 # 3. Archivos de compilación y temporales de Flutter
 # ==========================================
-quipubox/.dart_tool/
-quipubox/build/
-quipubox/.flutter-plugins
-quipubox/.flutter-plugins-dependencies
+.dart_tool/
+/build/
+/coverage/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+**/doc/api/
+**/ios/Flutter/.last_build_id
 
 # Archivos generados automáticamente por Flutter en las carpetas nativas
 quipubox/**/generated_plugin_registrant.*
 quipubox/**/generated_plugins.cmake
 quipubox/**/GeneratedPluginRegistrant.swift
 
+# Android Studio / Build artifacts
+/android/app/debug
+/android/app/profile
+/android/app/release
+
 # ==========================================
-# 4. Configuración del IDE (VS Code)
+# 4. Configuración del IDE y Sistema
 # ==========================================
 .vscode/
 *.code-workspace
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# Archivos comprimidos de respaldo
-*.zip
+# Symbolication / Obfuscation related
+app.*.symbols
+app.*.map.json
