@@ -1,4 +1,7 @@
+
 import 'package:quipubox/features/sedes/domain/enums/tipo_sede.dart';
+
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import '../../domain/entities/sede.dart';
 
@@ -32,24 +35,18 @@ class SedeRequestModel {
 
   Map<String, dynamic> toCreateJson() => {
         if (idEmpresa != null) 'id_empresa': idEmpresa,
-        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+        if (nombre.hasText) 'nombre': nombre.value,
         'tipo_sede': tipoSede.value,
-        if (direccion != null && direccion!.trim().isNotEmpty)
-          'direccion': direccion!.trim(),
-        if (ciudad != null && ciudad!.trim().isNotEmpty)
-          'ciudad': ciudad!.trim(),
-        if (departamento != null && departamento!.trim().isNotEmpty)
-          'departamento': departamento!.trim(),
+        if (direccion.hasText) 'direccion': direccion.value,
+        if (ciudad.hasText) 'ciudad': ciudad.value,
+        if (departamento.hasText) 'departamento': departamento.value,
       };
 
   Map<String, dynamic> toUpdateJson() => {
-        if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+        if (nombre.hasText) 'nombre': nombre.value,
         'tipo_sede': tipoSede.value,
-        if (direccion != null && direccion!.trim().isNotEmpty)
-          'direccion': direccion!.trim(),
-        if (ciudad != null && ciudad!.trim().isNotEmpty)
-          'ciudad': ciudad!.trim(),
-        if (departamento != null && departamento!.trim().isNotEmpty)
-          'departamento': departamento!.trim(),
+        if (direccion.hasText) 'direccion': direccion.value,
+        if (ciudad.hasText) 'ciudad': ciudad.value,
+        if (departamento.hasText) 'departamento': departamento.value,
       };
 }

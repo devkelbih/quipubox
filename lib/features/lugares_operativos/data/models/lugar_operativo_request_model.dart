@@ -1,5 +1,7 @@
 import 'package:quipubox/features/lugares_operativos/domain/enums/lugar_operativo_tipos.dart';
 
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/lugar_operativo.dart';
 
 class LugarOperativoRequestModel {
@@ -33,21 +35,19 @@ class LugarOperativoRequestModel {
   Map<String, dynamic> toCreateJson() => {
     if (idEmpresa != null) 'id_empresa': idEmpresa,
     'id_sede': idSede,
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+    if (nombre.hasText) 'nombre': nombre.value,
     'tipo_lugar': tipoLugar.value,
-    if (direccionReferencia != null && direccionReferencia!.trim().isNotEmpty)
-      'direccion_referencia': direccionReferencia!.trim(),
-    if (observaciones != null && observaciones!.trim().isNotEmpty)
-      'observaciones': observaciones!.trim(),
+    if (direccionReferencia.hasText)
+      'direccion_referencia': direccionReferencia.value,
+    if (observaciones.hasText) 'observaciones': observaciones.value,
   };
 
   Map<String, dynamic> toUpdateJson() => {
     'id_sede': idSede,
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
+    if (nombre.hasText) 'nombre': nombre.value,
     'tipo_lugar': tipoLugar.value,
-    if (direccionReferencia != null && direccionReferencia!.trim().isNotEmpty)
-      'direccion_referencia': direccionReferencia!.trim(),
-    if (observaciones != null && observaciones!.trim().isNotEmpty)
-      'observaciones': observaciones!.trim(),
+    if (direccionReferencia.hasText)
+      'direccion_referencia': direccionReferencia.value,
+    if (observaciones.hasText) 'observaciones': observaciones.value,
   };
 }

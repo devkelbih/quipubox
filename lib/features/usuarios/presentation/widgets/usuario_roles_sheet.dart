@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/features/roles/domain/entities/role.dart';
 import 'package:quipubox/features/usuarios/domain/entities/usuario.dart';
@@ -142,8 +143,7 @@ class _UsuarioRolesSheetState extends State<UsuarioRolesSheet> {
     final isProcessing = _isProcessing(role);
     final hasProcessing = widget.processingRoleId != null;
 
-    final hasDescription =
-        role.descripcion != null && role.descripcion!.trim().isNotEmpty;
+    final hasDescription = role.descripcion.hasText;
 
     final isLastAssignedRole = isAssigned && _assignedRoleIds.length == 1;
 
@@ -209,7 +209,7 @@ class _UsuarioRolesSheetState extends State<UsuarioRolesSheet> {
                 Padding(
                   padding: const EdgeInsets.only(left: 30, right: 34),
                   child: Text(
-                    role.descripcion!.trim(),
+                    role.descripcion!.value,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       height: 1.4,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import 'package:quipubox/core/ui/feedback/app_toast.dart';
@@ -326,16 +327,16 @@ class _UsuariosFormScreenState extends State<UsuariosFormScreen> {
         .where((role) => _selectedRoleIds.contains(role.id))
         .toList();
 
-    final apellidos = _apellidosController.text.trim();
-    final telefono = _telefonoController.text.trim();
+    final apellidos = _apellidosController.text.value;
+    final telefono = _telefonoController.text.value;
 
     final usuario = Usuario(
       id: widget.item?.id,
       idSede: _idSede!,
-      nombres: _nombresController.text.trim(),
+      nombres: _nombresController.text.value,
       apellidos: apellidos.isEmpty ? null : apellidos,
       telefono: telefono.isEmpty ? null : telefono,
-      email: _emailController.text.trim(),
+      email: _emailController.text.value,
       roles: rolesSeleccionados,
       estado: widget.item?.estado ?? true,
     );

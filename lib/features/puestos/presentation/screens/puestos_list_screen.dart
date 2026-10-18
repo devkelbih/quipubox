@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
@@ -62,7 +63,7 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
     final activeCount = vm.items.where((e) => e.estado).length;
     final inactiveCount = vm.items.length - activeCount;
 
-    final search = _searchController.text.trim().toLowerCase();
+    final search = _searchController.text.value.toLowerCase();
 
     final filteredItems = vm.items.where((item) {
       final matchesStatus = switch (_statusFilter) {

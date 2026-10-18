@@ -1,5 +1,6 @@
-import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/variedades/data/models/variedad_resumen_model.dart';
+
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import '../../domain/entities/fruta.dart';
 

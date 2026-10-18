@@ -1,3 +1,6 @@
+
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/puesto.dart';
 
 class PuestoRequestModel {
@@ -25,15 +28,13 @@ class PuestoRequestModel {
   Map<String, dynamic> toCreateJson() => {
     if (idEmpresa != null) 'id_empresa': idEmpresa,
     if (idLugar != null) 'id_lugar': idLugar,
-    if (numeroPuesto.trim().isNotEmpty) 'numero_puesto': numeroPuesto.trim(),
-    if (referencia != null && referencia!.trim().isNotEmpty)
-      'referencia': referencia!.trim(),
+    if (numeroPuesto.hasText) 'numero_puesto': numeroPuesto.value,
+    if (referencia.hasText) 'referencia': referencia.value,
   };
 
   Map<String, dynamic> toUpdateJson() => {
     if (idLugar != null) 'id_lugar': idLugar,
-    if (numeroPuesto.trim().isNotEmpty) 'numero_puesto': numeroPuesto.trim(),
-    if (referencia != null && referencia!.trim().isNotEmpty)
-      'referencia': referencia!.trim(),
+    if (numeroPuesto.hasText) 'numero_puesto': numeroPuesto.value,
+    if (referencia.hasText) 'referencia': referencia.value,
   };
 }

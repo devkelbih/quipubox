@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../../roles/data/models/role_model.dart';
 import '../../../sedes/data/models/sede_model.dart';
 import '../../domain/entities/usuario.dart';
@@ -119,7 +121,7 @@ class UsuarioModel {
   }
 
   static String? _readNullableString(dynamic value) {
-    final text = value?.toString().trim();
+    final text = value?.toString().value;
 
     if (text == null || text.isEmpty) {
       return null;

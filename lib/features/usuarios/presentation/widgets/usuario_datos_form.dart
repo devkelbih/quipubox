@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 class UsuarioDatosForm extends StatelessWidget {
   final TextEditingController nombresController;
@@ -24,7 +25,7 @@ class UsuarioDatosForm extends StatelessWidget {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'Nombres'),
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
+            if (!value.hasText) {
               return 'Ingresa los nombres';
             }
 
@@ -39,7 +40,7 @@ class UsuarioDatosForm extends StatelessWidget {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'Apellidos'),
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
+            if (!value.hasText) {
               return 'Ingresa los apellidos';
             }
 
@@ -58,13 +59,12 @@ class UsuarioDatosForm extends StatelessWidget {
           ],
           decoration: const InputDecoration(labelText: 'Teléfono'),
           validator: (value) {
-            final telefono = value?.trim() ?? '';
-
             // El teléfono es opcional.
-            if (telefono.isEmpty) {
+            if (!value.hasText) {
               return null;
             }
 
+            final telefono = value!.value;
             if (telefono.length != 9) {
               return 'El teléfono debe tener 9 dígitos';
             }
@@ -80,12 +80,11 @@ class UsuarioDatosForm extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           decoration: const InputDecoration(labelText: 'Correo electrónico'),
           validator: (value) {
-            final email = value?.trim() ?? '';
-
-            if (email.isEmpty) {
+            if (!value.hasText) {
               return 'Ingresa el correo electrónico';
             }
 
+            final email = value!.value;
             final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
             if (!emailRegex.hasMatch(email)) {

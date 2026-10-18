@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
-import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/core/ui/feedback/app_toast.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente_puesto.dart';
@@ -419,10 +419,10 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
     final cliente = Cliente(
       id: widget.item?.id,
       nombres: _nombresController.text.value,
-      apellidos: StringUtils.emptyToNull(_apellidosController.text),
-      apodo: StringUtils.emptyToNull(_apodoController.text),
-      telefono: StringUtils.emptyToNull(_telefonoController.text),
-      observaciones: StringUtils.emptyToNull(_observacionesController.text),
+      apellidos: _apellidosController.text.value,
+      apodo: _apodoController.text.value,
+      telefono: _telefonoController.text.value,
+      observaciones: _observacionesController.text.value,
       estado: widget.item?.estado ?? true,
       sedes: clienteSedes,
       puestos: clientePuestos,

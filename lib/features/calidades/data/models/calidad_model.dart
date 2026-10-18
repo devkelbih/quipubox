@@ -1,3 +1,4 @@
+
 import 'package:quipubox/core/common/string_extensions.dart';
 
 import '../../domain/entities/calidad.dart';

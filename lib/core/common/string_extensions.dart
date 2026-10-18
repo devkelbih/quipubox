@@ -2,6 +2,8 @@
 // Su propósito es simplificar la validación, limpieza y transformación de texto
 // en todo el proyecto (Formularios, Entidades, Modelos JSON), evitando código repetitivo.
 
+import 'string_utils.dart';
+
 export 'string_utils.dart';
 
 /// Extensiones para trabajar con `String` obligatorios (no nulos).
@@ -40,7 +42,7 @@ extension NullableStringExtension on String? {
   /// String? nombre;
   /// nombre.hasText // false
   /// ```
-  bool get hasText => this != null && this!.trim().isNotEmpty;
+  bool get hasText => !StringUtils.isBlank(this);
 
   /// Limpia los espacios (`trim`) y maneja la nulidad de forma inteligente.
   /// 
@@ -54,13 +56,7 @@ extension NullableStringExtension on String? {
   /// null.value    // null
   /// ```
   String? get value {
-    final text = this?.trim();
-
-    if (text == null || text.isEmpty) {
-      return null;
-    }
-
-    return text;
+    return StringUtils.emptyToNull(this);
   }
 
   /// Devuelve el texto limpio, o una cadena vacía `''` si es nulo o vacío.

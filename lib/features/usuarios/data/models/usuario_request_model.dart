@@ -1,4 +1,5 @@
 import 'package:quipubox/features/usuarios/domain/entities/usuario.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 class UsuarioRequestModel {
   final int? idEmpresa;
@@ -34,23 +35,19 @@ class UsuarioRequestModel {
   Map<String, dynamic> toCreateJson() => {
     if (idEmpresa != null) 'id_empresa': idEmpresa,
     'id_sede': idSede,
-    'nombres': nombres.trim(),
-    if (apellidos != null && apellidos!.trim().isNotEmpty)
-      'apellidos': apellidos!.trim(),
-    if (telefono != null && telefono!.trim().isNotEmpty)
-      'telefono': telefono!.trim(),
-    'email': email.trim(),
+    'nombres': nombres.value,
+    if (apellidos.hasText) 'apellidos': apellidos.value,
+    if (telefono.hasText) 'telefono': telefono.value,
+    'email': email.value,
     'roles': roles,
   };
 
   Map<String, dynamic> toUpdateJson() => {
     'id_sede': idSede,
-    'nombres': nombres.trim(),
-    if (apellidos != null && apellidos!.trim().isNotEmpty)
-      'apellidos': apellidos!.trim(),
-    if (telefono != null && telefono!.trim().isNotEmpty)
-      'telefono': telefono!.trim(),
-    'email': email.trim(),
+    'nombres': nombres.value,
+    if (apellidos.hasText) 'apellidos': apellidos.value,
+    if (telefono.hasText) 'telefono': telefono.value,
+    'email': email.value,
     'roles': roles,
   };
 }

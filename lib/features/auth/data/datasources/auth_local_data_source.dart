@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../models/app_user_model.dart';
 
 class AuthLocalDataSource {
@@ -13,38 +15,29 @@ class AuthLocalDataSource {
 
   Future<AppUserModel?> getCachedUser() async {
     try {
-      final raw = await storage.read(
-        key: _cachedUserKey,
-      );
+      final raw = await storage.read(key: _cachedUserKey);
 
-      if (raw == null || raw.trim().isEmpty) {
+      if (!raw.hasText) {
         return null;
       }
 
-      final decoded = jsonDecode(raw);
+      final decoded = jsonDecode(raw!);
 
       if (decoded is! Map<String, dynamic>) {
         return null;
       }
 
-      return AppUserModel.fromJson(decoded,source: 'cache');
+      return AppUserModel.fromJson(decoded, source: 'cache');
     } on Object {
       return null;
     }
   }
 
   Future<void> saveCachedUser(AppUserModel user) async {
-    await storage.write(
-      key: _cachedUserKey,
-      value: jsonEncode(
-        user.toJson(),
-      ),
-    );
+    await storage.write(key: _cachedUserKey, value: jsonEncode(user.toJson()));
   }
 
   Future<void> clearCachedUser() async {
-    await storage.delete(
-      key: _cachedUserKey,
-    );
+    await storage.delete(key: _cachedUserKey);
   }
 }

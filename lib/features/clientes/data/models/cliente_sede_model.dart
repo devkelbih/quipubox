@@ -1,4 +1,5 @@
 import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../../sedes/data/models/sede_model.dart';
 import '../../domain/entities/cliente_sede.dart';
 import '../../domain/enums/tipos_relacion_cliente_sedes.dart';

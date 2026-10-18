@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -25,14 +26,15 @@ class SedeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombre.isEmpty ? 'Sede #${item.id}' : item.nombre;
+    final title = item.nombre.hasText
+        ? item.nombre.value
+        : 'Sede #${item.id}';
     final subtitle = item.tipoSede.label;
     final status = AppStatus.active(item.estado);
 
     final location = _locationText(item);
-    final hasDireccion =
-        item.direccion != null && item.direccion!.trim().isNotEmpty;
-    final hasBody = location != null || hasDireccion;
+    final direccion = item.direccion.value;
+    final hasBody = location != null || direccion != null;
 
     return AppCard(
       header: AppCardHeader(
@@ -53,13 +55,13 @@ class SedeCard extends StatelessWidget {
                       label: 'Ubicación',
                       value: location,
                     ),
-                  if (location != null && hasDireccion)
+                  if (location != null && direccion != null)
                     const SizedBox(height: 10),
-                  if (hasDireccion)
+                  if (direccion != null)
                     AppCardInfoRow(
                       icon: Icons.place_rounded,
                       label: 'Dirección',
-                      value: item.direccion!,
+                      value: direccion,
                     ),
                 ],
               ),
@@ -83,18 +85,18 @@ class SedeCard extends StatelessWidget {
   }
 
   static String? _locationText(Sede item) {
-    final ciudad = item.ciudad?.trim();
-    final departamento = item.departamento?.trim();
+    final ciudad = item.ciudad?.value;
+    final departamento = item.departamento?.value;
 
-    if (_hasText(ciudad) && _hasText(departamento)) {
+    if (ciudad.hasText && departamento.hasText) {
       if (ciudad!.toLowerCase() == departamento!.toLowerCase()) {
         return ciudad;
       }
       return '$ciudad, $departamento';
     }
 
-    if (_hasText(ciudad)) return ciudad;
-    if (_hasText(departamento)) return departamento;
+    if (ciudad.hasText) return ciudad;
+    if (departamento.hasText) return departamento;
 
     return null;
   }
@@ -109,8 +111,4 @@ class SedeCard extends StatelessWidget {
         return Icons.sync_alt_rounded;
     }
   }
-
-  static bool _hasText(String? value) {
-    return value != null && value.trim().isNotEmpty;
-  }
-}
+}

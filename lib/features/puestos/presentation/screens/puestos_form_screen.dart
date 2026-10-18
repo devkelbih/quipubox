@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
@@ -82,7 +83,7 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
               prefixIcon: Icon(Icons.storefront_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el número del puesto';
               }
 
@@ -103,7 +104,7 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
             ),
             hint: const Text('Selecciona un lugar operativo'),
             items: lugaresDisponibles.map((lugar) {
-              final sedeNombre = lugar.sede?.nombre.trim() ?? '';
+              final sedeNombre = lugar.sede?.nombre.value ?? '';
 
               return DropdownMenuItem<int>(
                 value: lugar.id!,
@@ -111,7 +112,7 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: lugar.nombre.trim(),
+                        text: lugar.nombre.value,
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       if (sedeNombre.isNotEmpty) ...[
@@ -225,8 +226,8 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
       idLugar: idLugar,
       lugarOperativo: lugar,
       estado: item?.estado ?? true,
-      numeroPuesto: _numeroPuestoController.text.trim(),
-      referencia: _nullIfEmpty(_referenciaController.text),
+      numeroPuesto: _numeroPuestoController.text.value,
+      referencia: _referenciaController.text.value,
     );
 
     final ok = _isEditing ? await vm.update(puesto) : await vm.create(puesto);
@@ -247,9 +248,4 @@ class _PuestoFormScreenState extends State<PuestoFormScreen> {
     }
   }
 
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-
-    return clean.isEmpty ? null : clean;
-  }
 }

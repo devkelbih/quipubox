@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
@@ -104,7 +105,7 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
               prefixIcon: Icon(Icons.grain_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el nombre de la variedad';
               }
 
@@ -166,8 +167,8 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
       idEmpresa: item?.idEmpresa,
       idFruta: _idFruta!,
       estado: item?.estado ?? true,
-      nombre: _nombreController.text.trim(),
-      descripcion: _nullIfEmpty(_descripcionController.text),
+      nombre: _nombreController.text.value,
+      descripcion: _descripcionController.text.value,
     );
 
     final ok = _isEditing
@@ -190,9 +191,4 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
     }
   }
 
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-
-    return clean.isEmpty ? null : clean;
-  }
 }

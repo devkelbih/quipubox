@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +25,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthViewModel>().user;
-    final rawName = user?.nombres.trim().split(' ').first ?? '';
+    final rawName = user?.nombres.value.split(' ').first ?? '';
 
     final sections = <Widget>[
       _GreetingHeader(

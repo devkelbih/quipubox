@@ -1,5 +1,7 @@
 import 'package:quipubox/features/auth/domain/entities/auth_sede.dart';
 
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../../company/domain/entities/empresa.dart';
 import '../../../roles/domain/entities/role.dart';
 
@@ -56,20 +58,20 @@ class AuthenticatedUser {
   /// Utilizado en pantallas donde se requiere mostrar la identidad completa,
   /// como el perfil del usuario.
   String get fullName =>
-      '${nombres.trim()} ${apellidos.trim()}'.trim();
+      '${nombres.value} ${apellidos.value}'.value;
 
   /// Nombre resumido para espacios reducidos.
   ///
   /// Ejemplo:
   /// Juan Carlos + Pérez Gómez → Juan Pérez
   String get shortName {
-    final firstName = nombres.trim().split(' ').first;
+    final firstName = nombres.value.split(' ').first;
 
-    final lastName = apellidos.trim().isEmpty
+    final lastName = !apellidos.hasText
         ? ''
-        : apellidos.trim().split(' ').first;
+        : apellidos.value.split(' ').first;
 
-    return '$firstName $lastName'.trim();
+    return '$firstName $lastName'.value;
   }
 
   /// Resumen compacto de los roles del usuario.
@@ -107,10 +109,10 @@ class AuthenticatedUser {
   ///
   /// La comparación ignora mayúsculas, minúsculas y espacios.
   bool hasRoleName(String roleName) {
-    final normalizedRole = roleName.trim().toLowerCase();
+    final normalizedRole = roleName.value.toLowerCase();
 
     return roles.any(
-      (role) => role.nombre.trim().toLowerCase() == normalizedRole,
+      (role) => role.nombre.value.toLowerCase() == normalizedRole,
     );
   }
 }

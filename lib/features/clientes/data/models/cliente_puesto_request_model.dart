@@ -1,5 +1,5 @@
-import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/clientes/domain/entities/cliente_puesto.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 class ClientePuestoRequestModel {
   final int idPuesto;

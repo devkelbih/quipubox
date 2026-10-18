@@ -1,3 +1,6 @@
+
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../domain/entities/tipos_jaba.dart';
 
 class TipoJabaRequestModel {
@@ -24,16 +27,14 @@ class TipoJabaRequestModel {
 
   Map<String, dynamic> toCreateJson() => {
     if (idEmpresa != null) 'id_empresa': idEmpresa,
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-    if (tipoMaterial.trim().isNotEmpty) 'tipo_material': tipoMaterial.trim(),
-    if (descripcion != null && descripcion!.trim().isNotEmpty)
-      'descripcion': descripcion!.trim(),
+    if (nombre.hasText) 'nombre': nombre.value,
+    if (tipoMaterial.hasText) 'tipo_material': tipoMaterial.value,
+    if (descripcion.hasText) 'descripcion': descripcion.value,
   };
 
   Map<String, dynamic> toUpdateJson() => {
-    if (nombre.trim().isNotEmpty) 'nombre': nombre.trim(),
-    if (tipoMaterial.trim().isNotEmpty) 'tipo_material': tipoMaterial.trim(),
-    if (descripcion != null && descripcion!.trim().isNotEmpty)
-      'descripcion': descripcion!.trim(),
+    if (nombre.hasText) 'nombre': nombre.value,
+    if (tipoMaterial.hasText) 'tipo_material': tipoMaterial.value,
+    if (descripcion.hasText) 'descripcion': descripcion.value,
   };
 }

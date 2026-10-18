@@ -1,7 +1,7 @@
-import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'cliente_puesto.dart';
 import 'cliente_sede.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 class Cliente {
   final int? id;

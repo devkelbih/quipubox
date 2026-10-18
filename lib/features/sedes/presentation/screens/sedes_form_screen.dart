@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
@@ -78,7 +79,7 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
               prefixIcon: Icon(Icons.apartment_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el nombre de la sede';
               }
               return null;
@@ -182,11 +183,11 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
-      nombre: _nombreController.text.trim(),
+      nombre: _nombreController.text.value,
       tipoSede: _tipoSede,
-      direccion: _nullIfEmpty(_direccionController.text),
-      ciudad: _nullIfEmpty(_ciudadController.text),
-      departamento: _nullIfEmpty(_departamentoController.text),
+      direccion: _direccionController.text.value,
+      ciudad: _ciudadController.text.value,
+      departamento: _departamentoController.text.value,
     );
 
     final ok = _isEditing
@@ -207,8 +208,4 @@ class _SedeFormScreenState extends State<SedeFormScreen> {
     if (ok) Navigator.pop(context);
   }
 
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-    return clean.isEmpty ? null : clean;
-  }
 }

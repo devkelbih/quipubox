@@ -1,6 +1,7 @@
-import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:quipubox/features/clientes/data/models/cliente_puesto_model.dart';
 import 'package:quipubox/features/clientes/data/models/cliente_sede_model.dart';
+
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import '../../domain/entities/cliente.dart';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
@@ -69,7 +70,7 @@ class _TipoJabaFormScreenState extends State<TipoJabaFormScreen> {
               prefixIcon: Icon(Icons.inventory_2_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el nombre del tipo de jaba';
               }
               return null;
@@ -152,9 +153,9 @@ class _TipoJabaFormScreenState extends State<TipoJabaFormScreen> {
       id: item?.id,
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
-      nombre: _nombreController.text.trim(),
+      nombre: _nombreController.text.value,
       tipoMaterial: _tipoMaterial,
-      descripcion: _nullIfEmpty(_descripcionController.text),
+      descripcion: _descripcionController.text.value,
     );
 
     final ok = _isEditing
@@ -175,8 +176,4 @@ class _TipoJabaFormScreenState extends State<TipoJabaFormScreen> {
     if (ok) Navigator.pop(context);
   }
 
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-    return clean.isEmpty ? null : clean;
-  }
 }

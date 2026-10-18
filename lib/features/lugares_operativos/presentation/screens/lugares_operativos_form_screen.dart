@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/connectivity_viewmodel.dart';
@@ -88,7 +89,7 @@ class _LugarOperativoFormScreenState extends State<LugarOperativoFormScreen> {
               prefixIcon: Icon(Icons.place_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa el nombre del lugar';
               }
 
@@ -106,7 +107,7 @@ class _LugarOperativoFormScreenState extends State<LugarOperativoFormScreen> {
             items: sedesVm.items.where((sede) => sede.id != null).map((sede) {
               return DropdownMenuItem<int>(
                 value: sede.id!,
-                child: Text(sede.nombre.trim()),
+                child: Text(sede.nombre.value),
               );
             }).toList(),
             onChanged: vm.isSaving || sedesVm.isLoading
@@ -161,7 +162,7 @@ class _LugarOperativoFormScreenState extends State<LugarOperativoFormScreen> {
               prefixIcon: Icon(Icons.location_on_rounded),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
+              if (!value.hasText) {
                 return 'Ingresa una dirección o referencia';
               }
 
@@ -255,10 +256,10 @@ class _LugarOperativoFormScreenState extends State<LugarOperativoFormScreen> {
       sede: sede,
 
       estado: item?.estado ?? true,
-      nombre: _nombreController.text.trim(),
+      nombre: _nombreController.text.value,
       tipoLugar: _tipoLugar,
-      direccionReferencia: _nullIfEmpty(_direccionController.text),
-      observaciones: _nullIfEmpty(_observacionesController.text),
+      direccionReferencia: _direccionController.text.value,
+      observaciones: _observacionesController.text.value,
     );
 
     final ok = _isEditing
@@ -281,9 +282,4 @@ class _LugarOperativoFormScreenState extends State<LugarOperativoFormScreen> {
     }
   }
 
-  String? _nullIfEmpty(String value) {
-    final clean = value.trim();
-
-    return clean.isEmpty ? null : clean;
-  }
 }

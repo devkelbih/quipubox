@@ -1,4 +1,5 @@
 import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../../puestos/data/models/puesto_model.dart';
 import '../../domain/entities/cliente_puesto.dart';
 import '../../domain/enums/secciones_cliente_puesto.dart';

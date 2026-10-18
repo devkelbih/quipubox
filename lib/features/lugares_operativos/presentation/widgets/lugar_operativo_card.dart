@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -25,16 +26,16 @@ class LugarOperativoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombre.isEmpty
+    final title = !item.nombre.hasText
         ? 'Lugar operativo #${item.id}'
         : item.nombre;
 
     final subtitle = item.tipoLugar.label;
     final status = AppStatus.active(item.estado);
 
-    final hasDireccion = item.direccionReferencia?.trim().isNotEmpty ?? false;
+    final hasDireccion = item.direccionReferencia.hasText;
 
-    final hasObservaciones = item.observaciones?.trim().isNotEmpty ?? false;
+    final hasObservaciones = item.observaciones.hasText;
 
     return AppCard(
       header: AppCardHeader(
@@ -50,14 +51,14 @@ class LugarOperativoCard extends StatelessWidget {
             AppCardInfoRow(
               icon: Icons.business_rounded,
               label: 'Sede',
-              value: item.sede?.nombre.trim() ?? 'Sin sede',
+              value: item.sede?.nombre.value ?? 'Sin sede',
             ),
             if (hasDireccion) ...[
               const SizedBox(height: 10),
               AppCardInfoRow(
                 icon: Icons.place_rounded,
                 label: 'Dirección',
-                value: item.direccionReferencia!.trim(),
+                value: item.direccionReferencia!.value,
               ),
             ],
             if (hasObservaciones) ...[
@@ -65,7 +66,7 @@ class LugarOperativoCard extends StatelessWidget {
               AppCardInfoRow(
                 icon: Icons.notes_rounded,
                 label: 'Observaciones',
-                value: item.observaciones!.trim(),
+                value: item.observaciones!.value,
               ),
             ],
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -24,17 +25,15 @@ class VariedadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombre.trim().isEmpty
-        ? 'Variedad #${item.id ?? '-'}'
-        : item.nombre;
-    final subtitle = item.frutaNombre.trim().isNotEmpty == true
-        ? item.frutaNombre
+    final title = item.nombre.hasText
+        ? item.nombre.value
+        : 'Variedad #${item.id ?? '-'}';
+    final subtitle = item.frutaNombre.hasText
+        ? item.frutaNombre.value
         : 'Sin fruta';
     final status = AppStatus.active(item.estado);
 
-    final descripcion = item.descripcion?.trim().isNotEmpty == true
-        ? item.descripcion
-        : null;
+    final descripcion = item.descripcion.value;
 
     return AppCard(
       header: AppCardHeader(

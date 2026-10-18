@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 enum TipoSede {
   origen('origen', 'Origen'),
   destino('destino', 'Destino'),
@@ -10,7 +11,7 @@ enum TipoSede {
 
   static TipoSede fromValue(String value) {
     return TipoSede.values.firstWhere(
-      (e) => e.value.toLowerCase() == value.toLowerCase().trim(),
+      (e) => e.value.toLowerCase() == value.value.toLowerCase(),
       orElse: () => throw Exception('Tipo de sede no válido: $value'),
     );
   }

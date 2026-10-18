@@ -1,3 +1,5 @@
+import 'package:quipubox/core/common/string_extensions.dart';
+
 import '../../../roles/domain/entities/role.dart';
 import '../../../sedes/domain/entities/sede.dart';
 
@@ -40,7 +42,7 @@ class Usuario {
     this.estado = true,
   });
 
-  String get nombreCompleto => '$nombres ${apellidos ?? ''}'.trim();
+  String get nombreCompleto => '$nombres ${apellidos ?? ''}'.value;
 
   List<int> get roleIds => roles.map((e) => e.id).toList();
 

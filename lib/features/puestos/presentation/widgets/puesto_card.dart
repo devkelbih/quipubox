@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -24,21 +25,22 @@ class PuestoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final numero = item.numeroPuesto.trim().isEmpty
+    final numeroPuesto = item.numeroPuesto.value;
+    final numero = !item.numeroPuesto.hasText
         ? 'Puesto #${item.id ?? '-'}'
-        : 'Puesto ${item.numeroPuesto.trim()}';
+        : 'Puesto $numeroPuesto';
 
-    final lugar = item.lugarNombre.trim().isNotEmpty
-        ? item.lugarNombre.trim()
+    final lugarNombre = item.lugarNombre.value;
+    final lugar = item.lugarNombre.hasText
+        ? lugarNombre
         : 'Sin lugar operativo';
 
-    final sede = item.sedeNombre.trim().isNotEmpty
-        ? item.sedeNombre.trim()
+    final sedeNombre = item.sedeNombre.value;
+    final sede = item.sedeNombre.hasText
+        ? sedeNombre
         : 'Sin sede';
 
-    final referencia = item.referencia?.trim().isNotEmpty == true
-        ? item.referencia!.trim()
-        : null;
+    final referencia = item.referencia.value;
 
     final tipoLugar = item.lugarOperativo?.tipoLugar.name;
 
@@ -60,7 +62,7 @@ class PuestoCard extends StatelessWidget {
               label: 'Sede',
               value: sede,
             ),
-            if (tipoLugar != null && tipoLugar.trim().isNotEmpty)
+            if (tipoLugar != null)
               AppCardInfoRow(
                 icon: Icons.place_rounded,
                 label: 'Tipo de lugar',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -27,17 +28,15 @@ class UsuarioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item.nombreCompleto.isNotEmpty
-        ? item.nombreCompleto
+    final nombreCompleto = item.nombreCompleto;
+    final title = nombreCompleto.hasText
+        ? nombreCompleto
         : 'Usuario #${item.id}';
 
-    final subtitle = item.sede?.nombre.trim().isNotEmpty == true
-        ? item.sede!.nombre
-        : 'Sede #${item.idSede}';
+    final sedeNombre = item.sede?.nombre.value;
+    final subtitle = sedeNombre ?? 'Sede #${item.idSede}';
 
-    final avatarUrl = item.avatarUrl?.trim().isNotEmpty == true
-        ? item.avatarUrl
-        : null;
+    final avatarUrl = item.avatarUrl.value;
     final status = AppStatus.active(item.estado);
     return AppCard(
       header: AppCardHeader(

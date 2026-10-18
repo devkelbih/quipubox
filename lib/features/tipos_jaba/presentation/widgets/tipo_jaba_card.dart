@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
@@ -25,13 +26,13 @@ class TipoJabaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        item.nombre.trim().isEmpty ? 'Tipo de jaba #${item.id ?? '-'}' : item.nombre;
+    final title = item.nombre.hasText
+        ? item.nombre.value
+        : 'Tipo de jaba #${item.id ?? '-'}';
     final subtitle = item.tipoMaterial.label;
     final status = AppStatus.active(item.estado);
 
-    final descripcion =
-        item.descripcion?.trim().isNotEmpty == true ? item.descripcion : null;
+    final descripcion = item.descripcion.value;
 
     return AppCard(
       header: AppCardHeader(

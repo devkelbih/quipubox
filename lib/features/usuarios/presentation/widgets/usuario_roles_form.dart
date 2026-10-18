@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/sheets/app_bottom_sheet.dart';
 import 'package:quipubox/features/roles/domain/entities/role.dart';
@@ -158,7 +159,7 @@ class UsuarioRolesForm extends StatelessWidget {
   }
 
   Future<void> _showRoleDescription(BuildContext context, Role role) async {
-    final description = role.descripcion?.trim();
+    final description = role.descripcion?.value;
 
     if (description == null || description.isEmpty) {
       return;

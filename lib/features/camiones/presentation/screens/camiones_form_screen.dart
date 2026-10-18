@@ -170,8 +170,8 @@ class _CamionFormScreenState extends State<CamionFormScreen> {
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
       placa: _placaController.text.value.toUpperCase(),
-      descripcion: StringUtils.emptyToNull(_descripcionController.text),
-      observaciones: StringUtils.emptyToNull(_observacionesController.text),
+      descripcion: _descripcionController.text.value,
+      observaciones: _observacionesController.text.value,
     );
 
     final vm = context.read<CamionViewModel>();

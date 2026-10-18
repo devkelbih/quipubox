@@ -126,7 +126,7 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
       idEmpresa: item?.idEmpresa,
       estado: item?.estado ?? true,
       nombre: _nombreController.text.value,
-      descripcion: StringUtils.emptyToNull(_descripcionController.text),
+      descripcion: _descripcionController.text.value,
     );
 
     final ok = _isEditing ? await vm.update(fruta) : await vm.create(fruta);

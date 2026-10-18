@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 enum LugarOperativoTipos {
   mercado('mercado', 'Mercado'),
   almacen('almacen', 'Almacén'),
@@ -13,7 +14,7 @@ enum LugarOperativoTipos {
 
   static LugarOperativoTipos fromValue(String value) {
     return LugarOperativoTipos.values.firstWhere(
-      (e) => e.value.toLowerCase() == value.toLowerCase().trim(),
+      (e) => e.value.toLowerCase() == value.value.toLowerCase(),
       orElse: () => throw Exception('Tipo de lugar operativo no válido: $value'),
     );
   }

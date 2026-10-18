@@ -1,3 +1,4 @@
+import 'package:quipubox/core/common/string_extensions.dart';
 enum TipoMaterialJaba {
   madera('madera', 'Madera'),
   plastico('plastico', 'Plástico'),
@@ -9,7 +10,7 @@ enum TipoMaterialJaba {
   const TipoMaterialJaba(this.value, this.label);
 
   static TipoMaterialJaba fromValue(String? value) {
-    switch (value?.trim().toLowerCase()) {
+    switch (value?.value.toLowerCase()) {
       case 'plastico':
       case 'plástico':
         return TipoMaterialJaba.plastico;
