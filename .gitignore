@@ -1,0 +1,33 @@
+# ==========================================
+# 1. API (Carpeta del compañero - No subir)
+# ==========================================
+api-qb/
+
+# ==========================================
+# 2. Secretos y Configuración Local
+# ==========================================
+# El archivo .env de Flutter contiene llaves sensibles (Supabase, etc.)
+quipubox/.env
+.env
+
+# ==========================================
+# 3. Archivos de compilación y temporales de Flutter
+# ==========================================
+quipubox/.dart_tool/
+quipubox/build/
+quipubox/.flutter-plugins
+quipubox/.flutter-plugins-dependencies
+
+# Archivos generados automáticamente por Flutter en las carpetas nativas
+quipubox/**/generated_plugin_registrant.*
+quipubox/**/generated_plugins.cmake
+quipubox/**/GeneratedPluginRegistrant.swift
+
+# ==========================================
+# 4. Configuración del IDE (VS Code)
+# ==========================================
+.vscode/
+*.code-workspace
+
+# Archivos comprimidos de respaldo
+*.zip
