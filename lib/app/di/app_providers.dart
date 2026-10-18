@@ -10,17 +10,17 @@ import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 import 'modules/auth_module.dart';
 import 'modules/settings_module.dart';
-import 'modules/roles_module.dart';
-import 'modules/sedes_module.dart';
-import 'modules/usuarios_module.dart';
-import 'modules/lugares_operativos_module.dart';
-import 'modules/puestos_module.dart';
-import 'modules/camiones_module.dart';
-import 'modules/clientes_module.dart';
-import 'modules/frutas_module.dart';
-import 'modules/variedades_module.dart';
-import 'modules/calidades_module.dart';
-import 'modules/tipos_jaba_module.dart';
+import 'modules/organizacion/roles_module.dart';
+import 'modules/organizacion/sedes_module.dart';
+import 'modules/organizacion/usuarios_module.dart';
+import 'modules/organizacion/lugares_operativos_module.dart';
+import 'modules/organizacion/puestos_module.dart';
+import 'modules/catalogos/camiones_module.dart';
+import 'modules/organizacion/clientes_module.dart';
+import 'modules/catalogos/frutas_module.dart';
+import 'modules/catalogos/variedades_module.dart';
+import 'modules/catalogos/calidades_module.dart';
+import 'modules/catalogos/tipos_jaba_module.dart';
 
 class AppProviders {
   const AppProviders._();

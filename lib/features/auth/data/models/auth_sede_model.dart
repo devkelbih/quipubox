@@ -1,5 +1,5 @@
 import '../../domain/entities/auth_sede.dart';
-import '../../../sedes/domain/enums/tipo_sede.dart';
+import '../../../organizacion/sedes/domain/enums/tipo_sede.dart';
 
 class AuthSedeModel {
   final int id;

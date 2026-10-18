@@ -9,23 +9,23 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/company/presentation/screens/company_profile_screen.dart';
 
 // Screens simples (Solo ListScreen, sus forms son BottomSheets)
-import '../../features/sedes/presentation/screens/sedes_list_screen.dart';
-import '../../features/lugares_operativos/presentation/screens/lugares_operativos_list_screen.dart';
-import '../../features/puestos/presentation/screens/puestos_list_screen.dart';
-import '../../features/frutas/presentation/screens/frutas_list_screen.dart';
-import '../../features/variedades/presentation/screens/variedades_list_screen.dart';
-import '../../features/calidades/presentation/screens/calidades_list_screen.dart';
-import '../../features/tipos_jaba/presentation/screens/tipos_jaba_list_screen.dart';
-import '../../features/camiones/presentation/screens/camiones_list_screen.dart';
+import '../../features/organizacion/sedes/presentation/screens/sedes_list_screen.dart';
+import '../../features/organizacion/lugares_operativos/presentation/screens/lugares_operativos_list_screen.dart';
+import '../../features/organizacion/puestos/presentation/screens/puestos_list_screen.dart';
+import '../../features/catalogos/frutas/presentation/screens/frutas_list_screen.dart';
+import '../../features/catalogos/variedades/presentation/screens/variedades_list_screen.dart';
+import '../../features/catalogos/calidades/presentation/screens/calidades_list_screen.dart';
+import '../../features/catalogos/tipos_jaba/presentation/screens/tipos_jaba_list_screen.dart';
+import '../../features/catalogos/camiones/presentation/screens/camiones_list_screen.dart';
 
 // Screens complejas (Tienen ListScreen + FormScreen independiente)
-import '../../features/usuarios/domain/entities/usuario.dart';
-import '../../features/usuarios/presentation/screens/usuarios_form_screen.dart';
-import '../../features/usuarios/presentation/screens/usuarios_list_screen.dart';
+import '../../features/organizacion/usuarios/domain/entities/usuario.dart';
+import '../../features/organizacion/usuarios/presentation/screens/usuarios_form_screen.dart';
+import '../../features/organizacion/usuarios/presentation/screens/usuarios_list_screen.dart';
 
-import '../../features/clientes/domain/entities/cliente.dart';
-import '../../features/clientes/presentation/screens/clientes_form_screen.dart';
-import '../../features/clientes/presentation/screens/clientes_list_screen.dart';
+import '../../features/organizacion/clientes/domain/entities/cliente.dart';
+import '../../features/organizacion/clientes/presentation/screens/clientes_form_screen.dart';
+import '../../features/organizacion/clientes/presentation/screens/clientes_list_screen.dart';
 
 import 'app_routes.dart';
 import 'navigation_keys.dart';

@@ -3,7 +3,7 @@ import 'package:quipubox/features/auth/domain/entities/auth_sede.dart';
 import 'package:quipubox/core/common/string_extensions.dart';
 
 import '../../../company/domain/entities/empresa.dart';
-import '../../../roles/domain/entities/role.dart';
+import '../../../organizacion/roles/domain/entities/role.dart';
 
 /// Usuario autenticado de Quipubox.
 ///

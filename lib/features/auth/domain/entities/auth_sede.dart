@@ -1,4 +1,4 @@
-import 'package:quipubox/features/sedes/domain/enums/tipo_sede.dart';
+import 'package:quipubox/features/organizacion/sedes/domain/enums/tipo_sede.dart';
 
 class AuthSede {
   final int id;

@@ -1,7 +1,7 @@
 import 'package:quipubox/features/auth/data/models/auth_sede_model.dart';
 
 import '../../../company/data/models/empresa_model.dart';
-import '../../../roles/data/models/role_model.dart';
+import '../../../organizacion/roles/data/models/role_model.dart';
 import '../../domain/entities/authenticated_user.dart';
 
 class AppUserModel {
