@@ -7,8 +7,8 @@ api-qb/
 # 2. Secretos y Configuración Local
 # ==========================================
 # El archivo .env de Flutter contiene llaves sensibles (Supabase, etc.)
-quipubox/.env
 .env
+quipubox/.env
 
 # Archivos comprimidos de respaldo
 *.zip
@@ -17,8 +17,8 @@ quipubox/.env
 # 3. Archivos de compilación y temporales de Flutter
 # ==========================================
 .dart_tool/
-/build/
-/coverage/
+build/
+coverage/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
@@ -26,14 +26,14 @@ quipubox/.env
 **/ios/Flutter/.last_build_id
 
 # Archivos generados automáticamente por Flutter en las carpetas nativas
-quipubox/**/generated_plugin_registrant.*
-quipubox/**/generated_plugins.cmake
-quipubox/**/GeneratedPluginRegistrant.swift
+**/generated_plugin_registrant.*
+**/generated_plugins.cmake
+**/GeneratedPluginRegistrant.swift
 
 # Android Studio / Build artifacts
-/android/app/debug
-/android/app/profile
-/android/app/release
+android/app/debug
+android/app/profile
+android/app/release
 
 # ==========================================
 # 4. Configuración del IDE y Sistema
