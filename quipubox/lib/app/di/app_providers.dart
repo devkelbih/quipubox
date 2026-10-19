@@ -21,66 +21,59 @@ import 'modules/catalogos/frutas_module.dart';
 import 'modules/catalogos/variedades_module.dart';
 import 'modules/catalogos/calidades_module.dart';
 import 'modules/catalogos/tipos_jaba_module.dart';
+import 'modules/operaciones/carga_module.dart';
 
 class AppProviders {
   const AppProviders._();
 
-  static List<SingleChildWidget> providers(
-    SharedPreferences preferences,
-  ) =>
-      [
-        // Core
-        Provider<SharedPreferences>.value(
-          value: preferences,
-        ),
+  static List<SingleChildWidget> providers(SharedPreferences preferences) => [
+    // Core
+    Provider<SharedPreferences>.value(value: preferences),
 
-        Provider<NetworkChecker>(
-          create: (_) => NetworkChecker(),
-        ),
+    Provider<NetworkChecker>(create: (_) => NetworkChecker()),
 
-        Provider<ApiClient>(
-          create: (context) => ApiClient(
-            networkChecker: context.read<NetworkChecker>(),
-          ),
-        ),
+    Provider<ApiClient>(
+      create: (context) =>
+          ApiClient(networkChecker: context.read<NetworkChecker>()),
+    ),
 
-        ChangeNotifierProvider<ConnectivityViewModel>(
-          create: (context) =>
-              ConnectivityViewModel(
-                networkChecker: context.read<NetworkChecker>(),
-              )..start(),
-        ),
+    ChangeNotifierProvider<ConnectivityViewModel>(
+      create: (context) =>
+          ConnectivityViewModel(networkChecker: context.read<NetworkChecker>())
+            ..start(),
+    ),
 
-        // Auth y sesión
-        ...AuthModule.providers,
+    // Auth y sesión
+    ...AuthModule.providers,
 
-        // Navegación
-        Provider<AppRouter>(
-          create: (context) => AppRouter(
-            context.read<AuthViewModel>(),
-          ),
-        ),
+    // Navegación
+    Provider<AppRouter>(
+      create: (context) => AppRouter(context.read<AuthViewModel>()),
+    ),
 
-        // Configuración
-        ...SettingsModule.providers,
+    // Configuración
+    ...SettingsModule.providers,
 
-        // Administración
-        ...RolesModule.providers,
-        ...UsuariosModule.providers,
+    // Administración
+    ...RolesModule.providers,
+    ...UsuariosModule.providers,
 
-        // Logística
-        ...SedesModule.providers,
-        ...LugaresOperativosModule.providers,
-        ...PuestosModule.providers,
-        ...CamionesModule.providers,
+    // Logística
+    ...SedesModule.providers,
+    ...LugaresOperativosModule.providers,
+    ...PuestosModule.providers,
+    ...CamionesModule.providers,
 
-        // Clientes
-        ...ClientesModule.providers,
+    // Clientes
+    ...ClientesModule.providers,
 
-        // Catálogos
-        ...FrutasModule.providers,
-        ...VariedadesModule.providers,
-        ...CalidadesModule.providers,
-        ...TiposJabaModule.providers,
-      ];
+    // Catálogos
+    ...FrutasModule.providers,
+    ...VariedadesModule.providers,
+    ...CalidadesModule.providers,
+    ...TiposJabaModule.providers,
+
+    // Operaciones
+    ...CargaModule.providers,
+  ];
 }

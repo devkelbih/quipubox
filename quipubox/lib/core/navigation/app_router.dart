@@ -7,6 +7,10 @@ import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/company/presentation/screens/company_profile_screen.dart';
+import '../../features/operaciones/carga/domain/entities/operacion_carga.dart';
+import '../../features/operaciones/carga/presentation/screens/carga_detail_screen.dart';
+import '../../features/operaciones/carga/presentation/screens/carga_form_screen.dart';
+import '../../features/operaciones/carga/presentation/screens/carga_list_screen.dart';
 
 // Screens simples (Solo ListScreen, sus forms son BottomSheets)
 import '../../features/organizacion/sedes/presentation/screens/sedes_list_screen.dart';
@@ -109,6 +113,43 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.camiones,
         builder: (_, __) => const CamionListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operacionesCarga,
+        builder: (_, __) => const CargaListScreen(),
+        routes: [
+          GoRoute(
+            path: 'create',
+            builder: (_, state) => Scaffold(
+              appBar: AppBar(title: const Text('Nueva operación')),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: CargaFormScreen(item: state.extra as OperacionCarga?),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: ':id',
+            builder: (_, state) => CargaDetailScreen(
+              operationId: int.parse(state.pathParameters['id']!),
+            ),
+            routes: [
+              GoRoute(
+                path: 'edit',
+                builder: (_, state) => Scaffold(
+                  appBar: AppBar(title: const Text('Editar operación')),
+                  body: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: CargaFormScreen(
+                      item: state.extra as OperacionCarga?,
+                      operationId: int.parse(state.pathParameters['id']!),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
 
       // -----------------------------------------------------------------------

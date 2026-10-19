@@ -25,9 +25,12 @@ class ChangeStatusDialog extends StatelessWidget {
     required Future<bool> Function(bool newStatus) onConfirm,
     required String? Function()
     getErrorMessage, // Obligatorio: Callback para leer el error del ViewModel tras la ejecución
+    String? actionLabel,
+    String? successMessageOverride,
+    String? fallbackErrorOverride,
   }) async {
     final newStatus = !currentStatus;
-    final actionText = newStatus ? 'Activar' : 'Desactivar';
+    final actionText = actionLabel ?? (newStatus ? 'Activar' : 'Desactivar');
     final artLower = article.toLowerCase();
     final isFemale = artLower == 'la';
 
@@ -51,13 +54,17 @@ class ChangeStatusDialog extends StatelessWidget {
     if (!context.mounted) return;
 
     final genderSuffix = isFemale ? 'a' : 'o';
-    final successMessage = newStatus
-        ? '$entityName activad$genderSuffix correctamente.'
-        : '$entityName desactivad$genderSuffix correctamente.';
+    final successMessage =
+        successMessageOverride ??
+        (newStatus
+            ? '$entityName activad$genderSuffix correctamente.'
+            : '$entityName desactivad$genderSuffix correctamente.');
 
-    final fallbackError = newStatus
-        ? 'No se pudo activar $artLower ${entityName.toLowerCase()}.'
-        : 'No se pudo desactivar $artLower ${entityName.toLowerCase()}.';
+    final fallbackError =
+        fallbackErrorOverride ??
+        (newStatus
+            ? 'No se pudo activar $artLower ${entityName.toLowerCase()}.'
+            : 'No se pudo desactivar $artLower ${entityName.toLowerCase()}.');
 
     // Se obtiene el error actualizado del ViewModel tras terminar la petición
     final errorMessage = getErrorMessage();

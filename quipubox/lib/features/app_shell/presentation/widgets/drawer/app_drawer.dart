@@ -38,7 +38,7 @@ class _AppDrawerState extends State<AppDrawer> {
     }
 
     _isNavigating = true;
-  
+
     Navigator.of(context).pop();
 
     await Future<void>.delayed(const Duration(milliseconds: 180));
@@ -127,10 +127,13 @@ class _AppDrawerState extends State<AppDrawer> {
           title: 'Operaciones',
           subtitle: 'Carga, reparto, entregas y guías',
           children: [
-            _buildSubTile(title: 'Nueva carga', onTap: _showNotAvailable),
+            _buildSubTile(
+              title: 'Nueva carga',
+              onTap: () => _navigateTo(AppRoutes.operacionesCargaCreate),
+            ),
             _buildSubTile(
               title: 'Operaciones registradas',
-              onTap: _showNotAvailable,
+              onTap: () => _navigateTo(AppRoutes.operacionesCarga),
             ),
             _buildSubTile(
               title: 'Repartos y entregas',

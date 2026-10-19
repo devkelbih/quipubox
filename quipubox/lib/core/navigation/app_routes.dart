@@ -31,8 +31,15 @@ class AppRoutes {
   // ---------------------------------------------------------------------------
   static const usuarios = '/usuarios';
   static const clientes = '/clientes';
+  static const operacionesCarga = '/operaciones/carga';
+  static const operacionesCargaCreate = '$operacionesCarga/create';
+  static const operacionCargaDetail = '$operacionesCarga/:id';
+  static const operacionCargaEdit = '$operacionesCarga/:id/edit';
 
   // Rutas Absolutas para context.push(...)
   static const usuariosForm = '$usuarios/$formSubRoute';
   static const clientesForm = '$clientes/$formSubRoute';
+
+  static String operacionCargaDetailPath(int id) => '$operacionesCarga/$id';
+  static String operacionCargaEditPath(int id) => '$operacionesCarga/$id/edit';
 }
