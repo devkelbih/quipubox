@@ -14,6 +14,10 @@ class UpdateOperacionCargaUseCase {
   });
 
   Future<OperacionCarga> call(OperacionCarga operacion) {
+    final currentUserId = currentSession.currentUserId;
+    if (currentUserId == null) {
+      throw const AppException('No se encontró el usuario en sesión.');
+    }
     final idEmpresa = requireCurrentCompanyId(currentSession);
     if (operacion.id == null) {
       throw const AppException(
@@ -21,6 +25,8 @@ class UpdateOperacionCargaUseCase {
       );
     }
 
-    return repository.update(operacion.copyWith(idEmpresa: idEmpresa));
+    return repository.update(
+      operacion.copyWith(idEmpresa: idEmpresa, idEncargadoCarga: currentUserId),
+    );
   }
 }

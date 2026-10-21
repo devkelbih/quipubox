@@ -10,7 +10,6 @@ import 'package:quipubox/core/ui/cards/app_status_badge.dart';
 import 'package:quipubox/core/ui/states/empty_state.dart';
 
 import '../../../../../core/navigation/app_routes.dart';
-import '../../../../../core/ui/feedback/change_status_dialog.dart';
 import '../../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../domain/entities/operacion_carga.dart';
 import '../viewmodels/carga_viewmodel.dart';
@@ -42,6 +41,8 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
         ? vm.selected
         : null;
 
+    final isBusy = vm.isSaving || vm.isChangingStatus || vm.isDeleting;
+
     return AppScaffold.withTextTitle(
       title: 'Operación #${widget.operationId}',
       actions: [
@@ -58,6 +59,23 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
               extra: operation,
             ),
             icon: const Icon(Icons.edit_rounded),
+          ),
+        if (operation != null && operation.estado == 'pendiente')
+          IconButton(
+            tooltip: 'Eliminar operación',
+            onPressed: isBusy ? null : _confirmDelete,
+            icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+          ),
+        if (operation != null &&
+            const [
+              'pendiente',
+              'en_curso',
+              'en_transito',
+            ].contains(operation.estado))
+          IconButton(
+            tooltip: 'Asignar carga',
+            onPressed: isBusy ? null : _openAsignarCarga,
+            icon: const Icon(Icons.add_box_outlined),
           ),
       ],
       body: () {
@@ -76,8 +94,7 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
 
         return Column(
           children: [
-            if (vm.isSaving || vm.isChangingStatus)
-              const LinearProgressIndicator(),
+            if (isBusy) const LinearProgressIndicator(),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async => vm.loadById(widget.operationId),
@@ -114,10 +131,8 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
                     const SizedBox(height: 12),
                     _OperationActions(
                       operation: operation,
-                      onStart: () => _changeEstado('en_curso'),
-                      onFinalize: _finalizar,
-                      onCancel: () => _confirmCancel(operation),
-                      onGenerateGuides: _generateGuides,
+                      onStart: isBusy ? null : () => _changeEstado('en_curso'),
+                      onFinalize: isBusy ? null : _finalizar,
                     ),
                   ],
                 ),
@@ -156,33 +171,44 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
     );
   }
 
-  Future<void> _generateGuides() async {
-    final vm = context.read<CargaViewModel>();
-    final succeeded = await vm.generarGuias(widget.operationId);
-    if (!mounted) return;
-    AppToast.show(
-      succeeded
-          ? 'Guías generadas correctamente.'
-          : vm.errorMessage ?? 'No se pudieron generar las guías.',
-      type: succeeded ? ToastType.success : ToastType.error,
+  void _openAsignarCarga() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('La asignación de carga estará disponible próximamente.'),
+      ),
     );
   }
 
-  Future<void> _confirmCancel(OperacionCarga operation) async {
-    final vm = context.read<CargaViewModel>();
-    await ChangeStatusDialog.showAndAction(
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      currentStatus: true,
-      article: 'La',
-      entityName: 'operación de carga',
-      itemName: '#${widget.operationId}',
-      actionLabel: 'Cancelar',
-      successMessageOverride: 'Operación de carga cancelada correctamente.',
-      fallbackErrorOverride: 'No se pudo cancelar la operación de carga.',
-      onConfirm: (newStatus) async =>
-          newStatus ? false : vm.cancelar(widget.operationId),
-      getErrorMessage: () => vm.errorMessage,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Eliminar operación'),
+        content: const Text('¿Deseas eliminar esta operación de carga?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Volver'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
+    if (confirmed != true || !mounted) return;
+    final vm = context.read<CargaViewModel>();
+    final succeeded = await vm.eliminar(widget.operationId);
+    if (!mounted) return;
+    if (succeeded) {
+      context.pop();
+    } else {
+      AppToast.show(
+        vm.errorMessage ?? 'No se pudo eliminar la operación.',
+        type: ToastType.error,
+      );
+    }
   }
 }
 
@@ -194,6 +220,21 @@ class _OperationSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = CargaCard.statusFor(operation.estado);
+    final nombreOrigen =
+        operation.sedeOrigen?.nombre ?? 'Sede #${operation.idSedeOrigen}';
+    final nombreDestino = operation.idSedeDestino != null
+        ? (operation.sedeDestino?.nombre ?? 'Sede #${operation.idSedeDestino}')
+        : 'Sin destino';
+    final placaCamion =
+        operation.camion?.placa ?? 'Camión #${operation.idCamion}';
+    final nombreEncargado = operation.encargadoCarga != null
+        ? '${operation.encargadoCarga!.nombres} ${operation.encargadoCarga!.apellidos ?? ''}'
+              .trim()
+        : 'Usuario #${operation.idEncargadoCarga}';
+    final nombreRepartidor = operation.repartidorAsignado != null
+        ? '${operation.repartidorAsignado!.nombres} ${operation.repartidorAsignado!.apellidos ?? ''}'
+              .trim()
+        : 'Usuario #${operation.idRepartidorAsignado}';
 
     return AppCard(
       header: AppCardHeader(
@@ -208,29 +249,21 @@ class _OperationSummary extends StatelessWidget {
           children: [
             AppCardInfoRow(
               icon: Icons.trip_origin_rounded,
-              label: 'Sede de origen',
-              value: 'Sede #${operation.idSedeOrigen}',
+              label: 'Ruta',
+              value: '$nombreOrigen → $nombreDestino',
             ),
-            if (operation.idSedeDestino != null) ...[
-              const SizedBox(height: 8),
-              AppCardInfoRow(
-                icon: Icons.place_outlined,
-                label: 'Sede de destino',
-                value: 'Sede #${operation.idSedeDestino}',
-              ),
-            ],
             const SizedBox(height: 8),
             AppCardInfoRow(
               icon: Icons.local_shipping_outlined,
               label: 'Camión',
-              value: 'Camión #${operation.idCamion}',
+              value: placaCamion,
             ),
             if (operation.idEncargadoCarga != null) ...[
               const SizedBox(height: 8),
               AppCardInfoRow(
                 icon: Icons.person_outline_rounded,
                 label: 'Encargado',
-                value: 'Usuario #${operation.idEncargadoCarga}',
+                value: nombreEncargado,
               ),
             ],
             if (operation.idRepartidorAsignado != null) ...[
@@ -238,7 +271,7 @@ class _OperationSummary extends StatelessWidget {
               AppCardInfoRow(
                 icon: Icons.delivery_dining_rounded,
                 label: 'Repartidor',
-                value: 'Usuario #${operation.idRepartidorAsignado}',
+                value: nombreRepartidor,
               ),
             ],
             if (operation.horaCarga != null) ...[
@@ -272,17 +305,13 @@ class _OperationSummary extends StatelessWidget {
 
 class _OperationActions extends StatelessWidget {
   final OperacionCarga operation;
-  final VoidCallback onStart;
-  final VoidCallback onFinalize;
-  final VoidCallback onCancel;
-  final VoidCallback onGenerateGuides;
+  final VoidCallback? onStart;
+  final VoidCallback? onFinalize;
 
   const _OperationActions({
     required this.operation,
     required this.onStart,
     required this.onFinalize,
-    required this.onCancel,
-    required this.onGenerateGuides,
   });
 
   @override
@@ -302,19 +331,6 @@ class _OperationActions extends StatelessWidget {
             onPressed: onFinalize,
             icon: const Icon(Icons.task_alt_rounded),
             label: const Text('Finalizar carga'),
-          ),
-        if (operation.estado == 'repartiendo')
-          FilledButton.tonalIcon(
-            onPressed: onGenerateGuides,
-            icon: const Icon(Icons.description_outlined),
-            label: const Text('Generar guías'),
-          ),
-        if (operation.estado != 'repartiendo' &&
-            operation.estado != 'cancelada')
-          OutlinedButton.icon(
-            onPressed: onCancel,
-            icon: const Icon(Icons.cancel_outlined),
-            label: const Text('Cancelar operación'),
           ),
       ],
     );

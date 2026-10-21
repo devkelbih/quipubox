@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:quipubox/core/ui/navigation/app_filter_tab_bar.dart';
+import 'package:quipubox/features/operaciones/carga/domain/enums/estado_operacion_carga.dart';
 
 import '../../../../../core/navigation/app_routes.dart';
-import '../../../../../core/ui/feedback/change_status_dialog.dart';
-import '../../../../../core/ui/navigation/app_status_tab_bar.dart';
 import '../../../../../core/ui/sheets/app_bottom_sheet.dart';
 import '../../../../../core/ui/states/empty_state.dart';
 import '../../../../app_shell/presentation/widgets/app_scaffold.dart';
@@ -21,14 +21,15 @@ class CargaListScreen extends StatefulWidget {
 }
 
 class _CargaListScreenState extends State<CargaListScreen> {
-  static const _statuses = [
-    ('pendiente', 'Pendiente'),
-    ('en_curso', 'En curso'),
-    ('repartiendo', 'Repartiendo'),
-    ('cancelada', 'Cancelada'),
-  ];
+  /// Tabs de dominio: SIN 'todos'. AppFilterTabBar lo antepone.
+  static final _domainStatuses = EstadoOperacionCarga.values
+      .map((e) => (e.value, e.label))
+      .toList(growable: false);
 
-  String _statusFilter = 'pendiente';
+  String _statusFilter = 'todos'; // 'todos' siempre existe y es el primero.
+
+  bool _matchesStatus(OperacionCarga item, String status) =>
+    status == 'todos' || item.estado == status;
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class _CargaListScreenState extends State<CargaListScreen> {
   Widget build(BuildContext context) {
     final vm = context.watch<CargaViewModel>();
     final filteredItems = vm.items
-        .where((item) => item.estado == _statusFilter)
+        .where((item) => _matchesStatus(item, _statusFilter))
         .toList();
 
     return AppScaffold(
@@ -54,20 +55,19 @@ class _CargaListScreenState extends State<CargaListScreen> {
           onPressed: vm.isSaving ? null : () => _openForm(context),
         ),
       ],
-      appBarBottom: AppStatusTabBar.forStatuses(
-        tabs: _statuses
+      appBarBottom: AppFilterTabBar(
+        tabs: _domainStatuses
             .map(
-              (status) => StatusFilterTab(
-                value: status.$1,
-                label: status.$2,
-                count: vm.items
-                    .where((item) => item.estado == status.$1)
-                    .length,
+              (s) => AppFilterTab(
+                value: s.$1,
+                label: s.$2,
+                count: vm.items.where((i) => _matchesStatus(i, s.$1)).length,
               ),
             )
             .toList(),
+        totalOverride: vm.items.length, // total real (evita sobreconteo)
         selected: _statusFilter,
-        onChanged: (value) => setState(() => _statusFilter = value),
+        onChanged: (value) => setState(() => _statusFilter = value), // solo UI
       ),
       body: Column(
         children: [
@@ -75,10 +75,12 @@ class _CargaListScreenState extends State<CargaListScreen> {
             const LinearProgressIndicator(),
           Expanded(
             child: () {
+              // 1. Cargando inicial (sin datos aún).
               if (vm.isLoading && vm.items.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
 
+              // 2. Error inicial (sin datos).
               if (vm.errorMessage != null && vm.items.isEmpty) {
                 return EmptyState(
                   message: vm.errorMessage!,
@@ -87,6 +89,7 @@ class _CargaListScreenState extends State<CargaListScreen> {
                 );
               }
 
+              // 3. Lista completa vacía (no hay operaciones en absoluto).
               if (vm.items.isEmpty) {
                 return EmptyState(
                   message: 'Aún no tienes operaciones de carga.',
@@ -95,18 +98,22 @@ class _CargaListScreenState extends State<CargaListScreen> {
                 );
               }
 
+              // 4. Tab activo vacío (hay datos, pero no en este filtro).
+              //    El usuario decide volver a 'todos' con el botón.
+              //    No se recarga: solo se cambia el filtro.
               if (filteredItems.isEmpty) {
-                final label = _statuses
-                    .firstWhere((status) => status.$1 == _statusFilter)
+                final label = _domainStatuses
+                    .firstWhere((s) => s.$1 == _statusFilter)
                     .$2
                     .toLowerCase();
                 return EmptyState(
                   message: 'No hay operaciones con estado $label.',
-                  actionLabel: 'Actualizar',
-                  onAction: vm.load,
+                  actionLabel: 'Ver todos',
+                  onAction: () => setState(() => _statusFilter = 'todos'),
                 );
               }
 
+              // 5. Lista con items.
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(
@@ -120,7 +127,7 @@ class _CargaListScreenState extends State<CargaListScreen> {
                           item: item,
                           onOpen: () => _openDetails(context, item),
                           onEdit: () => _openForm(context, item: item),
-                          onCancel: () => _confirmCancel(context, item),
+                          onAssignCarga: () => _openAsignarCarga(context, item),
                         ),
                       ),
                     ),
@@ -138,9 +145,9 @@ class _CargaListScreenState extends State<CargaListScreen> {
     await AppBottomSheet.show<void>(
       context: context,
       title: item == null ? 'Nueva operación' : 'Editar operación',
-      minChildSize: 0.65,
-      initialChildSize: 0.88,
-      maxChildSize: 0.96,
+      minChildSize: 0.75,
+      initialChildSize: 0.8,
+      maxChildSize: 0.85,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(
@@ -158,22 +165,20 @@ class _CargaListScreenState extends State<CargaListScreen> {
     context.push(AppRoutes.operacionCargaDetailPath(id));
   }
 
-  Future<void> _confirmCancel(BuildContext context, OperacionCarga item) async {
+  // TODO: Implementar la pantalla/formulario para asignar detalle a la carga
+  void _openAsignarCarga(BuildContext context, OperacionCarga item) {
     final id = item.id;
     if (id == null) return;
-    final vm = context.read<CargaViewModel>();
 
-    await ChangeStatusDialog.showAndAction(
-      context: context,
-      currentStatus: true,
-      article: 'La',
-      entityName: 'operación de carga',
-      itemName: '#$id',
-      actionLabel: 'Cancelar',
-      successMessageOverride: 'Operación de carga cancelada correctamente.',
-      fallbackErrorOverride: 'No se pudo cancelar la operación de carga.',
-      onConfirm: (newStatus) async => newStatus ? false : vm.cancelar(id),
-      getErrorMessage: () => vm.errorMessage,
+    // Feedback temporal para saber que el botón funciona
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Próximamente: Asignar carga a la operación #$id'),
+      ),
     );
+
+    // Aquí irá la navegación futura, por ejemplo:
+    // context.push(AppRoutes.operacionCargaAsignarPath(id));
+    // o abrir un AppBottomSheet con el formulario de detalle de carga.
   }
 }

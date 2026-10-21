@@ -14,24 +14,36 @@ class CargaCard extends StatelessWidget {
   final OperacionCarga item;
   final VoidCallback onOpen;
   final VoidCallback onEdit;
-  final VoidCallback onCancel;
+  final VoidCallback onAssignCarga;
 
   const CargaCard({
     super.key,
     required this.item,
     required this.onOpen,
     required this.onEdit,
-    required this.onCancel,
+    required this.onAssignCarga,
   });
 
   @override
   Widget build(BuildContext context) {
-    final status = statusFor(item.estado);
-    final canCancel =
-        item.estado != 'cancelada' &&
-        item.estado != 'repartiendo' &&
+    final status = AppStatus(
+      label: item.estadoEnum.label,
+      type: statusFor(item.estado).type,
+    );
+
+    // Reglas de negocio
+    final canEdit = item.estado == 'pendiente' || item.estado == 'en_curso';
+    final canAssign =
+        (item.estado == 'pendiente' ||
+            item.estado == 'en_curso' ||
+            item.estado == 'en_transito') &&
         item.id != null;
-    final canEdit = item.estado != 'cancelada' && item.estado != 'repartiendo';
+
+    final origen = item.sedeOrigen?.nombre ?? 'Sede #${item.idSedeOrigen}';
+    final destino = item.sedeDestino?.nombre ?? 'Lugar #${item.idSedeDestino ?? '-'}';
+
+    // Obtenemos la cantidad real de registros de detalle
+    final cantidadDetalles = item.detalles?.length ?? 0;
 
     return AppCard(
       header: AppCardHeader(
@@ -44,23 +56,28 @@ class CargaCard extends StatelessWidget {
       body: AppCardBody(
         child: Column(
           children: [
+            // 1. Ruta (Origen -> Destino)
             AppCardInfoRow(
-              icon: Icons.trip_origin_rounded,
-              label: 'Sede de origen',
-              value: 'Sede #${item.idSedeOrigen}',
+              icon: Icons.route_rounded,
+              label: 'Ruta',
+              value: '$origen  →  $destino',
             ),
             const SizedBox(height: 8),
+
+            // 2. Camión
             AppCardInfoRow(
               icon: Icons.local_shipping_outlined,
               label: 'Camión',
-              value: 'Camión #${item.idCamion}',
+              value: item.camion?.placa ?? 'Camión #${item.idCamion}',
             ),
             const SizedBox(height: 8),
+
+            // 3. Detalles de Carga (Navega al detalle)
             AppCardInfoRow(
               icon: Icons.inventory_2_outlined,
               label: 'Detalles de carga',
-              value: '${item.detalles?.length ?? 0} detalles · Ver operación',
-              onTap: onOpen,
+              value: '$cantidadDetalles registro${cantidadDetalles == 1 ? '' : 's'}',
+              onTap: onOpen, // <-- Aquí se activa la flechita y la navegación
             ),
           ],
         ),
@@ -72,9 +89,9 @@ class CargaCard extends StatelessWidget {
           label: const Text('Editar'),
         ),
         primaryAction: FilledButton.tonalIcon(
-          onPressed: canCancel ? onCancel : null,
-          icon: const Icon(Icons.cancel_outlined, size: 18),
-          label: const Text('Cancelar'),
+          onPressed: canAssign ? onAssignCarga : null,
+          icon: const Icon(Icons.note_alt_outlined, size: 18),
+          label: const Text('Asignar Carga'),
         ),
       ),
     );
@@ -82,22 +99,11 @@ class CargaCard extends StatelessWidget {
 
   static AppStatus statusFor(String value) {
     return switch (value) {
-      'pendiente' => const AppStatus(
-        label: 'Pendiente',
-        type: AppStatusType.warning,
-      ),
-      'en_curso' => const AppStatus(
-        label: 'En curso',
-        type: AppStatusType.info,
-      ),
-      'repartiendo' => const AppStatus(
-        label: 'Repartiendo',
-        type: AppStatusType.success,
-      ),
-      'cancelada' => const AppStatus(
-        label: 'Cancelada',
-        type: AppStatusType.danger,
-      ),
+      'pendiente' => const AppStatus(label: 'Pendiente', type: AppStatusType.warning),
+      'en_curso' => const AppStatus(label: 'En curso', type: AppStatusType.info),
+      'en_transito' => const AppStatus(label: 'En tránsito', type: AppStatusType.info),
+      'repartiendo' => const AppStatus(label: 'Repartiendo', type: AppStatusType.success),
+      'completado' => const AppStatus(label: 'Completado', type: AppStatusType.neutral),
       _ => AppStatus(label: value, type: AppStatusType.neutral),
     };
   }

@@ -1,4 +1,8 @@
 import 'detalle_carga.dart';
+import '../enums/estado_operacion_carga.dart';
+import '../../../../catalogos/camiones/domain/entities/camion.dart';
+import '../../../../organizacion/sedes/domain/entities/sede.dart';
+import '../../../../organizacion/usuarios/domain/entities/usuario.dart';
 
 class OperacionCarga {
   final int? id;
@@ -13,6 +17,11 @@ class OperacionCarga {
   final String estado;
   final String? observaciones;
   final List<DetalleCarga>? detalles;
+  final Sede? sedeOrigen;
+  final Sede? sedeDestino;
+  final Camion? camion;
+  final Usuario? encargadoCarga;
+  final Usuario? repartidorAsignado;
 
   const OperacionCarga({
     this.id,
@@ -27,7 +36,14 @@ class OperacionCarga {
     this.estado = 'pendiente',
     this.observaciones,
     this.detalles,
+    this.sedeOrigen,
+    this.sedeDestino,
+    this.camion,
+    this.encargadoCarga,
+    this.repartidorAsignado,
   });
+
+  EstadoOperacionCarga get estadoEnum => EstadoOperacionCarga.fromValue(estado);
 
   OperacionCarga copyWith({
     int? id,
@@ -42,6 +58,11 @@ class OperacionCarga {
     String? estado,
     String? observaciones,
     List<DetalleCarga>? detalles,
+    Sede? sedeOrigen,
+    Sede? sedeDestino,
+    Camion? camion,
+    Usuario? encargadoCarga,
+    Usuario? repartidorAsignado,
   }) {
     return OperacionCarga(
       id: id ?? this.id,
@@ -56,6 +77,11 @@ class OperacionCarga {
       estado: estado ?? this.estado,
       observaciones: observaciones ?? this.observaciones,
       detalles: detalles ?? this.detalles,
+      sedeOrigen: sedeOrigen ?? this.sedeOrigen,
+      sedeDestino: sedeDestino ?? this.sedeDestino,
+      camion: camion ?? this.camion,
+      encargadoCarga: encargadoCarga ?? this.encargadoCarga,
+      repartidorAsignado: repartidorAsignado ?? this.repartidorAsignado,
     );
   }
 }

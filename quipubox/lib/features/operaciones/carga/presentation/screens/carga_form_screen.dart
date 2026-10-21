@@ -8,10 +8,12 @@ import '../../../../../core/network/connectivity_viewmodel.dart';
 import '../../../../catalogos/camiones/domain/entities/camion.dart';
 import '../../../../catalogos/camiones/presentation/viewmodels/camiones_viewmodel.dart';
 import '../../../../organizacion/sedes/domain/entities/sede.dart';
+import '../../../../organizacion/sedes/domain/enums/tipo_sede.dart';
 import '../../../../organizacion/sedes/presentation/viewmodels/sedes_viewmodel.dart';
 import '../../../../organizacion/usuarios/domain/entities/usuario.dart';
 import '../../../../organizacion/usuarios/presentation/viewmodels/usuarios_viewmodel.dart';
 import '../../domain/entities/operacion_carga.dart';
+import '../../domain/enums/estado_operacion_carga.dart';
 import '../viewmodels/carga_viewmodel.dart';
 
 class CargaFormScreen extends StatefulWidget {
@@ -35,7 +37,7 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
   int? _idSedeOrigen;
   int? _idSedeDestino;
   int? _idCamion;
-  int? _idEncargadoCarga;
+
   int? _idRepartidor;
   bool _loadingOperation = false;
 
@@ -70,7 +72,16 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
     final isOnline = context.watch<ConnectivityViewModel>().isOnline;
     final isBusy = vm.isSaving || _loadingOperation;
 
-    final sedes = _availableSedes(sedesVm.items);
+    final sedesOrigen = _availableSedes(
+      sedesVm.items,
+      TipoSede.origen,
+      _idSedeOrigen,
+    );
+    final sedesDestino = _availableSedes(
+      sedesVm.items,
+      TipoSede.destino,
+      _idSedeDestino,
+    );
     final camiones = _availableCamiones(camionesVm.items);
     final usuarios = _availableUsers(usuariosVm.items);
 
@@ -86,12 +97,12 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
             const LinearProgressIndicator(),
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
-            initialValue: _matchingId(_idSedeOrigen, sedes),
+            initialValue: _matchingId(_idSedeOrigen, sedesOrigen),
             decoration: const InputDecoration(
               labelText: 'Sede de origen',
               prefixIcon: Icon(Icons.trip_origin_rounded),
             ),
-            items: sedes
+            items: sedesOrigen
                 .where((sede) => sede.id != null)
                 .map(
                   (sede) => DropdownMenuItem<int>(
@@ -107,7 +118,7 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
           ),
           const SizedBox(height: 14),
           DropdownButtonFormField<int?>(
-            initialValue: _matchingId(_idSedeDestino, sedes),
+            initialValue: _matchingId(_idSedeDestino, sedesDestino),
             decoration: const InputDecoration(
               labelText: 'Sede de destino (opcional)',
               prefixIcon: Icon(Icons.place_outlined),
@@ -117,7 +128,7 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
                 value: null,
                 child: Text('Sin destino'),
               ),
-              ...sedes
+              ...sedesDestino
                   .where((sede) => sede.id != null)
                   .map(
                     (sede) => DropdownMenuItem<int?>(
@@ -151,34 +162,6 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
                 : (value) => setState(() => _idCamion = value),
             validator: (value) =>
                 value == null ? 'Selecciona un camión.' : null,
-          ),
-          const SizedBox(height: 14),
-          DropdownButtonFormField<int?>(
-            initialValue: _matchingId(_idEncargadoCarga, usuarios),
-            decoration: const InputDecoration(
-              labelText: 'Encargado de carga (opcional)',
-              prefixIcon: Icon(Icons.person_outline_rounded),
-            ),
-            items: [
-              const DropdownMenuItem<int?>(
-                value: null,
-                child: Text('Sin asignar'),
-              ),
-              ...usuarios
-                  .where((usuario) => usuario.id != null)
-                  .map(
-                    (usuario) => DropdownMenuItem<int?>(
-                      value: usuario.id,
-                      child: Text(
-                        usuario.nombreCompleto,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-            ],
-            onChanged: isBusy || usuariosVm.isLoading
-                ? null
-                : (value) => setState(() => _idEncargadoCarga = value),
           ),
           const SizedBox(height: 14),
           DropdownButtonFormField<int?>(
@@ -218,8 +201,6 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
               prefixIcon: Icon(Icons.calendar_month_rounded),
             ),
             onTap: isBusy ? null : _pickDate,
-            validator: (_) =>
-                _fechaCarga == null ? 'Selecciona la fecha de carga.' : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
@@ -300,11 +281,10 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
 
   void _applyItem(OperacionCarga? item) {
     if (item == null) return;
-    _idSedeOrigen = item.idSedeOrigen;
-    _idSedeDestino = item.idSedeDestino;
-    _idCamion = item.idCamion;
-    _idEncargadoCarga = item.idEncargadoCarga;
-    _idRepartidor = item.idRepartidorAsignado;
+    _idSedeOrigen = item.sedeOrigen?.id ?? item.idSedeOrigen;
+    _idSedeDestino = item.sedeDestino?.id ?? item.idSedeDestino;
+    _idCamion = item.camion?.id ?? item.idCamion;
+    _idRepartidor = item.repartidorAsignado?.id ?? item.idRepartidorAsignado;
     _fechaCarga = item.fechaCarga;
     _horaCarga = _parseTime(item.horaCarga);
     _fechaController.text = _dateText(item.fechaCarga);
@@ -352,11 +332,10 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
       idSedeOrigen: _idSedeOrigen!,
       idSedeDestino: _idSedeDestino,
       idCamion: _idCamion!,
-      idEncargadoCarga: _idEncargadoCarga,
       idRepartidorAsignado: _idRepartidor,
-      fechaCarga: _fechaCarga!,
+      fechaCarga: _fechaCarga ?? DateTime.now(),
       horaCarga: _horaCarga == null ? null : _timeText(_horaCarga!),
-      estado: item?.estado ?? 'pendiente',
+      estado: item?.estado ?? EstadoOperacionCarga.pendiente.value,
       observaciones: _observacionesController.text.trim().isEmpty
           ? null
           : _observacionesController.text.trim(),
@@ -380,26 +359,23 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
     if (succeeded) Navigator.of(context).pop();
   }
 
-  List<Sede> _availableSedes(List<Sede> items) => items
+  List<Sede> _availableSedes(
+    List<Sede> items,
+    TipoSede tipoSede,
+    int? selectedId,
+  ) => items
       .where(
         (item) =>
-            item.estado ||
-            item.id == _idSedeOrigen ||
-            item.id == _idSedeDestino,
+            (item.estado && item.tipoSede == tipoSede) || item.id == selectedId,
       )
       .toList();
-
   List<Camion> _availableCamiones(List<Camion> items) =>
       items.where((item) => item.estado || item.id == _idCamion).toList();
 
-  List<Usuario> _availableUsers(List<Usuario> items) => items
-      .where(
-        (item) =>
-            item.estado ||
-            item.id == _idEncargadoCarga ||
-            item.id == _idRepartidor,
-      )
-      .toList();
+  List<Usuario> _availableUsers(List<Usuario> items) {
+    // TODO: Filtrar por rol 'repartidor' cuando el modelo Usuario exponga los roles
+    return items;
+  }
 
   int? _matchingId(int? value, List<dynamic> items) {
     if (value == null || !items.any((item) => item.id == value)) return null;

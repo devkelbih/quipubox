@@ -1,5 +1,6 @@
 
-enum StatusSummaryValue { all, active, inactive }
+//primera version
+//enum StatusSummaryValue { all, active, inactive }
 
 /*class StatusSummaryFilter extends StatelessWidget {
   final int total;

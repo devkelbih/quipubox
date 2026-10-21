@@ -101,10 +101,8 @@ extension on _Tone {
 
     return switch (this) {
       _Tone.brand => theme.colorScheme.primary,
-      _Tone.success =>
-        dark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
-      _Tone.warning =>
-        dark ? const Color(0xFFFBBF24) : const Color(0xFFD97706),
+      _Tone.success => dark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
+      _Tone.warning => dark ? const Color(0xFFFBBF24) : const Color(0xFFD97706),
       _Tone.danger => theme.colorScheme.error,
     };
   }
@@ -121,11 +119,27 @@ String _fmt(int v) {
 }
 
 const _weekdays = [
-  'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+  'Domingo',
 ];
 const _months = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
 ];
 
 /// Animación de entrada suave (fade + desplazamiento) para cada bloque.
@@ -144,7 +158,10 @@ class _Reveal extends StatelessWidget {
       child: child,
       builder: (context, t, child) => Opacity(
         opacity: t,
-        child: Transform.translate(offset: Offset(0, 14 * (1 - t)), child: child),
+        child: Transform.translate(
+          offset: Offset(0, 14 * (1 - t)),
+          child: child,
+        ),
       ),
     );
   }
@@ -167,9 +184,9 @@ class _Section extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
               ),
             ),
             if (action != null)
@@ -332,8 +349,9 @@ class _GreetingHeader extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: .6),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: .6,
+                    ),
                     border: Border.all(color: theme.colorScheme.outlineVariant),
                     borderRadius: BorderRadius.circular(99),
                   ),
@@ -527,11 +545,13 @@ class _HeroDivider extends StatelessWidget {
 // ============================================================================
 // Accesos directos (se mantienen los 4 originales)
 // ============================================================================
-
 class _QuickActions extends StatelessWidget {
   const _QuickActions();
 
+  // Nota: Tienes items duplicados en tu lista original (Puestos, Frutas, Operativos se repiten).
+  // Te dejo la lista limpia con los 4 originales.
   static const _items = <(IconData, String, String)>[
+    (Icons.local_shipping_outlined, 'Cargas', AppRoutes.operacionesCarga),
     (Icons.business_outlined, 'Sedes', AppRoutes.sedes),
     (Icons.home_work_outlined, 'Puestos', AppRoutes.puestos),
     (Icons.category_outlined, 'Frutas', AppRoutes.frutas),
@@ -542,11 +562,19 @@ class _QuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Row(
-      children: [
-        for (var i = 0; i < _items.length; i++) ...[
-          if (i > 0) const SizedBox(width: 10),
-          Expanded(
+    // Envolvemos el ListView en un SizedBox para darle altura,
+    // ya que al ser horizontal no puede calcular su altura por sí solo en un ListView vertical.
+    return SizedBox(
+      height: 110, // Altura suficiente para el icono + texto + padding
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none, // Para que las sombras o efectos no se corten
+        physics: const BouncingScrollPhysics(), // Efecto de rebote suave
+        itemCount: _items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, i) {
+          return SizedBox(
+            width: 96, // Ancho fijo para que quepan bien y no se deformen
             child: InkWell(
               onTap: () => context.push(_items[i].$3),
               borderRadius: BorderRadius.circular(20),
@@ -558,6 +586,7 @@ class _QuickActions extends StatelessWidget {
                   border: Border.all(color: scheme.outlineVariant),
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                       width: 46,
@@ -569,22 +598,26 @@ class _QuickActions extends StatelessWidget {
                       child: Icon(_items[i].$1, color: scheme.primary),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      _items[i].$2,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 12,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        _items[i].$2,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
-      ],
+          );
+        },
+      ),
     );
   }
 }
@@ -706,7 +739,11 @@ class _KpiCard extends StatelessWidget {
                   child: Icon(data.icon, size: 20, color: color),
                 ),
                 const Spacer(),
-                _TrendPill(label: data.trend, up: data.trendUp, tone: data.tone),
+                _TrendPill(
+                  label: data.trend,
+                  up: data.trendUp,
+                  tone: data.tone,
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -858,7 +895,11 @@ class _WeeklyChartCard extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    const _TrendPill(label: '+12%', up: true, tone: _Tone.success),
+                    const _TrendPill(
+                      label: '+12%',
+                      up: true,
+                      tone: _Tone.success,
+                    ),
                   ],
                 ),
               ],
@@ -1151,10 +1192,8 @@ class _DeliveriesCarousel extends StatelessWidget {
         clipBehavior: Clip.none,
         itemCount: _items.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (_, i) => SizedBox(
-          width: 292,
-          child: _DeliveryCard(data: _items[i]),
-        ),
+        itemBuilder: (_, i) =>
+            SizedBox(width: 292, child: _DeliveryCard(data: _items[i])),
       ),
     );
   }
@@ -1447,7 +1486,11 @@ class _TimelineItem extends StatelessWidget {
                 ),
                 child: isLast
                     ? null
-                    : Icon(Icons.check_rounded, size: 12, color: scheme.onPrimary),
+                    : Icon(
+                        Icons.check_rounded,
+                        size: 12,
+                        color: scheme.onPrimary,
+                      ),
               ),
               if (!isLast)
                 Expanded(

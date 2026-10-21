@@ -1,3 +1,4 @@
+import '../../../../../core/exceptions/app_exception.dart';
 import '../../../../../core/session/current_session.dart';
 import '../entities/operacion_carga.dart';
 import '../repositories/operacion_carga_repository.dart';
@@ -13,7 +14,13 @@ class CreateOperacionCargaUseCase {
   });
 
   Future<OperacionCarga> call(OperacionCarga operacion) {
+    final currentUserId = currentSession.currentUserId;
+    if (currentUserId == null) {
+      throw const AppException('No se encontró el usuario en sesión.');
+    }
     final idEmpresa = requireCurrentCompanyId(currentSession);
-    return repository.create(operacion.copyWith(idEmpresa: idEmpresa));
+    return repository.create(
+      operacion.copyWith(idEmpresa: idEmpresa, idEncargadoCarga: currentUserId),
+    );
   }
 }

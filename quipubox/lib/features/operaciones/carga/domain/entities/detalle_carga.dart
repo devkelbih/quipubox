@@ -1,3 +1,8 @@
+import '../../../../catalogos/frutas/domain/entities/fruta.dart';
+import '../../../../catalogos/tipos_jaba/domain/entities/tipos_jaba.dart';
+import '../../../../catalogos/variedades/domain/entities/variedad.dart';
+import '../../../../organizacion/clientes/domain/entities/cliente.dart';
+
 class DetalleCarga {
   final int? id;
   final int? idEmpresa;
@@ -14,6 +19,10 @@ class DetalleCarga {
   final int? idClienteReceptor;
   final int? idPuesto;
   final String? idSeccion;
+  final Cliente? clienteEmisor;
+  final Fruta? fruta;
+  final Variedad? variedad;
+  final TiposJaba? tipoJaba;
 
   const DetalleCarga({
     this.id,
@@ -31,6 +40,10 @@ class DetalleCarga {
     this.idClienteReceptor,
     this.idPuesto,
     this.idSeccion,
+    this.clienteEmisor,
+    this.fruta,
+    this.variedad,
+    this.tipoJaba,
   });
 
   DetalleCarga copyWith({
@@ -49,6 +62,10 @@ class DetalleCarga {
     int? idClienteReceptor,
     int? idPuesto,
     String? idSeccion,
+    Cliente? clienteEmisor,
+    Fruta? fruta,
+    Variedad? variedad,
+    TiposJaba? tipoJaba,
   }) {
     return DetalleCarga(
       id: id ?? this.id,
@@ -66,6 +83,10 @@ class DetalleCarga {
       idClienteReceptor: idClienteReceptor ?? this.idClienteReceptor,
       idPuesto: idPuesto ?? this.idPuesto,
       idSeccion: idSeccion ?? this.idSeccion,
+      clienteEmisor: clienteEmisor ?? this.clienteEmisor,
+      fruta: fruta ?? this.fruta,
+      variedad: variedad ?? this.variedad,
+      tipoJaba: tipoJaba ?? this.tipoJaba,
     );
   }
 }

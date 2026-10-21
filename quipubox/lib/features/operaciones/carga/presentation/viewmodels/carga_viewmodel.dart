@@ -133,6 +133,24 @@ class CargaViewModel extends BaseStateViewModel {
     return true;
   }
 
+  Future<bool> eliminar(int id) async {
+    final succeeded = await runBool(
+      state: ViewModelActionState.deleting,
+      action: () async {
+        final result = await cancelarUseCase(id);
+        _replaceItem(result);
+      },
+    );
+    if (!succeeded) return false;
+
+    if (selected?.id == id) {
+      selected = null;
+      detalles = [];
+    }
+    notifyListeners();
+    return true;
+  }
+
   Future<bool> finalizar(int id) async {
     final result = await run<OperacionCarga>(
       state: ViewModelActionState.changingStatus,
