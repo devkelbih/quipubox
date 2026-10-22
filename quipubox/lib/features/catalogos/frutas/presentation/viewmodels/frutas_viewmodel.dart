@@ -2,6 +2,8 @@ import 'package:quipubox/core/state/base_state_viewmodel.dart';
 import 'package:quipubox/features/catalogos/frutas/domain/usecases/change_fruta_status.dart';
 
 import '../../domain/entities/fruta.dart';
+import '../../../variedades/domain/entities/variedad.dart';
+import '../../../variedades/domain/entities/variedad_resumen.dart';
 import '../../domain/usecases/create_fruta.dart';
 import '../../domain/usecases/get_frutas.dart';
 import '../../domain/usecases/update_fruta.dart';
@@ -20,6 +22,29 @@ class FrutaViewModel extends BaseStateViewModel {
   });
 
   List<Fruta> items = [];
+
+  /// Integra una variedad confirmada por la API sin reemplazar la fruta
+  /// por la versión parcial incluida en la respuesta de variedades.
+  void upsertVariedad(Variedad variedad) {
+    final id = variedad.id;
+    final index = items.indexWhere((fruta) => fruta.id == variedad.idFruta);
+    if (id == null || index == -1) return;
+    final fruta = items[index];
+    final resumen = VariedadResumen(
+      id: id,
+      nombre: variedad.nombre,
+      estado: variedad.estado,
+    );
+    final variedades = [...?fruta.variedades];
+    final existing = variedades.indexWhere((item) => item.id == id);
+    if (existing == -1) {
+      variedades.add(resumen);
+    } else {
+      variedades[existing] = resumen;
+    }
+    items = [...items]..[index] = fruta.copyWith(variedades: variedades);
+    notifyListeners();
+  }
 
   Future<void> load() async {
     final result = await run<List<Fruta>>(

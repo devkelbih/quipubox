@@ -15,23 +15,10 @@ import 'package:flutter/material.dart';
 class AppCardBody extends StatelessWidget {
   final Widget child;
 
-  const AppCardBody({
-    super.key,
-    required this.child,
-  });
+  const AppCardBody({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: child,
-    );
+    return SizedBox(width: double.infinity, child: child);
   }
 }

@@ -10,8 +10,9 @@ import '../viewmodels/variedades_viewmodel.dart';
 
 class VariedadFormScreen extends StatefulWidget {
   final Variedad? item;
+  final int? initialFrutaId;
 
-  const VariedadFormScreen({super.key, this.item});
+  const VariedadFormScreen({super.key, this.item, this.initialFrutaId});
 
   @override
   State<VariedadFormScreen> createState() => _VariedadFormScreenState();
@@ -39,10 +40,12 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
       text: item?.descripcion ?? '',
     );
 
-    _idFruta = item?.idFruta;
+    _idFruta = item?.idFruta ?? widget.initialFrutaId;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FrutaViewModel>().load();
+      if (!mounted) return;
+      final vm = context.read<FrutaViewModel>();
+      if (vm.items.isEmpty && !vm.isLoading) vm.load();
     });
   }
 
@@ -171,9 +174,10 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
       descripcion: _descripcionController.text.value,
     );
 
-    final ok = _isEditing
-        ? await vm.update(variedad)
-        : await vm.create(variedad);
+    final saved = _isEditing
+        ? await vm.updateWithResult(variedad)
+        : await vm.createWithResult(variedad);
+    final ok = saved != null;
 
     if (!mounted) return;
 
@@ -187,8 +191,7 @@ class _VariedadFormScreenState extends State<VariedadFormScreen> {
     );
 
     if (ok) {
-      Navigator.pop(context);
+      Navigator.pop(context, saved);
     }
   }
-
 }

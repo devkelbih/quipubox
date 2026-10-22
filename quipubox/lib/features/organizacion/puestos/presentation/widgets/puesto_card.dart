@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
-import 'package:quipubox/core/ui/cards/app_card_actions.dart';
+import 'package:quipubox/core/ui/cards/app_card_menu.dart';
 import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
 import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
+import 'package:quipubox/core/ui/cards/app_card_info_grid.dart';
 import 'package:quipubox/core/ui/cards/app_status_badge.dart';
 import 'package:quipubox/core/ui/status/app_status.dart';
 
@@ -36,9 +37,7 @@ class PuestoCard extends StatelessWidget {
         : 'Sin lugar operativo';
 
     final sedeNombre = item.sedeNombre.value;
-    final sede = item.sedeNombre.hasText
-        ? sedeNombre
-        : 'Sin sede';
+    final sede = item.sedeNombre.hasText ? sedeNombre : 'Sin sede';
 
     final referencia = item.referencia.value;
 
@@ -53,21 +52,41 @@ class PuestoCard extends StatelessWidget {
         subtitle: lugar,
         status: status,
         badge: AppStatusBadge(status: status),
+        menu: AppCardMenu(
+          actions: [
+            AppCardMenuAction(
+              icon: Icons.edit_rounded,
+              label: 'Editar',
+              onSelected: onEdit,
+            ),
+            AppCardMenuAction(
+              icon: item.estado
+                  ? Icons.block_rounded
+                  : Icons.check_circle_rounded,
+              label: item.estado ? 'Desactivar' : 'Activar',
+              onSelected: onChangeStatus,
+            ),
+          ],
+        ),
       ),
       body: AppCardBody(
         child: Column(
           children: [
-            AppCardInfoRow(
-              icon: Icons.location_on_rounded,
-              label: 'Sede',
-              value: sede,
+            AppCardInfoGrid(
+              children: [
+                AppCardInfoRow(
+                  icon: Icons.location_on_rounded,
+                  label: 'Sede',
+                  value: sede,
+                ),
+                if (tipoLugar != null)
+                  AppCardInfoRow(
+                    icon: Icons.place_rounded,
+                    label: 'Tipo de lugar',
+                    value: tipoLugar,
+                  ),
+              ],
             ),
-            if (tipoLugar != null)
-              AppCardInfoRow(
-                icon: Icons.place_rounded,
-                label: 'Tipo de lugar',
-                value: tipoLugar,
-              ),
             if (referencia != null)
               AppCardInfoRow(
                 icon: Icons.notes_rounded,
@@ -75,21 +94,6 @@ class PuestoCard extends StatelessWidget {
                 value: referencia,
               ),
           ],
-        ),
-      ),
-      actions: AppCardActions(
-        secondaryAction: OutlinedButton.icon(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_rounded, size: 18),
-          label: const Text('Editar'),
-        ),
-        primaryAction: FilledButton.tonalIcon(
-          onPressed: onChangeStatus,
-          icon: Icon(
-            item.estado ? Icons.block_rounded : Icons.check_circle_rounded,
-            size: 18,
-          ),
-          label: Text(item.estado ? 'Desactivar' : 'Activar'),
         ),
       ),
     );

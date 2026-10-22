@@ -21,7 +21,7 @@ class ClienteRepositoryImpl implements ClienteRepository {
   Future<Cliente> create(Cliente cliente) async {
     final requestModel = ClienteFullRequestModel.fromEntity(cliente);
     final model = await remoteDataSource.create(requestModel);
-    return model.toEntity();
+    return _completeRelations(model.toEntity(), cliente);
   }
 
   @override
@@ -37,7 +37,43 @@ class ClienteRepositoryImpl implements ClienteRepository {
       cliente.id!,
       request: requestModel,
     );
-    return model.toEntity();
+    return _completeRelations(model.toEntity(), cliente);
+  }
+
+  /// Las respuestas de guardado pueden omitir el lugar del puesto o la sede.
+  /// Conserva esos objetos del formulario solo si sus claves aún coinciden;
+  /// las relaciones y los valores confirmados por la API tienen prioridad.
+  Cliente _completeRelations(Cliente saved, Cliente submitted) {
+    final sedes = {
+      for (final relation in submitted.sedes) relation.idSede: relation.sede,
+    };
+    final puestos = {
+      for (final relation in submitted.puestos)
+        relation.idPuesto: relation.puesto,
+    };
+
+    return saved.copyWith(
+      sedes: saved.sedes.map((relation) {
+        final sede = sedes[relation.idSede];
+        return relation.copyWith(
+          sede: relation.sede ?? (sede?.id == relation.idSede ? sede : null),
+        );
+      }).toList(),
+      puestos: saved.puestos.map((relation) {
+        final previous = puestos[relation.idPuesto];
+        final matching = previous?.id == relation.idPuesto ? previous : null;
+        final puesto = relation.puesto;
+        if (puesto == null) return relation.copyWith(puesto: matching);
+        final lugar = matching?.lugarOperativo;
+        return relation.copyWith(
+          puesto: puesto.copyWith(
+            lugarOperativo:
+                puesto.lugarOperativo ??
+                (lugar?.id == puesto.idLugar ? lugar : null),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   @override

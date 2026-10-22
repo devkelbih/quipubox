@@ -19,7 +19,16 @@ class AppCard extends StatelessWidget {
   final Widget? body;
   final Widget? actions;
 
-  const AppCard({super.key, required this.header, this.body, this.actions});
+  /// Footer prioritario. `actions` se conserva para consumidores existentes.
+  final Widget? quickActions;
+
+  const AppCard({
+    super.key,
+    required this.header,
+    this.body,
+    this.actions,
+    this.quickActions,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +46,15 @@ class AppCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             header,
 
-            if (body != null) ...[SizedBox(height: 14), body!],
+            if (body != null) ...[const SizedBox(height: 10), body!],
 
-            if (actions != null) ...[SizedBox(height: 14), actions!],
+            if (actions != null) actions!,
+            if (quickActions != null) quickActions!,
           ],
         ),
       ),

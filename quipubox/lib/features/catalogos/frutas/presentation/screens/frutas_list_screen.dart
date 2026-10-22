@@ -9,6 +9,8 @@ import '../../domain/entities/fruta.dart';
 import '../viewmodels/frutas_viewmodel.dart';
 import '../widgets/fruta_card.dart';
 import 'frutas_form_screen.dart';
+import '../../../variedades/presentation/screens/variedades_form_screen.dart';
+import '../../../variedades/domain/entities/variedad.dart';
 
 class FrutaListScreen extends StatefulWidget {
   const FrutaListScreen({super.key});
@@ -91,9 +93,7 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
                       : 'No tienes frutas inactivas.',
                   actionLabel: 'Mostrar todos',
                   onAction: () {
-                    setState(
-                      () => _statusFilter = StatusSummaryValue.all,
-                    );
+                    setState(() => _statusFilter = StatusSummaryValue.all);
                   },
                 );
               }
@@ -113,6 +113,9 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
                               _confirmChangeStatus(context, item),
                           onViewVariedades: () =>
                               _showVariedades(context, item),
+                          onRegisterVariedad: item.id == null
+                              ? null
+                              : () => _registerVariedad(context, item),
                         ),
                       ),
                     ),
@@ -142,6 +145,24 @@ class _FrutaListScreenState extends State<FrutaListScreen> {
         child: FrutaFormScreen(item: item),
       ),
     );
+  }
+
+  Future<void> _registerVariedad(BuildContext context, Fruta item) async {
+    final vm = context.read<FrutaViewModel>();
+    final saved = await AppBottomSheet.show<Variedad>(
+      context: context,
+      title: 'Nueva variedad de ${item.nombre}',
+      minChildSize: 0.4,
+      initialChildSize: 0.5,
+      maxChildSize: 0.55,
+      builder: (context, controller) => SingleChildScrollView(
+        controller: controller,
+        padding: const EdgeInsets.all(20),
+        child: VariedadFormScreen(initialFrutaId: item.id),
+      ),
+    );
+    if (!mounted || saved == null) return;
+    vm.upsertVariedad(saved);
   }
 
   Future<void> _showVariedades(BuildContext context, Fruta item) async {

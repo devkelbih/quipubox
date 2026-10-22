@@ -554,8 +554,14 @@ class _QuickActions extends StatelessWidget {
     (Icons.local_shipping_outlined, 'Cargas', AppRoutes.operacionesCarga),
     (Icons.business_outlined, 'Sedes', AppRoutes.sedes),
     (Icons.home_work_outlined, 'Puestos', AppRoutes.puestos),
-    (Icons.category_outlined, 'Frutas', AppRoutes.frutas),
     (Icons.map_rounded, 'Operativos', AppRoutes.lugaresOperativos),
+    (Icons.category_outlined, 'Frutas', AppRoutes.frutas),
+    (Icons.eco_outlined, 'Variedades', AppRoutes.variedades),
+    (Icons.grade_outlined, 'Calidades', AppRoutes.calidades),
+    (Icons.inventory_2_outlined, 'Tipos de jaba', AppRoutes.tiposJaba),
+    (Icons.fire_truck_outlined, 'Camiones', AppRoutes.camiones),
+    (Icons.people_outline, 'Usuarios', AppRoutes.usuarios),
+    (Icons.handshake_outlined, 'Clientes', AppRoutes.clientes),
   ];
 
   @override

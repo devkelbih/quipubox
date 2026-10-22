@@ -1,4 +1,3 @@
-
 import 'package:quipubox/features/organizacion/sedes/domain/enums/tipo_sede.dart';
 
 import 'package:quipubox/core/common/string_extensions.dart';
@@ -34,19 +33,21 @@ class SedeRequestModel {
   }
 
   Map<String, dynamic> toCreateJson() => {
-        if (idEmpresa != null) 'id_empresa': idEmpresa,
-        if (nombre.hasText) 'nombre': nombre.value,
-        'tipo_sede': tipoSede.value,
-        if (direccion.hasText) 'direccion': direccion.value,
-        if (ciudad.hasText) 'ciudad': ciudad.value,
-        if (departamento.hasText) 'departamento': departamento.value,
-      };
+    if (idEmpresa != null) 'id_empresa': idEmpresa,
+    if (nombre.hasText) 'nombre': nombre.value,
+    'tipo_sede': tipoSede.value,
+    if (direccion.hasText) 'direccion': direccion.value,
+    if (ciudad.hasText) 'ciudad': ciudad.value,
+    if (departamento.hasText) 'departamento': departamento.value,
+  };
 
   Map<String, dynamic> toUpdateJson() => {
-        if (nombre.hasText) 'nombre': nombre.value,
-        'tipo_sede': tipoSede.value,
-        if (direccion.hasText) 'direccion': direccion.value,
-        if (ciudad.hasText) 'ciudad': ciudad.value,
-        if (departamento.hasText) 'departamento': departamento.value,
-      };
+    if (nombre.hasText) 'nombre': nombre.value,
+    'tipo_sede': tipoSede.value,
+    // En edición, vacío significa borrar; omitir el campo conserva el anterior.
+    // Se envía '' porque ApiClient elimina las propiedades null.
+    'direccion': direccion.value ?? '',
+    'ciudad': ciudad.value ?? '',
+    'departamento': departamento.value ?? '',
+  };
 }

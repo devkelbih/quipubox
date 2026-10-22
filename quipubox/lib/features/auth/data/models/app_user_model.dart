@@ -32,7 +32,7 @@ class AppUserModel {
     required this.estado,
   });
   static void logJson(String title, Map<String, dynamic> json) {
-    //TODO: imprime datos del usuario
+    //TOD imprime datos del usuario
     //const encoder = JsonEncoder.withIndent('  ');
     //debugPrint('$title\n${encoder.convert(json)}');
   }

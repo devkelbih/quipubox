@@ -33,26 +33,32 @@ class VariedadViewModel extends BaseStateViewModel {
     }
   }
 
-  Future<bool> create(Variedad variedad) async {
+  Future<bool> create(Variedad variedad) async =>
+      await createWithResult(variedad) != null;
+
+  Future<Variedad?> createWithResult(Variedad variedad) async {
     final result = await run<Variedad>(
       state: ViewModelActionState.saving,
       action: () => createUseCase(variedad),
     );
 
-    if (result == null) return false;
+    if (result == null) return null;
 
     items.add(result);
     notifyListeners();
-    return true;
+    return result;
   }
 
-  Future<bool> update(Variedad variedad) async {
+  Future<bool> update(Variedad variedad) async =>
+      await updateWithResult(variedad) != null;
+
+  Future<Variedad?> updateWithResult(Variedad variedad) async {
     final result = await run<Variedad>(
       state: ViewModelActionState.saving,
       action: () => updateUseCase(variedad),
     );
 
-    if (result == null) return false;
+    if (result == null) return null;
 
     final index = items.indexWhere((e) => e.id == result.id);
 
@@ -61,7 +67,7 @@ class VariedadViewModel extends BaseStateViewModel {
     }
 
     notifyListeners();
-    return true;
+    return result;
   }
 
   Future<bool> changeStatus({required int id, required bool estado}) async {

@@ -4,16 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
+import 'package:quipubox/core/ui/cards/app_card_info_grid.dart';
 import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
 import 'package:quipubox/core/ui/feedback/app_toast.dart';
 import 'package:quipubox/core/ui/cards/app_status_badge.dart';
 import 'package:quipubox/core/ui/states/empty_state.dart';
 
-import '../../../../../core/navigation/app_routes.dart';
-import '../../../../app_shell/presentation/widgets/app_scaffold.dart';
 import '../../domain/entities/operacion_carga.dart';
 import '../viewmodels/carga_viewmodel.dart';
-import '../widgets/carga_card.dart';
+import '../widgets/estado_operacion_carga_ui.dart';
 import '../widgets/detalle_carga_card.dart';
 
 class CargaDetailScreen extends StatefulWidget {
@@ -43,41 +42,18 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
 
     final isBusy = vm.isSaving || vm.isChangingStatus || vm.isDeleting;
 
-    return AppScaffold.withTextTitle(
-      title: 'Operación #${widget.operationId}',
-      actions: [
-        IconButton(
-          tooltip: 'Volver',
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        if (operation != null && operation.estado != 'cancelada')
-          IconButton(
-            tooltip: 'Editar operación',
-            onPressed: () => context.push(
-              AppRoutes.operacionCargaEditPath(widget.operationId),
-              extra: operation,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Operación #${widget.operationId}'),
+        actions: [
+          if (operation != null && operation.estado == 'pendiente')
+            IconButton(
+              tooltip: 'Eliminar operación',
+              onPressed: isBusy ? null : _confirmDelete,
+              icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
             ),
-            icon: const Icon(Icons.edit_rounded),
-          ),
-        if (operation != null && operation.estado == 'pendiente')
-          IconButton(
-            tooltip: 'Eliminar operación',
-            onPressed: isBusy ? null : _confirmDelete,
-            icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-          ),
-        if (operation != null &&
-            const [
-              'pendiente',
-              'en_curso',
-              'en_transito',
-            ].contains(operation.estado))
-          IconButton(
-            tooltip: 'Asignar carga',
-            onPressed: isBusy ? null : _openAsignarCarga,
-            icon: const Icon(Icons.add_box_outlined),
-          ),
-      ],
+        ],
+      ),
       body: () {
         if (vm.isLoading && operation == null) {
           return const Center(child: CircularProgressIndicator());
@@ -171,14 +147,6 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
     );
   }
 
-  void _openAsignarCarga() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('La asignación de carga estará disponible próximamente.'),
-      ),
-    );
-  }
-
   Future<void> _confirmDelete() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -219,7 +187,7 @@ class _OperationSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = CargaCard.statusFor(operation.estado);
+    final status = operation.estadoEnum.status;
     final nombreOrigen =
         operation.sedeOrigen?.nombre ?? 'Sede #${operation.idSedeOrigen}';
     final nombreDestino = operation.idSedeDestino != null
@@ -239,33 +207,33 @@ class _OperationSummary extends StatelessWidget {
     return AppCard(
       header: AppCardHeader(
         icon: const Icon(Icons.local_shipping_rounded),
-        title: 'Operación #${operation.id}',
-        subtitle: _dateText(operation.fechaCarga),
+        title: '$nombreOrigen → $nombreDestino',
+        subtitle:
+            '${_dateText(operation.fechaCarga)} ${operation.horaCarga ?? ''}'
+                .trim(),
         status: status,
         badge: AppStatusBadge(status: status),
       ),
       body: AppCardBody(
         child: Column(
           children: [
-            AppCardInfoRow(
-              icon: Icons.trip_origin_rounded,
-              label: 'Ruta',
-              value: '$nombreOrigen → $nombreDestino',
+            AppCardInfoGrid(
+              children: [
+                AppCardInfoRow(
+                  icon: Icons.local_shipping_outlined,
+                  label: 'Camión',
+                  value: placaCamion,
+                ),
+                if (operation.idEncargadoCarga != null) ...[
+                  AppCardInfoRow(
+                    icon: Icons.person_outline_rounded,
+                    label: 'Encargado',
+                    value: nombreEncargado,
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: 8),
-            AppCardInfoRow(
-              icon: Icons.local_shipping_outlined,
-              label: 'Camión',
-              value: placaCamion,
-            ),
-            if (operation.idEncargadoCarga != null) ...[
-              const SizedBox(height: 8),
-              AppCardInfoRow(
-                icon: Icons.person_outline_rounded,
-                label: 'Encargado',
-                value: nombreEncargado,
-              ),
-            ],
+
             if (operation.idRepartidorAsignado != null) ...[
               const SizedBox(height: 8),
               AppCardInfoRow(
@@ -274,14 +242,7 @@ class _OperationSummary extends StatelessWidget {
                 value: nombreRepartidor,
               ),
             ],
-            if (operation.horaCarga != null) ...[
-              const SizedBox(height: 8),
-              AppCardInfoRow(
-                icon: Icons.schedule_rounded,
-                label: 'Hora de carga',
-                value: operation.horaCarga!,
-              ),
-            ],
+
             if (operation.observaciones?.trim().isNotEmpty == true) ...[
               const SizedBox(height: 8),
               AppCardInfoRow(

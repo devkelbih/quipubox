@@ -20,16 +20,28 @@ class ClienteListScreen extends StatefulWidget {
 }
 
 class _ClienteListScreenState extends State<ClienteListScreen> {
+  final TextEditingController _searchController = TextEditingController();
   StatusSummaryValue _statusFilter = StatusSummaryValue.all;
 
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_onSearchChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ClienteViewModel>().load();
     });
   }
+
+  @override
+  void dispose() {
+    _searchController
+      ..removeListener(_onSearchChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +50,20 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
     final activeCount = vm.items.where((e) => e.estado).length;
     final inactiveCount = vm.items.length - activeCount;
 
-    final filteredItems = switch (_statusFilter) {
-      StatusSummaryValue.all => vm.items,
-      StatusSummaryValue.active =>
-        vm.items.where((e) => e.estado).toList(),
-      StatusSummaryValue.inactive =>
-        vm.items.where((e) => !e.estado).toList(),
-    };
+    final search = _searchController.text.trim().toLowerCase();
+    final filteredItems = vm.items.where((item) {
+      final matchesStatus = switch (_statusFilter) {
+        StatusSummaryValue.all => true,
+        StatusSummaryValue.active => item.estado,
+        StatusSummaryValue.inactive => !item.estado,
+      };
+      final matchesSearch =
+          search.isEmpty ||
+          item.nombreCompleto.toLowerCase().contains(search) ||
+          (item.apodo?.toLowerCase().contains(search) ?? false) ||
+          (item.telefono?.contains(search) ?? false);
+      return matchesStatus && matchesSearch;
+    }).toList();
 
     return AppScaffold(
       title: const Text('Clientes'),
@@ -65,15 +84,32 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: TextField(
+              controller: _searchController,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: 'Buscar por nombre, apodo o teléfono',
+                prefixIcon: const Icon(Icons.search_rounded),
+                suffixIcon: search.isNotEmpty
+                    ? IconButton(
+                        tooltip: 'Limpiar búsqueda',
+                        icon: const Icon(Icons.clear_rounded),
+                        onPressed: _searchController.clear,
+                      )
+                    : null,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ),
           if (vm.isSaving || vm.isChangingStatus)
             const LinearProgressIndicator(),
 
           Expanded(
             child: () {
               if (vm.isLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               if (vm.errorMessage != null && vm.items.isEmpty) {
@@ -93,15 +129,21 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
               }
 
               if (filteredItems.isEmpty) {
+                if (search.isNotEmpty) {
+                  return EmptyState(
+                    message:
+                        'No se encontraron clientes con la búsqueda y el estado seleccionados.',
+                    actionLabel: 'Limpiar búsqueda',
+                    onAction: _searchController.clear,
+                  );
+                }
                 return EmptyState(
                   message: _statusFilter == StatusSummaryValue.active
                       ? 'No tienes clientes activos.'
                       : 'No tienes clientes inactivos.',
                   actionLabel: 'Mostrar todos',
                   onAction: () {
-                    setState(
-                      () => _statusFilter = StatusSummaryValue.all,
-                    );
+                    setState(() => _statusFilter = StatusSummaryValue.all);
                   },
                 );
               }
@@ -109,18 +151,14 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
               return RefreshIndicator(
                 onRefresh: vm.load,
                 child: ListView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                   children: [
-                    const SizedBox(height: 14),
                     ...filteredItems.map(
                       (item) => Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: ClienteCard(
                           item: item,
-                          onEdit: () => _openForm(
-                            context,
-                            item: item,
-                          ),
+                          onEdit: () => _openForm(context, item: item),
                           onChangeStatus: () =>
                               _confirmChangeStatus(context, item),
                         ),
@@ -136,20 +174,11 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
     );
   }
 
-  Future<void> _openForm(
-    BuildContext context, {
-    Cliente? item,
-  }) async {
-    context.push(
-      AppRoutes.clientesForm,
-      extra: item,
-    );
+  Future<void> _openForm(BuildContext context, {Cliente? item}) async {
+    context.push(AppRoutes.clientesForm, extra: item);
   }
 
-  Future<void> _confirmChangeStatus(
-    BuildContext context,
-    Cliente item,
-  ) async {
+  Future<void> _confirmChangeStatus(BuildContext context, Cliente item) async {
     if (item.id == null) return;
 
     final vm = context.read<ClienteViewModel>();
@@ -160,10 +189,8 @@ class _ClienteListScreenState extends State<ClienteListScreen> {
       article: 'El',
       entityName: 'Cliente',
       itemName: item.nombreCompleto,
-      onConfirm: (newStatus) => vm.changeStatus(
-        id: item.id!,
-        estado: newStatus,
-      ),
+      onConfirm: (newStatus) =>
+          vm.changeStatus(id: item.id!, estado: newStatus),
       getErrorMessage: () => vm.errorMessage,
     );
   }

@@ -85,6 +85,13 @@ class _FrutaFormScreenState extends State<FrutaFormScreen> {
               prefixIcon: Icon(Icons.notes_rounded),
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Las variedades se gestionan por separado.\nGuarda la fruta para luego registrar sus variedades.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 22),
 
           FilledButton.icon(

@@ -48,22 +48,17 @@ class AppCardInfoRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Icon(icon, size: 18, color: scheme.primary),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Icon(icon, size: 18, color: scheme.onSurfaceVariant),
               ),
 
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
 
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       label,
@@ -92,7 +87,7 @@ class AppCardInfoRow extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.chevron_right_rounded,
-                      size: 30,
+                      size: 20,
                       color: scheme.primary,
                     ),
                   ),

@@ -7,6 +7,7 @@ class AppCardHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Widget? badge;
+  final Widget? menu;
 
   final AppStatus? status;
 
@@ -17,6 +18,7 @@ class AppCardHeader extends StatelessWidget {
     this.subtitle,
     this.badge,
     this.status,
+    this.menu,
   });
 
   @override
@@ -25,68 +27,86 @@ class AppCardHeader extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     final style = status != null
-        ? AppStatusStyle.fromScheme(
-            scheme,
-            status!.type,
-          )
+        ? AppStatusStyle.fromScheme(scheme, status!.type)
         : null;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: style?.background ?? scheme.primaryContainer,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          alignment: Alignment.center,
-          child: IconTheme(
-            data: IconThemeData(
-              color: style?.foreground ?? scheme.primary,
-              size: 20,
+    return LayoutBuilder(
+      builder: (context, constraints) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: style?.background ?? scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: icon,
-          ),
-        ),
-
-        const SizedBox(width: 14),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            alignment: Alignment.center,
+            child: IconTheme(
+              data: IconThemeData(
+                color: style?.foreground ?? scheme.primary,
+                size: 20,
               ),
+              child: icon,
+            ),
+          ),
 
-              if (subtitle != null) ...[
-                const SizedBox(height: 3),
-                Text(
-                  subtitle!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    height: 1.25,
+          const SizedBox(width: 10),
+
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Tooltip(
+                  message: title,
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
-              ],
-            ],
-          ),
-        ),
 
-        if (badge != null) ...[
-          const SizedBox(width: 12),
-          badge!,
+                if (subtitle?.trim().isNotEmpty == true) ...[
+                  const SizedBox(height: 3),
+                  Tooltip(
+                    message: subtitle!,
+                    child: Text(
+                      subtitle!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.25,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          if (menu != null || badge != null) ...[
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: constraints.maxWidth * 0.48,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (badge != null) Flexible(child: badge!),
+                  if (menu != null && badge != null) const SizedBox(width: 4),
+                  if (menu != null) menu!,
+                ],
+              ),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

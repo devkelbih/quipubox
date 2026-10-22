@@ -1,23 +1,12 @@
-import 'package:flutter/material.dart';
+import 'app_card_quick_actions.dart';
+export 'app_card_quick_actions.dart' show AppCardQuickAction;
 
-class AppCardActions extends StatelessWidget {
-  final Widget primaryAction;
-  final Widget secondaryAction;
-
+/// Footer de acciones prioritarias. Las acciones administrativas van al menú.
+class AppCardActions extends AppCardQuickActions {
   const AppCardActions({
     super.key,
-    required this.primaryAction,
-    required this.secondaryAction,
+    super.navigationAction,
+    super.secondaryNavigationAction,
+    super.operationalAction,
   });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: secondaryAction),
-        const SizedBox(width: 12),
-        Expanded(child: primaryAction),
-      ],
-    );
-  }
 }

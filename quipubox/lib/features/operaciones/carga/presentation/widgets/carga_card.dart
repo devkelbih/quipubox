@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:quipubox/core/ui/cards/app_card.dart';
 import 'package:quipubox/core/ui/cards/app_card_actions.dart';
+import 'package:quipubox/core/ui/cards/app_card_info_grid.dart';
+import 'package:quipubox/core/ui/cards/app_card_menu.dart';
 import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
 import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
 import 'package:quipubox/core/ui/cards/app_status_badge.dart';
-import 'package:quipubox/core/ui/status/app_status.dart';
-import 'package:quipubox/core/ui/status/app_status_colors.dart';
 
 import '../../domain/entities/operacion_carga.dart';
+import '../../domain/enums/estado_operacion_carga.dart';
+import 'estado_operacion_carga_ui.dart';
 
 class CargaCard extends StatelessWidget {
   final OperacionCarga item;
@@ -26,24 +28,22 @@ class CargaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = AppStatus(
-      label: item.estadoEnum.label,
-      type: statusFor(item.estado).type,
-    );
+    final estado = item.estadoEnum;
+    final status = estado.status;
 
     // Reglas de negocio
-    final canEdit = item.estado == 'pendiente' || item.estado == 'en_curso';
+    final canEdit =
+        estado == EstadoOperacionCarga.pendiente ||
+        estado == EstadoOperacionCarga.enCurso;
     final canAssign =
-        (item.estado == 'pendiente' ||
-            item.estado == 'en_curso' ||
-            item.estado == 'en_transito') &&
+        (estado == EstadoOperacionCarga.pendiente ||
+            estado == EstadoOperacionCarga.enCurso ||
+            estado == EstadoOperacionCarga.enTransito) &&
         item.id != null;
 
     final origen = item.sedeOrigen?.nombre ?? 'Sede #${item.idSedeOrigen}';
-    final destino = item.sedeDestino?.nombre ?? 'Lugar #${item.idSedeDestino ?? '-'}';
-
-    // Obtenemos la cantidad real de registros de detalle
-    final cantidadDetalles = item.detalles?.length ?? 0;
+    final destino =
+        item.sedeDestino?.nombre ?? 'Lugar #${item.idSedeDestino ?? '-'}';
 
     return AppCard(
       header: AppCardHeader(
@@ -52,60 +52,62 @@ class CargaCard extends StatelessWidget {
         subtitle: _dateText(item.fechaCarga),
         status: status,
         badge: AppStatusBadge(status: status),
+        menu: AppCardMenu(
+          actions: [
+            AppCardMenuAction(
+              icon: Icons.edit_rounded,
+              label: 'Editar',
+              onSelected: onEdit,
+              enabled: canEdit,
+            ),
+          ],
+        ),
       ),
       body: AppCardBody(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Ruta (Origen -> Destino)
-            AppCardInfoRow(
-              icon: Icons.route_rounded,
-              label: 'Ruta',
-              value: '$origen  →  $destino',
-            ),
-            const SizedBox(height: 8),
+            AppCardInfoGrid(
+              children: [
+                // 1. Ruta (Origen -> Destino)
+                AppCardInfoRow(
+                  icon: Icons.route_rounded,
+                  label: 'Ruta',
+                  value: '$origen  →  $destino',
+                ),
 
-            // 2. Camión
-            AppCardInfoRow(
-              icon: Icons.local_shipping_outlined,
-              label: 'Camión',
-              value: item.camion?.placa ?? 'Camión #${item.idCamion}',
+                // 2. Camión
+                AppCardInfoRow(
+                  icon: Icons.local_shipping_outlined,
+                  label: 'Camión',
+                  value: item.camion?.placa ?? 'Camión #${item.idCamion}',
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-
+            SizedBox(height: 8.0),
             // 3. Detalles de Carga (Navega al detalle)
             AppCardInfoRow(
               icon: Icons.inventory_2_outlined,
-              label: 'Detalles de carga',
-              value: '$cantidadDetalles registro${cantidadDetalles == 1 ? '' : 's'}',
-              onTap: onOpen, // <-- Aquí se activa la flechita y la navegación
+              label: 'Encargado de carga',
+              value:
+                  item.encargadoCarga?.nombreCompleto ?? 'Usuario #${item.idEncargadoCarga}',
             ),
           ],
         ),
       ),
       actions: AppCardActions(
-        secondaryAction: OutlinedButton.icon(
-          onPressed: canEdit ? onEdit : null,
-          icon: const Icon(Icons.edit_rounded, size: 18),
-          label: const Text('Editar'),
+        navigationAction: AppCardQuickAction(
+          icon: Icons.inventory_2_outlined,
+          label: 'Ver detalles',
+          onPressed: onOpen,
         ),
-        primaryAction: FilledButton.tonalIcon(
+        operationalAction: AppCardQuickAction(
+          icon: Icons.note_alt_outlined,
+          label: 'Asignar carga',
           onPressed: canAssign ? onAssignCarga : null,
-          icon: const Icon(Icons.note_alt_outlined, size: 18),
-          label: const Text('Asignar Carga'),
         ),
       ),
     );
-  }
-
-  static AppStatus statusFor(String value) {
-    return switch (value) {
-      'pendiente' => const AppStatus(label: 'Pendiente', type: AppStatusType.warning),
-      'en_curso' => const AppStatus(label: 'En curso', type: AppStatusType.info),
-      'en_transito' => const AppStatus(label: 'En tránsito', type: AppStatusType.info),
-      'repartiendo' => const AppStatus(label: 'Repartiendo', type: AppStatusType.success),
-      'completado' => const AppStatus(label: 'Completado', type: AppStatusType.neutral),
-      _ => AppStatus(label: value, type: AppStatusType.neutral),
-    };
   }
 
   static String _dateText(DateTime date) {

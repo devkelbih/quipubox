@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quipubox/core/common/string_extensions.dart';
 
 import 'package:quipubox/core/ui/cards/app_card.dart';
-import 'package:quipubox/core/ui/cards/app_card_actions.dart';
+import 'package:quipubox/core/ui/cards/app_card_menu.dart';
 import 'package:quipubox/core/ui/cards/app_card_body.dart';
 import 'package:quipubox/core/ui/cards/app_card_header.dart';
 import 'package:quipubox/core/ui/cards/app_card_info_row.dart';
@@ -37,6 +37,22 @@ class CalidadCard extends StatelessWidget {
         title: title,
         status: status,
         badge: AppStatusBadge(status: status),
+        menu: AppCardMenu(
+          actions: [
+            AppCardMenuAction(
+              icon: Icons.edit_rounded,
+              label: 'Editar',
+              onSelected: onEdit,
+            ),
+            AppCardMenuAction(
+              icon: item.estado
+                  ? Icons.block_rounded
+                  : Icons.check_circle_rounded,
+              label: item.estado ? 'Desactivar' : 'Activar',
+              onSelected: onChangeStatus,
+            ),
+          ],
+        ),
       ),
       body: descripcion == null
           ? null
@@ -47,21 +63,6 @@ class CalidadCard extends StatelessWidget {
                 value: descripcion,
               ),
             ),
-      actions: AppCardActions(
-        secondaryAction: OutlinedButton.icon(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_rounded, size: 18),
-          label: const Text('Editar'),
-        ),
-        primaryAction: FilledButton.tonalIcon(
-          onPressed: onChangeStatus,
-          icon: Icon(
-            item.estado ? Icons.block_rounded : Icons.check_circle_rounded,
-            size: 18,
-          ),
-          label: Text(item.estado ? 'Desactivar' : 'Activar'),
-        ),
-      ),
     );
   }
 }
