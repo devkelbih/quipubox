@@ -29,11 +29,10 @@ class CargaFormScreen extends StatefulWidget {
 class _CargaFormScreenState extends State<CargaFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _fechaController;
-  late final TextEditingController _horaController;
   late final TextEditingController _observacionesController;
 
-  DateTime? _fechaCarga;
-  TimeOfDay? _horaCarga;
+  late DateTime _fechaCarga;
+  String? _horaCarga;
   int? _idSedeOrigen;
   int? _idSedeDestino;
   int? _idCamion;
@@ -47,7 +46,8 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
   void initState() {
     super.initState();
     _fechaController = TextEditingController();
-    _horaController = TextEditingController();
+    _fechaCarga = DateTime.now();
+    if (!_isEditing) _fechaController.text = _dateText(_fechaCarga);
     _observacionesController = TextEditingController();
     _applyItem(widget.item);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -58,7 +58,6 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
   @override
   void dispose() {
     _fechaController.dispose();
-    _horaController.dispose();
     _observacionesController.dispose();
     super.dispose();
   }
@@ -204,17 +203,6 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
           ),
           const SizedBox(height: 14),
           TextFormField(
-            controller: _horaController,
-            readOnly: true,
-            enabled: !isBusy,
-            decoration: const InputDecoration(
-              labelText: 'Hora de carga (opcional)',
-              prefixIcon: Icon(Icons.schedule_rounded),
-            ),
-            onTap: isBusy ? null : _pickTime,
-          ),
-          const SizedBox(height: 14),
-          TextFormField(
             controller: _observacionesController,
             enabled: !isBusy,
             textCapitalization: TextCapitalization.sentences,
@@ -286,9 +274,8 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
     _idCamion = item.camion?.id ?? item.idCamion;
     _idRepartidor = item.repartidorAsignado?.id ?? item.idRepartidorAsignado;
     _fechaCarga = item.fechaCarga;
-    _horaCarga = _parseTime(item.horaCarga);
+    _horaCarga = item.horaCarga;
     _fechaController.text = _dateText(item.fechaCarga);
-    _horaController.text = item.horaCarga ?? '';
     _observacionesController.text = item.observaciones ?? '';
   }
 
@@ -296,26 +283,54 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
     final today = DateTime.now();
     final selected = await showDatePicker(
       context: context,
-      initialDate: _fechaCarga ?? today,
+      initialDate: _fechaCarga,
       firstDate: DateTime(today.year - 5),
-      lastDate: DateTime(today.year + 5),
+      lastDate: _isEditing ? DateTime(today.year + 5) : today,
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      locale: const Locale('es', 'PE'),
+      helpText: 'Selecciona la fecha de carga',
+      cancelText: 'Cancelar',
+      confirmText: 'Confirmar',
+      builder: (context, child) {
+        final theme = Theme.of(context);
+        return Theme(
+          data: theme.copyWith(
+            datePickerTheme: theme.datePickerTheme.copyWith(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(26),
+                side: BorderSide(color: theme.colorScheme.outlineVariant),
+              ),
+              backgroundColor: theme.colorScheme.surface,
+              surfaceTintColor: Colors.transparent,
+              headerHeadlineStyle: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+              dayShape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              cancelButtonStyle: theme.textButtonTheme.style,
+              confirmButtonStyle:
+                  FilledButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                      )
+                      .merge(theme.filledButtonTheme.style)
+                      .copyWith(
+                        minimumSize: const WidgetStatePropertyAll(Size(0, 36)),
+                        padding: const WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        ),
+                      ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (selected == null || !mounted) return;
     setState(() {
       _fechaCarga = selected;
       _fechaController.text = _dateText(selected);
-    });
-  }
-
-  Future<void> _pickTime() async {
-    final selected = await showTimePicker(
-      context: context,
-      initialTime: _horaCarga ?? TimeOfDay.now(),
-    );
-    if (selected == null || !mounted) return;
-    setState(() {
-      _horaCarga = selected;
-      _horaController.text = _timeText(selected);
     });
   }
 
@@ -333,8 +348,8 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
       idSedeDestino: _idSedeDestino,
       idCamion: _idCamion!,
       idRepartidorAsignado: _idRepartidor,
-      fechaCarga: _fechaCarga ?? DateTime.now(),
-      horaCarga: _horaCarga == null ? null : _timeText(_horaCarga!),
+      fechaCarga: _fechaCarga,
+      horaCarga: _horaCarga,
       estado: item?.estado ?? EstadoOperacionCarga.pendiente.value,
       observaciones: _observacionesController.text.trim().isEmpty
           ? null
@@ -382,22 +397,9 @@ class _CargaFormScreenState extends State<CargaFormScreen> {
     return value;
   }
 
-  static TimeOfDay? _parseTime(String? value) {
-    if (value == null || value.isEmpty) return null;
-    final parts = value.split(':');
-    if (parts.length < 2) return null;
-    final hour = int.tryParse(parts[0]);
-    final minute = int.tryParse(parts[1]);
-    if (hour == null || minute == null) return null;
-    return TimeOfDay(hour: hour, minute: minute);
-  }
-
   static String _dateText(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
     return '$day/$month/${date.year}';
   }
-
-  static String _timeText(TimeOfDay time) =>
-      '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 }

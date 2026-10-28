@@ -1,3 +1,4 @@
+import '../../../../../core/exceptions/app_exception.dart';
 import '../../../../../core/state/base_state_viewmodel.dart';
 import '../../domain/entities/detalle_carga.dart';
 import '../../domain/entities/guia_operacion_carga.dart';
@@ -72,10 +73,60 @@ class CargaViewModel extends BaseStateViewModel {
     return true;
   }
 
+  Future<bool> loadDetalles(OperacionCarga operation) async {
+    final id = operation.id;
+    if (id == null) return false;
+    if (selected?.id != id) detalles = [];
+    selected = operation;
+    final result = await run<List<DetalleCarga>>(
+      state: ViewModelActionState.loading,
+      action: () => getDetallesUseCase(id),
+    );
+    if (result == null || selected?.id != id) return false;
+    detalles = result;
+    notifyListeners();
+    return true;
+  }
+
   Future<bool> create(OperacionCarga operation) async {
     final result = await run<OperacionCarga>(
       state: ViewModelActionState.saving,
-      action: () => createOperacionUseCase(operation),
+      action: () {
+        final ahora = DateTime.now();
+        final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+        final fecha = operation.fechaCarga;
+        final fechaSeleccionada = DateTime(fecha.year, fecha.month, fecha.day);
+        if (fechaSeleccionada.isAfter(hoy)) {
+          throw const AppException('La fecha de carga no puede ser futura.');
+        }
+        final esHoy = fechaSeleccionada == hoy;
+        final horaCarga = esHoy
+            ? '${ahora.hour.toString().padLeft(2, '0')}:'
+                  '${ahora.minute.toString().padLeft(2, '0')}:'
+                  '${ahora.second.toString().padLeft(2, '0')}'
+            : null;
+        // copyWith conserva la hora anterior cuando recibe null.
+        final nuevaOperacion = OperacionCarga(
+          id: operation.id,
+          idEmpresa: operation.idEmpresa,
+          idSedeOrigen: operation.idSedeOrigen,
+          idSedeDestino: operation.idSedeDestino,
+          idCamion: operation.idCamion,
+          idEncargadoCarga: operation.idEncargadoCarga,
+          idRepartidorAsignado: operation.idRepartidorAsignado,
+          fechaCarga: fechaSeleccionada,
+          horaCarga: horaCarga,
+          estado: operation.estado,
+          observaciones: operation.observaciones,
+          detalles: operation.detalles,
+          sedeOrigen: operation.sedeOrigen,
+          sedeDestino: operation.sedeDestino,
+          camion: operation.camion,
+          encargadoCarga: operation.encargadoCarga,
+          repartidorAsignado: operation.repartidorAsignado,
+        );
+        return createOperacionUseCase(nuevaOperacion);
+      },
     );
 
     if (result == null) return false;
@@ -159,8 +210,11 @@ class CargaViewModel extends BaseStateViewModel {
 
     if (result == null) return false;
 
-    _replaceItem(result);
-    if (selected?.id == id) selected = result;
+    final updated = selected?.id == id
+        ? selected!.copyWith(estado: result.estado)
+        : result;
+    _replaceItem(updated);
+    if (selected?.id == id) selected = updated;
     notifyListeners();
     return true;
   }

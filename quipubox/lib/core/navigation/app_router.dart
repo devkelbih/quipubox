@@ -132,6 +132,9 @@ class AppRouter {
             path: ':id',
             builder: (_, state) => CargaDetailScreen(
               operationId: int.parse(state.pathParameters['id']!),
+              operation: state.extra is OperacionCarga
+                  ? state.extra as OperacionCarga
+                  : null,
             ),
             routes: [
               GoRoute(

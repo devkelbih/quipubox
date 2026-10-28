@@ -29,7 +29,7 @@ class _CargaListScreenState extends State<CargaListScreen> {
   String _statusFilter = 'todos'; // 'todos' siempre existe y es el primero.
 
   bool _matchesStatus(OperacionCarga item, String status) =>
-    status == 'todos' || item.estado == status;
+      status == 'todos' || item.estado == status;
 
   @override
   void initState() {
@@ -162,7 +162,7 @@ class _CargaListScreenState extends State<CargaListScreen> {
   void _openDetails(BuildContext context, OperacionCarga item) {
     final id = item.id;
     if (id == null) return;
-    context.push(AppRoutes.operacionCargaDetailPath(id));
+    context.push(AppRoutes.operacionCargaDetailPath(id), extra: item);
   }
 
   // TODO: Implementar la pantalla/formulario para asignar detalle a la carga

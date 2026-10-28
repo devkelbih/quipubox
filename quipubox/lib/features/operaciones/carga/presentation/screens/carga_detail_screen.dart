@@ -13,24 +13,54 @@ import 'package:quipubox/core/ui/states/empty_state.dart';
 import '../../domain/entities/operacion_carga.dart';
 import '../viewmodels/carga_viewmodel.dart';
 import '../widgets/estado_operacion_carga_ui.dart';
-import '../widgets/detalle_carga_card.dart';
+import '../../domain/entities/detalle_carga.dart';
 
 class CargaDetailScreen extends StatefulWidget {
   final int operationId;
+  final OperacionCarga? operation;
 
-  const CargaDetailScreen({super.key, required this.operationId});
+  const CargaDetailScreen({
+    super.key,
+    required this.operationId,
+    this.operation,
+  });
 
   @override
   State<CargaDetailScreen> createState() => _CargaDetailScreenState();
 }
 
 class _CargaDetailScreenState extends State<CargaDetailScreen> {
+  Future<void> _loadDetails() async {
+    if (!mounted) return;
+    final vm = context.read<CargaViewModel>();
+    final cached = vm.selected?.id == widget.operationId ? vm.selected : null;
+    final operation =
+        cached ??
+        widget.operation ??
+        vm.items.where((item) => item.id == widget.operationId).firstOrNull;
+    if (operation != null && operation.id == widget.operationId) {
+      await vm.loadDetalles(operation);
+    } else {
+      // Respaldo para enlaces directos sin cabecera en memoria.
+      await vm.loadById(widget.operationId);
+    }
+  }
+
+  void _addDetalle() {
+    // TODO: Abrir el formulario de registro de detalle de carga y refrescar solo los detalles al guardar.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'El registro de ítems de carga estará disponible próximamente.',
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => context.read<CargaViewModel>().loadById(widget.operationId),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetails());
   }
 
   @override
@@ -38,7 +68,7 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
     final vm = context.watch<CargaViewModel>();
     final operation = vm.selected?.id == widget.operationId
         ? vm.selected
-        : null;
+        : widget.operation;
 
     final isBusy = vm.isSaving || vm.isChangingStatus || vm.isDeleting;
 
@@ -63,75 +93,97 @@ class _CargaDetailScreenState extends State<CargaDetailScreen> {
             child: EmptyState(
               message: vm.errorMessage ?? 'No se encontró la operación.',
               actionLabel: 'Reintentar',
-              onAction: () => vm.loadById(widget.operationId),
+              onAction: _loadDetails,
             ),
           );
         }
 
+        final canModify = const [
+          'pendiente',
+          'en_curso',
+          'en_transito',
+        ].contains(operation.estado);
         return Column(
           children: [
-            if (isBusy) const LinearProgressIndicator(),
+            if (isBusy || vm.isLoading) const LinearProgressIndicator(),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: () async => vm.loadById(widget.operationId),
-                child: ListView(
+                onRefresh: _loadDetails,
+                child: ListView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
-                  children: [
-                    _OperationSummary(operation: operation),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Detalles de carga',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
+                  itemCount: vm.detalles.length + 3,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _OperationSummary(operation: operation);
+                    }
+                    if (index == 1) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 8),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Detalles de carga (${vm.detalles.length})',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                                if (canModify)
+                                  TextButton.icon(
+                                    onPressed: isBusy || vm.isLoading
+                                        ? null
+                                        : _addDetalle,
+                                    icon: const Icon(Icons.add_rounded),
+                                    label: const Text('Agregar'),
+                                  ),
+                              ],
+                            ),
+                            if (vm.errorMessage != null)
+                              EmptyState(
+                                message: vm.errorMessage!,
+                                actionLabel: 'Reintentar',
+                                onAction: _loadDetails,
+                              )
+                            else if (!vm.isLoading && vm.detalles.isEmpty)
+                              const EmptyState(
+                                message:
+                                    'Esta operación aún no tiene detalles.',
+                              ),
+                          ],
                         ),
-                        Text('${vm.detalles.length}'),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (vm.detalles.isEmpty)
-                      const EmptyState(
-                        message: 'Esta operación aún no tiene detalles.',
-                      )
-                    else
-                      ...vm.detalles.map(
-                        (detalle) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: DetalleCargaCard(item: detalle),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                    _OperationActions(
-                      operation: operation,
-                      onStart: isBusy ? null : () => _changeEstado('en_curso'),
-                      onFinalize: isBusy ? null : _finalizar,
-                    ),
-                  ],
+                      );
+                    }
+                    if (index == vm.detalles.length + 2) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: canModify
+                            ? FilledButton.icon(
+                                onPressed:
+                                    isBusy ||
+                                        vm.isLoading ||
+                                        vm.errorMessage != null ||
+                                        vm.detalles.isEmpty
+                                    ? null
+                                    : _finalizar,
+                                icon: const Icon(Icons.task_alt_rounded),
+                                label: const Text('Finalizar operación'),
+                              )
+                            : const SizedBox.shrink(),
+                      );
+                    }
+                    return _DetalleCargaRow(item: vm.detalles[index - 2]);
+                  },
                 ),
               ),
             ),
           ],
         );
       }(),
-    );
-  }
-
-  Future<void> _changeEstado(String estado) async {
-    final vm = context.read<CargaViewModel>();
-    final succeeded = await vm.changeEstado(
-      id: widget.operationId,
-      estado: estado,
-    );
-    if (!mounted) return;
-    AppToast.show(
-      succeeded
-          ? 'La operación pasó a estado en curso.'
-          : vm.errorMessage ?? 'No se pudo cambiar el estado.',
-      type: succeeded ? ToastType.success : ToastType.error,
     );
   }
 
@@ -264,35 +316,39 @@ class _OperationSummary extends StatelessWidget {
   }
 }
 
-class _OperationActions extends StatelessWidget {
-  final OperacionCarga operation;
-  final VoidCallback? onStart;
-  final VoidCallback? onFinalize;
-
-  const _OperationActions({
-    required this.operation,
-    required this.onStart,
-    required this.onFinalize,
-  });
+class _DetalleCargaRow extends StatelessWidget {
+  final DetalleCarga item;
+  const _DetalleCargaRow({required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
+    final fruta = item.fruta?.nombre ?? 'Fruta #${item.idFruta}';
+    final tipoJaba = item.tipoJaba?.nombre ?? 'Tipo #${item.idTipoJaba}';
+    final emisor =
+        item.clienteEmisor?.nombreCompleto ??
+        'Cliente #${item.idClienteEmisor}';
+    final receptor = item.clientesReceptores.isEmpty
+        ? 'Sin asignar'
+        : item.clientesReceptores.join(', ');
+    final calidades = item.calidades.isEmpty
+        ? 'Sin registrar'
+        : item.calidades.join(', ');
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (operation.estado == 'pendiente')
-          FilledButton.icon(
-            onPressed: onStart,
-            icon: const Icon(Icons.play_arrow_rounded),
-            label: const Text('Iniciar carga'),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Text(
+            '${item.cantidadJabas}',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
-        if (operation.estado == 'en_curso')
-          FilledButton.icon(
-            onPressed: onFinalize,
-            icon: const Icon(Icons.task_alt_rounded),
-            label: const Text('Finalizar carga'),
+          title: Text('$fruta · $tipoJaba'),
+          subtitle: Text(
+            'Jabas · Calidad: $calidades\nEmisor: $emisor\nReceptor: $receptor',
           ),
+          isThreeLine: true,
+        ),
+        const Divider(height: 1),
       ],
     );
   }

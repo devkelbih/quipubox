@@ -23,6 +23,8 @@ class DetalleCarga {
   final Fruta? fruta;
   final Variedad? variedad;
   final TiposJaba? tipoJaba;
+  final List<String> calidades;
+  final List<String> clientesReceptores;
 
   const DetalleCarga({
     this.id,
@@ -44,6 +46,8 @@ class DetalleCarga {
     this.fruta,
     this.variedad,
     this.tipoJaba,
+    this.calidades = const [],
+    this.clientesReceptores = const [],
   });
 
   DetalleCarga copyWith({
@@ -66,6 +70,8 @@ class DetalleCarga {
     Fruta? fruta,
     Variedad? variedad,
     TiposJaba? tipoJaba,
+    List<String>? calidades,
+    List<String>? clientesReceptores,
   }) {
     return DetalleCarga(
       id: id ?? this.id,
@@ -87,6 +93,8 @@ class DetalleCarga {
       fruta: fruta ?? this.fruta,
       variedad: variedad ?? this.variedad,
       tipoJaba: tipoJaba ?? this.tipoJaba,
+      calidades: calidades ?? this.calidades,
+      clientesReceptores: clientesReceptores ?? this.clientesReceptores,
     );
   }
 }

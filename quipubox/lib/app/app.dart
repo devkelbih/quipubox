@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../core/navigation/app_router.dart';
@@ -17,6 +18,9 @@ class QuipuboxApp extends StatelessWidget {
 
     return MaterialApp.router(
       title: 'Quipubox',
+      locale: const Locale('es', 'PE'),
+      supportedLocales: const [Locale('es', 'PE')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: NavigationKeys.scaffoldMessengerKey,
       theme: AppTheme.light,
@@ -24,9 +28,7 @@ class QuipuboxApp extends StatelessWidget {
       themeMode: settings.themeMode,
       routerConfig: router,
       builder: (context, child) {
-        return ConnectivityBanner(
-          child: child ?? const SizedBox.shrink(),
-        );
+        return ConnectivityBanner(child: child ?? const SizedBox.shrink());
       },
     );
   }

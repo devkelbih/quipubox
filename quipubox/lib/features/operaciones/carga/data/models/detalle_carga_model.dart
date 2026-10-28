@@ -37,6 +37,8 @@ class DetalleCargaModel {
   final FrutaModel? fruta;
   final VariedadModel? variedad;
   final TipoJabaModel? tipoJaba;
+  final List<String> calidades;
+  final List<String> clientesReceptores;
 
   const DetalleCargaModel({
     this.id,
@@ -55,6 +57,8 @@ class DetalleCargaModel {
     this.fruta,
     this.variedad,
     this.tipoJaba,
+    this.calidades = const [],
+    this.clientesReceptores = const [],
   });
 
   factory DetalleCargaModel.fromJson(Map<String, dynamic> json) {
@@ -76,6 +80,32 @@ class DetalleCargaModel {
       instruccionReparto: json['instruccion_reparto']?.toString(),
       observaciones: json['observaciones']?.toString(),
       requiereRetornoJabas: json['requiere_retorno_jabas'] == true,
+      calidades:
+          (json['detalle_carga_calidades'] is List
+                  ? json['detalle_carga_calidades'] as List
+                  : const [])
+              .whereType<Map>()
+              .map(
+                (item) =>
+                    _asMap(item['calidades'])?['nombre']?.toString().trim() ??
+                    '',
+              )
+              .where((nombre) => nombre.isNotEmpty)
+              .toSet()
+              .toList(),
+      clientesReceptores:
+          (json['items_reparto'] is List
+                  ? json['items_reparto'] as List
+                  : const [])
+              .whereType<Map>()
+              .map((item) {
+                final cliente = _asMap(item['clientes']);
+                return '${cliente?['nombres'] ?? ''} ${cliente?['apellidos'] ?? ''}'
+                    .trim();
+              })
+              .where((nombre) => nombre.isNotEmpty)
+              .toSet()
+              .toList(),
       fruta: frutaJson == null ? null : FrutaModel.fromJson(frutaJson),
       variedad: variedadJson == null
           ? null
@@ -107,6 +137,8 @@ class DetalleCargaModel {
       fruta: _frutaModelFromEntity(detalle.fruta),
       variedad: _variedadModelFromEntity(detalle.variedad),
       tipoJaba: _tipoJabaModelFromEntity(detalle.tipoJaba),
+      calidades: detalle.calidades,
+      clientesReceptores: detalle.clientesReceptores,
     );
   }
 
@@ -127,6 +159,8 @@ class DetalleCargaModel {
     fruta: fruta?.toEntity(),
     variedad: variedad?.toEntity(),
     tipoJaba: tipoJaba?.toEntity(),
+    calidades: calidades,
+    clientesReceptores: clientesReceptores,
   );
 
   Map<String, dynamic> toJson() => {

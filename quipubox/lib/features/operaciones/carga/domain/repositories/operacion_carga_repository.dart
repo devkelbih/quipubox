@@ -11,7 +11,9 @@ abstract class OperacionCargaRepository {
     required int id,
     required String estado,
   });
+  /// Eliminar una operación de carga
   Future<OperacionCarga> cancelar(int id);
+  
   Future<OperacionCarga> finalizar(int id);
   Future<List<GuiaOperacionCarga>> generarGuias(int id);
   Future<List<GuiaOperacionCarga>> generarGuiasPorPuesto(int id);
