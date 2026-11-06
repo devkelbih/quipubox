@@ -6,6 +6,8 @@ import '../core/navigation/app_router.dart';
 import '../core/navigation/navigation_keys.dart';
 import '../core/theme/app_theme.dart';
 import '../core/ui/widgets/connectivity_banner.dart';
+import '../core/ui/feedback/app_blocking_loader_overlay.dart';
+import '../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../features/settings/presentation/viewmodels/settings_viewmodel.dart';
 
 class QuipuboxApp extends StatelessWidget {
@@ -28,7 +30,27 @@ class QuipuboxApp extends StatelessWidget {
       themeMode: settings.themeMode,
       routerConfig: router,
       builder: (context, child) {
-        return ConnectivityBanner(child: child ?? const SizedBox.shrink());
+        final preparingProfile = context.select<AuthViewModel, bool>(
+          (auth) => auth.isPreparingProfile,
+        );
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            AbsorbPointer(
+              absorbing: preparingProfile,
+              child: ConnectivityBanner(
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
+            if (preparingProfile)
+              const Positioned.fill(
+                child: AppBlockingLoaderOverlay(
+                  text: 'Preparando tu cuenta...',
+                  message: 'Estamos cargando tus datos. Espera un momento.',
+                ),
+              ),
+          ],
+        );
       },
     );
   }

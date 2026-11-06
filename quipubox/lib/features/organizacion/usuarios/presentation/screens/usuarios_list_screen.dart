@@ -1,3 +1,6 @@
+import 'dart:async';
+import '../../../sedes/presentation/viewmodels/sedes_viewmodel.dart';
+import '../widgets/usuarios_list_filters.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +28,22 @@ class UsuarioListScreen extends StatefulWidget {
 }
 
 class _UsuarioListScreenState extends State<UsuarioListScreen> {
+  final _searchController = TextEditingController();
+  Timer? _searchDebounce;
+  String _lastSearchText = '';
+  String _appliedSearch = '';
+  int? _selectedSedeId;
   StatusSummaryValue _statusFilter = StatusSummaryValue.all;
 
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_onSearchChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final sedesVm = context.read<SedeViewModel>();
+      if (sedesVm.items.isEmpty) sedesVm.load();
       context.read<UsuarioViewModel>().load();
       context.read<RolesViewModel>().load();
     });
@@ -44,11 +56,24 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
     final activeCount = vm.items.where((e) => e.estado).length;
     final inactiveCount = vm.items.length - activeCount;
 
-    final filteredItems = switch (_statusFilter) {
+    final statusItems = switch (_statusFilter) {
       StatusSummaryValue.all => vm.items,
       StatusSummaryValue.active => vm.items.where((e) => e.estado).toList(),
       StatusSummaryValue.inactive => vm.items.where((e) => !e.estado).toList(),
     };
+
+    final filteredItems = statusItems
+        .where(
+          (item) =>
+              (_selectedSedeId == null || item.idSede == _selectedSedeId) &&
+              (_appliedSearch.isEmpty ||
+                  [
+                    item.nombreCompleto,
+                    item.email,
+                    item.telefono ?? '',
+                  ].any((text) => text.toLowerCase().contains(_appliedSearch))),
+        )
+        .toList();
 
     final isSavingUser = vm.isSaving && vm.processingRoleId == null;
 
@@ -71,6 +96,41 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _applySearch(),
+                    decoration: InputDecoration(
+                      hintText: 'Buscar por nombre, correo o teléfono',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      suffixIcon: _searchController.text.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: 'Limpiar búsqueda',
+                              icon: const Icon(Icons.clear_rounded),
+                              onPressed: _searchController.clear,
+                            ),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: 'Filtros',
+                  onPressed: _openFilters,
+                  icon: Badge(
+                    isLabelVisible: _selectedSedeId != null,
+                    child: const Icon(Icons.tune_rounded),
+                  ),
+                ),
+              ],
+            ),
+          ),
           if (isSavingUser || vm.isDeleting || vm.isChangingStatus)
             const LinearProgressIndicator(),
 
@@ -98,14 +158,19 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
 
               if (filteredItems.isEmpty) {
                 return EmptyState(
-                  message: _statusFilter == StatusSummaryValue.active
+                  message: _appliedSearch.isNotEmpty || _selectedSedeId != null
+                      ? 'No se encontraron usuarios con los filtros seleccionados.'
+                      : _statusFilter == StatusSummaryValue.active
                       ? 'No tienes usuarios activos.'
                       : 'No tienes usuarios inactivos.',
                   actionLabel: 'Mostrar todos',
                   onAction: () {
-                    setState(
-                      () => _statusFilter = StatusSummaryValue.all,
-                    );
+                    _searchController.clear();
+                    _applySearch();
+                    setState(() {
+                      _statusFilter = StatusSummaryValue.all;
+                      _selectedSedeId = null;
+                    });
                   },
                 );
               }
@@ -136,6 +201,48 @@ class _UsuarioListScreenState extends State<UsuarioListScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    if (_lastSearchText == _searchController.text) return;
+    _lastSearchText = _searchController.text;
+    setState(() {});
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), _applySearch);
+  }
+
+  void _applySearch() {
+    _searchDebounce?.cancel();
+    if (mounted) {
+      setState(
+        () => _appliedSearch = _searchController.text.trim().toLowerCase(),
+      );
+    }
+  }
+
+  Future<void> _openFilters() async {
+    final result = await AppBottomSheet.show<int>(
+      context: context,
+      title: 'Filtros',
+      minChildSize: .30,
+      initialChildSize: .35,
+      maxChildSize: .40,
+      builder: (context, controller) => UsuarioListFilters(
+        controller: controller,
+        sedes: context.read<SedeViewModel>().items,
+        initialSedeId: _selectedSedeId,
+      ),
+    );
+    if (result == null || !mounted) return;
+    setState(() => _selectedSedeId = result == 0 ? null : result);
   }
 
   Future<void> _openForm(BuildContext context, {Usuario? item}) async {

@@ -22,14 +22,13 @@ import 'network_checker.dart';
 ///
 /// Todos los módulos consumen este cliente.
 class ApiClient {
-  ApiClient({
-    http.Client? client,
-    NetworkChecker? networkChecker,
-  })  : _client = client ?? http.Client(),
-        _networkChecker = networkChecker;
+  ApiClient({http.Client? client, NetworkChecker? networkChecker})
+    : _client = client ?? http.Client(),
+      _networkChecker = networkChecker;
 
   final http.Client _client;
   final NetworkChecker? _networkChecker;
+  Future<AuthResponse>? _refreshingSession;
 
   /// Tiempo máximo permitido para una petición.
   static const _timeout = Duration(seconds: 20);
@@ -45,8 +44,12 @@ class ApiClient {
   }
 
   /// PUT /recurso/id
-  Future<dynamic> put(String path, {Map<String, dynamic>? body}) {
-    return _send('PUT', path, body: body);
+  Future<dynamic> put(
+    String path, {
+    Map<String, dynamic>? body,
+    bool preserveNulls = false,
+  }) {
+    return _send('PUT', path, body: body, preserveNulls: preserveNulls);
   }
 
   /// PATCH /recurso/id
@@ -69,9 +72,24 @@ class ApiClient {
   /// puede devolver un token viejo.
   ///
   /// Por eso, antes de llamar al backend, intentamos refrescar la sesión.
-  /// Si el refresh falla, se devuelve el token actual como último intento.
+  /// Si el refresh falla, la operación termina con un error controlado.
   Future<String?> _getValidAccessToken() async {
-    return Supabase.instance.client.auth.currentSession?.accessToken;
+    final auth = Supabase.instance.client.auth;
+    final session = auth.currentSession;
+    if (session == null) return null;
+    if (!session.isExpired) return session.accessToken;
+
+    // Al volver de segundo plano, no enviar un JWT caducado mientras el
+    // refresco automático de Supabase todavía está recuperando la sesión.
+    final refresh = _refreshingSession ??= auth.refreshSession().timeout(
+      _timeout,
+    );
+    try {
+      final response = await refresh;
+      return response.session?.accessToken;
+    } finally {
+      if (identical(_refreshingSession, refresh)) _refreshingSession = null;
+    }
   }
 
   /// Método interno que ejecuta todas las solicitudes.
@@ -89,6 +107,7 @@ class ApiClient {
     String path, {
     Map<String, String>? query,
     Map<String, dynamic>? body,
+    bool preserveNulls = false,
   }) async {
     try {
       if (_networkChecker != null) {
@@ -112,7 +131,9 @@ class ApiClient {
         if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
       };
 
-      final encodedBody = body == null ? null : jsonEncode(_withoutNulls(body));
+      final encodedBody = body == null
+          ? null
+          : jsonEncode(preserveNulls ? body : _withoutNulls(body));
 
       final response = await _execute(
         method,
@@ -129,12 +150,9 @@ class ApiClient {
     } on AppException {
       rethrow;
     } on Object catch (error) {
-      throw AppException(
-        'No se pudo conectar con el servidor. $error',
-      );
+      throw AppException('No se pudo conectar con el servidor. $error');
     }
   }
-
 
   /// Ejecuta físicamente la petición HTTP.
   Future<http.Response> _execute(

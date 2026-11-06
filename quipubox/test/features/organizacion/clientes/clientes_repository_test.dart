@@ -71,7 +71,11 @@ class StubApiClient extends ApiClient {
   }
 
   @override
-  Future<dynamic> put(String path, {Map<String, dynamic>? body}) async {
+  Future<dynamic> put(
+    String path, {
+    Map<String, dynamic>? body,
+    bool preserveNulls = false,
+  }) async {
     calls.add('PUT $path');
     return response;
   }

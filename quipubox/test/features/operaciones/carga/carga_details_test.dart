@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:quipubox/core/session/current_session.dart';
@@ -13,6 +14,7 @@ import 'package:quipubox/features/operaciones/carga/domain/usecases/create_opera
 import 'package:quipubox/features/operaciones/carga/domain/usecases/update_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/change_estado_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/cancelar_operacion_carga.dart';
+import 'package:quipubox/features/operaciones/carga/domain/usecases/delete_detalle_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/finalizar_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/generar_guias_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/presentation/viewmodels/carga_viewmodel.dart';
@@ -80,6 +82,10 @@ class Repository implements OperacionCargaRepository {
 }
 
 CargaViewModel viewModel(Repository r) => CargaViewModel(
+  deleteDetalleUseCase: DeleteDetalleOperacionCargaUseCase(
+    repository: r,
+    currentSession: Session(),
+  ),
   getOperacionesUseCase: GetOperacionesCargaUseCase(repository: r),
   getOperacionByIdUseCase: GetOperacionCargaByIdUseCase(repository: r),
   getDetallesUseCase: GetDetallesOperacionUseCase(repository: r),
@@ -108,7 +114,92 @@ CargaViewModel viewModel(Repository r) => CargaViewModel(
     currentSession: Session(),
   ),
 );
+
+class SavedRepository extends Repository {
+  @override
+  Future<OperacionCarga> getById(int id) async {
+    headerRequests++;
+    return OperacionCarga(
+      id: id,
+      idSedeOrigen: 1,
+      idCamion: 2,
+      fechaCarga: DateTime(2026),
+      estado: 'en_curso',
+    );
+  }
+}
+
 void main() {
+  testWidgets(
+    'Asignar abre formulario sobre detalle y al guardar refresca sin volver al listado',
+    (tester) async {
+      final repository = SavedRepository();
+      final vm = viewModel(repository);
+      final operation = await repository.getById(1);
+      vm.items = [operation.copyWith(estado: 'pendiente')];
+      repository.headerRequests = 0;
+      var formOpens = 0;
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: TextButton(
+                onPressed: () => context.push('/operaciones/carga/1'),
+                child: const Text('Asignar carga'),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/operaciones/carga/:id',
+            builder: (context, state) => CargaDetailScreen(
+              operationId: 1,
+              operation: operation,
+              openDetalleForm: true,
+            ),
+            routes: [
+              GoRoute(
+                path: 'detalles/create',
+                builder: (context, state) {
+                  formOpens++;
+                  return Scaffold(
+                    body: TextButton(
+                      onPressed: () => context.pop(true),
+                      child: const Text('Guardar detalle'),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: vm,
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
+      await tester.tap(find.text('Asignar carga'));
+      await tester.pumpAndSettle();
+      expect(find.text('Guardar detalle'), findsOneWidget);
+      expect(router.canPop(), isTrue);
+      await tester.tap(find.text('Guardar detalle'));
+      await tester.pumpAndSettle();
+      expect(find.byType(CargaDetailScreen), findsOneWidget);
+      expect(repository.headerRequests, 1);
+      expect(repository.detailsRequests, 2);
+      expect(vm.items.single.estado, 'en_curso');
+      expect(vm.items.single, same(vm.selected));
+      expect(formOpens, 1);
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(find.text('Asignar carga'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+      router.dispose();
+      vm.dispose();
+    },
+  );
   testWidgets('Reutiliza cabecera y muestra lista con calidades y receptores', (
     tester,
   ) async {
@@ -137,8 +228,8 @@ void main() {
     expect(find.text('Conservar cabecera'), findsOneWidget);
     expect(find.byType(ListTile), findsOneWidget);
     expect(find.textContaining('Primera, Segunda'), findsOneWidget);
-    expect(find.textContaining('Ana Pérez'), findsOneWidget);
-    expect(vm.detalles.single.clientesReceptores, ['Ana Pérez']);
+    expect(find.textContaining('R: Ana Pérez'), findsOneWidget);
+    expect(vm.detalles.single.clienteReceptor?.nombreCompleto, 'Ana Pérez');
     expect(find.text('Agregar'), findsOneWidget);
     await tester.ensureVisible(find.text('Finalizar operación'));
     expect(

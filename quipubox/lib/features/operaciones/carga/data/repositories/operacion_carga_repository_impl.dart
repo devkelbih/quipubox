@@ -1,4 +1,6 @@
 import '../../domain/entities/detalle_carga.dart';
+import '../../domain/entities/asignacion_directa_carga.dart';
+import '../../domain/entities/detalle_carga_calidad.dart';
 import '../../domain/entities/guia_operacion_carga.dart';
 import '../../domain/entities/operacion_carga.dart';
 import '../../domain/repositories/operacion_carga_repository.dart';
@@ -82,9 +84,13 @@ class OperacionCargaRepositoryImpl implements OperacionCargaRepository {
   @override
   Future<DetalleCarga> createDetalle(
     int operacionId,
-    DetalleCarga detalle,
-  ) async {
-    final request = DetalleCargaRequestModel.fromEntity(detalle);
+    DetalleCarga detalle, {
+    AsignacionDirectaCarga? asignacionDirecta,
+  }) async {
+    final request = DetalleCargaRequestModel.fromEntity(
+      detalle,
+      asignacionDirecta: asignacionDirecta,
+    );
     final model = await remoteDataSource.createDetalle(operacionId, request);
     return model.toEntity();
   }
@@ -93,6 +99,33 @@ class OperacionCargaRepositoryImpl implements OperacionCargaRepository {
   Future<List<DetalleCarga>> getDetallesPendientes() async {
     final models = await remoteDataSource.getDetallesPendientes();
     return models.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Future<DetalleCarga> updateDetalle(DetalleCarga detalle) async =>
+      (await remoteDataSource.updateDetalle(detalle)).toEntity();
+
+  @override
+  Future<DetalleCargaCalidad> updateCalidadDetalle(
+    DetalleCargaCalidad calidad,
+  ) async => (await remoteDataSource.updateCalidadDetalle(calidad)).toEntity();
+
+  @override
+  Future<void> deleteDetalle(int detalleId) =>
+      remoteDataSource.deleteDetalle(detalleId);
+
+  @override
+  Future<List<DetalleCargaCalidad>> getCalidadesDetalle(int detalleId) async {
+    final models = await remoteDataSource.getCalidadesDetalle(detalleId);
+    return models.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Future<DetalleCargaCalidad> addCalidadDetalle(
+    DetalleCargaCalidad calidad,
+  ) async {
+    final model = await remoteDataSource.addCalidadDetalle(calidad);
+    return model.toEntity();
   }
 
   @override

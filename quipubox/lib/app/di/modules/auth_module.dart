@@ -11,6 +11,7 @@ import '../../../features/auth/domain/repositories/auth_repository.dart';
 import '../../../features/auth/domain/usecases/clear_cached_user_usecase.dart';
 import '../../../features/auth/domain/usecases/get_cached_user_usecase.dart';
 import '../../../features/auth/domain/usecases/get_current_session_usecase.dart';
+import '../../../features/auth/domain/usecases/get_auth_state_changes_usecase.dart';
 import '../../../features/auth/domain/usecases/get_profile_usecase.dart';
 import '../../../features/auth/domain/usecases/login_with_google_usecase.dart';
 import '../../../features/auth/domain/usecases/logout_usecase.dart';
@@ -70,9 +71,14 @@ class AuthModule {
           ClearCachedUserUseCase(context.read<AuthRepository>()),
     ),
 
+    Provider<GetAuthStateChangesUseCase>(
+      create: (context) =>
+          GetAuthStateChangesUseCase(context.read<AuthRepository>()),
+    ),
     ChangeNotifierProvider<AuthViewModel>(
       create: (context) => AuthViewModel(
         getCurrentSessionUseCase: context.read<GetCurrentSessionUseCase>(),
+        getAuthStateChangesUseCase: context.read<GetAuthStateChangesUseCase>(),
         loginWithGoogleUseCase: context.read<LoginWithGoogleUseCase>(),
         logoutUseCase: context.read<LogoutUseCase>(),
         getProfileUseCase: context.read<GetProfileUseCase>(),

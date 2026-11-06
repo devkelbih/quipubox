@@ -1,4 +1,5 @@
 import '../../domain/entities/detalle_carga.dart';
+import '../../domain/entities/asignacion_directa_carga.dart';
 
 class DetalleCargaRequestModel {
   final int idClienteEmisor;
@@ -29,7 +30,10 @@ class DetalleCargaRequestModel {
     this.idSeccion,
   });
 
-  factory DetalleCargaRequestModel.fromEntity(DetalleCarga detalle) {
+  factory DetalleCargaRequestModel.fromEntity(
+    DetalleCarga detalle, {
+    AsignacionDirectaCarga? asignacionDirecta,
+  }) {
     return DetalleCargaRequestModel(
       idClienteEmisor: detalle.idClienteEmisor,
       idFruta: detalle.idFruta,
@@ -40,9 +44,9 @@ class DetalleCargaRequestModel {
       instruccionReparto: detalle.instruccionReparto,
       observaciones: detalle.observaciones,
       requiereRetornoJabas: detalle.requiereRetornoJabas,
-      idClienteReceptor: detalle.idClienteReceptor,
-      idPuesto: detalle.idPuesto,
-      idSeccion: detalle.idSeccion,
+      idClienteReceptor: asignacionDirecta?.idClienteReceptor,
+      idPuesto: asignacionDirecta?.idPuesto,
+      idSeccion: asignacionDirecta?.seccion,
     );
   }
 

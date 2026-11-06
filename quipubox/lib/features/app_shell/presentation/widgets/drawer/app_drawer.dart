@@ -128,18 +128,14 @@ class _AppDrawerState extends State<AppDrawer> {
           subtitle: 'Carga, reparto, entregas y guías',
           children: [
             _buildSubTile(
-              title: 'Nueva carga',
-              onTap: () => _navigateTo(AppRoutes.operacionesCargaCreate),
-            ),
-            _buildSubTile(
-              title: 'Operaciones registradas',
+              title: 'Operaciones de carga',
               onTap: () => _navigateTo(AppRoutes.operacionesCarga),
             ),
             _buildSubTile(
-              title: 'Repartos y entregas',
-              onTap: _showNotAvailable,
+              title: 'Repartos',
+              onTap: () => _navigateTo(AppRoutes.repartos),
             ),
-            _buildSubTile(title: 'Guías operativas', onTap: _showNotAvailable),
+            _buildSubTile(title: 'Entregas y guías', onTap: _showNotAvailable),
           ],
         ),
       ],

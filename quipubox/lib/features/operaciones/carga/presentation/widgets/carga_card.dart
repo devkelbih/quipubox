@@ -90,7 +90,8 @@ class CargaCard extends StatelessWidget {
               icon: Icons.inventory_2_outlined,
               label: 'Encargado de carga',
               value:
-                  item.encargadoCarga?.nombreCompleto ?? 'Usuario #${item.idEncargadoCarga}',
+                  item.encargadoCarga?.nombreCompleto ??
+                  'Usuario #${item.idEncargadoCarga}',
             ),
           ],
         ),

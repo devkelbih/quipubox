@@ -4,6 +4,7 @@ import 'package:quipubox/features/organizacion/clientes/domain/entities/cliente_
 import 'package:quipubox/features/organizacion/clientes/domain/entities/cliente_sede.dart';
 
 import '../../domain/entities/cliente.dart';
+import '../../domain/entities/cliente_page.dart';
 import '../../domain/repositories/clientes_repository.dart';
 import '../datasources/clientes_remote_data_source.dart';
 
@@ -28,6 +29,24 @@ class ClienteRepositoryImpl implements ClienteRepository {
   Future<List<Cliente>> getAll() async {
     final models = await remoteDataSource.getAll();
     return models.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Future<ClientePage> getPage({
+    int page = 1,
+    int limit = 10,
+    String buscar = '',
+    bool? estado,
+    String? tipoRelacion,
+  }) async {
+    final model = await remoteDataSource.getPage(
+      page: page,
+      limit: limit,
+      buscar: buscar,
+      estado: estado,
+      tipoRelacion: tipoRelacion,
+    );
+    return model.toEntity();
   }
 
   @override

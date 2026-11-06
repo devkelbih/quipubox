@@ -6,6 +6,7 @@ import 'package:quipubox/features/organizacion/clientes/domain/repositories/clie
 import 'package:quipubox/features/organizacion/clientes/domain/usecases/change_cliente_estado.dart';
 import 'package:quipubox/features/organizacion/clientes/domain/usecases/create_cliente.dart';
 import 'package:quipubox/features/organizacion/clientes/domain/usecases/get_clientes.dart';
+import 'package:quipubox/features/organizacion/clientes/domain/usecases/get_clientes_page.dart';
 import 'package:quipubox/features/organizacion/clientes/domain/usecases/update_cliente.dart';
 import 'package:quipubox/features/organizacion/clientes/presentation/viewmodels/clientes_viewmodel.dart';
 
@@ -42,9 +43,12 @@ class ClientesModule {
           ChangeClienteEstadoUseCase(repository: context.read()),
     ),
 
+    Provider<GetClientesPageUseCase>(
+      create: (context) => GetClientesPageUseCase(repository: context.read()),
+    ),
     ChangeNotifierProvider<ClienteViewModel>(
       create: (context) => ClienteViewModel(
-        getItemsUseCase: context.read(),
+        getPageUseCase: context.read(),
         createUseCase: context.read(),
         updateUseCase: context.read(),
         changeStatusUseCase: context.read(),

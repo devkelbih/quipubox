@@ -61,7 +61,11 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return AppScaffold(
-      title: Image.asset('assets/logo.png', height: 36, fit: BoxFit.contain),
+      title: Image.asset(
+        'assets/logo-horizontal.png',
+        height: 36,
+        fit: BoxFit.contain,
+      ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
@@ -552,6 +556,7 @@ class _QuickActions extends StatelessWidget {
   // Te dejo la lista limpia con los 4 originales.
   static const _items = <(IconData, String, String)>[
     (Icons.local_shipping_outlined, 'Cargas', AppRoutes.operacionesCarga),
+    (Icons.pending_actions, 'Repartos', AppRoutes.repartos),
     (Icons.business_outlined, 'Sedes', AppRoutes.sedes),
     (Icons.home_work_outlined, 'Puestos', AppRoutes.puestos),
     (Icons.map_rounded, 'Operativos', AppRoutes.lugaresOperativos),

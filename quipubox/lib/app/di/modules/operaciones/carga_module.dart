@@ -1,3 +1,5 @@
+import 'package:quipubox/features/operaciones/carga/domain/usecases/update_calidad_detalle.dart';
+import 'package:quipubox/features/operaciones/carga/domain/usecases/update_detalle_operacion_carga.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -7,6 +9,7 @@ import 'package:quipubox/features/operaciones/carga/data/datasources/operacion_c
 import 'package:quipubox/features/operaciones/carga/data/repositories/operacion_carga_repository_impl.dart';
 import 'package:quipubox/features/operaciones/carga/domain/repositories/operacion_carga_repository.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/cancelar_operacion_carga.dart';
+import 'package:quipubox/features/operaciones/carga/domain/usecases/delete_detalle_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/change_estado_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/create_detalle_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/create_operacion_carga.dart';
@@ -20,6 +23,15 @@ import 'package:quipubox/features/operaciones/carga/domain/usecases/get_operacio
 import 'package:quipubox/features/operaciones/carga/domain/usecases/get_operaciones_carga.dart';
 import 'package:quipubox/features/operaciones/carga/domain/usecases/update_operacion_carga.dart';
 import 'package:quipubox/features/operaciones/carga/presentation/viewmodels/carga_viewmodel.dart';
+import 'package:quipubox/features/operaciones/carga/presentation/viewmodels/detalle_carga_form_viewmodel.dart';
+import 'package:quipubox/features/organizacion/clientes/domain/usecases/get_clientes.dart';
+import 'package:quipubox/features/catalogos/frutas/domain/usecases/get_frutas.dart';
+import 'package:quipubox/features/catalogos/variedades/domain/usecases/get_variedades.dart';
+import 'package:quipubox/features/catalogos/tipos_jaba/domain/usecases/get_tipos_jaba.dart';
+import 'package:quipubox/features/operaciones/carga/presentation/viewmodels/detalle_calidad_viewmodel.dart';
+import 'package:quipubox/features/operaciones/carga/domain/usecases/add_calidad_detalle.dart';
+import 'package:quipubox/features/operaciones/carga/domain/usecases/get_calidades_detalle.dart';
+import 'package:quipubox/features/catalogos/calidades/domain/usecases/get_calidades.dart';
 
 class CargaModule {
   const CargaModule._();
@@ -107,6 +119,56 @@ class CargaModule {
         repository: context.read<OperacionCargaRepository>(),
       ),
     ),
+    Provider<GetCalidadesDetalleUseCase>(
+      create: (context) => GetCalidadesDetalleUseCase(
+        repository: context.read<OperacionCargaRepository>(),
+      ),
+    ),
+    Provider<AddCalidadDetalleUseCase>(
+      create: (context) => AddCalidadDetalleUseCase(
+        repository: context.read<OperacionCargaRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
+    ),
+    Provider<UpdateCalidadDetalleUseCase>(
+      create: (context) => UpdateCalidadDetalleUseCase(
+        repository: context.read<OperacionCargaRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
+    ),
+    Provider<UpdateDetalleOperacionCargaUseCase>(
+      create: (context) => UpdateDetalleOperacionCargaUseCase(
+        repository: context.read<OperacionCargaRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
+    ),
+    Provider<DetalleCalidadViewModel Function()>(
+      create: (context) =>
+          () => DetalleCalidadViewModel(
+            getCalidades: context.read<GetCalidadesUseCase>(),
+            getRegistradas: context.read<GetCalidadesDetalleUseCase>(),
+            addCalidad: context.read<AddCalidadDetalleUseCase>(),
+            updateCalidad: context.read<UpdateCalidadDetalleUseCase>(),
+          ),
+    ),
+    Provider<DeleteDetalleOperacionCargaUseCase>(
+      create: (context) => DeleteDetalleOperacionCargaUseCase(
+        repository: context.read<OperacionCargaRepository>(),
+        currentSession: context.read<CurrentSession>(),
+      ),
+    ),
+    Provider<DetalleCargaFormViewModel Function()>(
+      create: (context) =>
+          () => DetalleCargaFormViewModel(
+            getClientes: context.read<GetClientesUseCase>(),
+            getFrutas: context.read<GetFrutasUseCase>(),
+            getVariedades: context.read<GetVariedadesUseCase>(),
+            getTiposJaba: context.read<GetTiposJabaUseCase>(),
+            createDetalle: context.read<CreateDetalleOperacionCargaUseCase>(),
+            updateDetalle: context.read<UpdateDetalleOperacionCargaUseCase>(),
+            getOperacion: context.read<GetOperacionCargaByIdUseCase>(),
+          ),
+    ),
     ChangeNotifierProvider<CargaViewModel>(
       create: (context) => CargaViewModel(
         getOperacionesUseCase: context.read<GetOperacionesCargaUseCase>(),
@@ -118,6 +180,8 @@ class CargaModule {
         finalizarUseCase: context.read<FinalizarOperacionCargaUseCase>(),
         generarGuiasUseCase: context.read<GenerarGuiasOperacionCargaUseCase>(),
         getDetallesUseCase: context.read<GetDetallesOperacionUseCase>(),
+        deleteDetalleUseCase: context
+            .read<DeleteDetalleOperacionCargaUseCase>(),
       ),
     ),
   ];

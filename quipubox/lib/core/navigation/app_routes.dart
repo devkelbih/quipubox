@@ -31,6 +31,11 @@ class AppRoutes {
   // ---------------------------------------------------------------------------
   static const usuarios = '/usuarios';
   static const clientes = '/clientes';
+  static const repartos = '/operaciones/reparto';
+  static String repartoOperacionPath(int operationId) =>
+      '$repartos/$operationId';
+  static String repartoDetailPath(int operationId, int detailId) =>
+      '$repartos/$operationId/cargas/$detailId';
   static const operacionesCarga = '/operaciones/carga';
   static const operacionesCargaCreate = '$operacionesCarga/create';
   static const operacionCargaDetail = '$operacionesCarga/:id';
@@ -42,4 +47,6 @@ class AppRoutes {
 
   static String operacionCargaDetailPath(int id) => '$operacionesCarga/$id';
   static String operacionCargaEditPath(int id) => '$operacionesCarga/$id/edit';
+  static String detalleCargaCreatePath(int id) =>
+      '$operacionesCarga/$id/detalles/create';
 }

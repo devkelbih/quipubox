@@ -34,11 +34,12 @@ class DetalleCargaModel {
   final String? observaciones;
   final bool requiereRetornoJabas;
   final ClienteModel? clienteEmisor;
+  final ClienteModel? clienteReceptor;
   final FrutaModel? fruta;
   final VariedadModel? variedad;
   final TipoJabaModel? tipoJaba;
   final List<String> calidades;
-  final List<String> clientesReceptores;
+  final int? cantidadClasificada;
 
   const DetalleCargaModel({
     this.id,
@@ -54,11 +55,12 @@ class DetalleCargaModel {
     this.observaciones,
     required this.requiereRetornoJabas,
     this.clienteEmisor,
+    this.clienteReceptor,
     this.fruta,
     this.variedad,
     this.tipoJaba,
     this.calidades = const [],
-    this.clientesReceptores = const [],
+    this.cantidadClasificada,
   });
 
   factory DetalleCargaModel.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,9 @@ class DetalleCargaModel {
       instruccionReparto: json['instruccion_reparto']?.toString(),
       observaciones: json['observaciones']?.toString(),
       requiereRetornoJabas: json['requiere_retorno_jabas'] == true,
+      cantidadClasificada: _readCantidadClasificada(
+        json['detalle_carga_calidades'],
+      ),
       calidades:
           (json['detalle_carga_calidades'] is List
                   ? json['detalle_carga_calidades'] as List
@@ -93,19 +98,6 @@ class DetalleCargaModel {
               .where((nombre) => nombre.isNotEmpty)
               .toSet()
               .toList(),
-      clientesReceptores:
-          (json['items_reparto'] is List
-                  ? json['items_reparto'] as List
-                  : const [])
-              .whereType<Map>()
-              .map((item) {
-                final cliente = _asMap(item['clientes']);
-                return '${cliente?['nombres'] ?? ''} ${cliente?['apellidos'] ?? ''}'
-                    .trim();
-              })
-              .where((nombre) => nombre.isNotEmpty)
-              .toSet()
-              .toList(),
       fruta: frutaJson == null ? null : FrutaModel.fromJson(frutaJson),
       variedad: variedadJson == null
           ? null
@@ -116,6 +108,7 @@ class DetalleCargaModel {
       clienteEmisor: clienteJson == null
           ? null
           : ClienteModel.fromJson(clienteJson),
+      clienteReceptor: _readReceptorUnico(json),
     );
   }
 
@@ -134,11 +127,12 @@ class DetalleCargaModel {
       observaciones: detalle.observaciones,
       requiereRetornoJabas: detalle.requiereRetornoJabas,
       clienteEmisor: _clienteModelFromEntity(detalle.clienteEmisor),
+      clienteReceptor: _clienteModelFromEntity(detalle.clienteReceptor),
       fruta: _frutaModelFromEntity(detalle.fruta),
       variedad: _variedadModelFromEntity(detalle.variedad),
       tipoJaba: _tipoJabaModelFromEntity(detalle.tipoJaba),
+      cantidadClasificada: detalle.cantidadClasificada,
       calidades: detalle.calidades,
-      clientesReceptores: detalle.clientesReceptores,
     );
   }
 
@@ -156,11 +150,12 @@ class DetalleCargaModel {
     observaciones: observaciones,
     requiereRetornoJabas: requiereRetornoJabas,
     clienteEmisor: clienteEmisor?.toEntity(),
+    clienteReceptor: clienteReceptor?.toEntity(),
     fruta: fruta?.toEntity(),
     variedad: variedad?.toEntity(),
     tipoJaba: tipoJaba?.toEntity(),
     calidades: calidades,
-    clientesReceptores: clientesReceptores,
+    cantidadClasificada: cantidadClasificada,
   );
 
   Map<String, dynamic> toJson() => {
@@ -177,6 +172,33 @@ class DetalleCargaModel {
     if (observaciones != null) 'observaciones': observaciones,
     'requiere_retorno_jabas': requiereRetornoJabas,
   };
+}
+
+ClienteModel? _readReceptorUnico(Map<String, dynamic> json) {
+  final repartos = <Map<String, dynamic>>[
+    if (_asMap(json['item_reparto']) case final Map<String, dynamic> item) item,
+    if (json['items_reparto'] is List)
+      for (final item in json['items_reparto'] as List)
+        if (_asMap(item) case final Map<String, dynamic> reparto) reparto,
+  ];
+  final receptores = <String, ClienteModel>{};
+  for (final reparto in repartos) {
+    final cliente = _asMap(reparto['clientes']);
+    final id =
+        _asInt(reparto['id_cliente_receptor']) ??
+        _asInt(cliente?['id_cliente'] ?? cliente?['id']);
+    final nombre = '${cliente?['nombres'] ?? ''} ${cliente?['apellidos'] ?? ''}'
+        .trim();
+    if ((id ?? 0) <= 0 && nombre.isEmpty) continue;
+    final key = (id ?? 0) > 0 ? 'id:$id' : 'nombre:$nombre';
+    receptores[key] = ClienteModel.fromJson({
+      ...?cliente,
+      if (id != null) 'id_cliente': id,
+      if (nombre.isEmpty) 'nombres': 'Cliente #$id',
+    });
+  }
+  // Si hay varios receptores distintos, no mostrar uno arbitrariamente.
+  return receptores.length == 1 ? receptores.values.single : null;
 }
 
 int? _asInt(dynamic value) {
@@ -325,4 +347,16 @@ TipoJabaModel? _tipoJabaModelFromEntity(TiposJaba? tipoJaba) {
     tipoMaterial: tipoJaba.tipoMaterial,
     descripcion: tipoJaba.descripcion,
   );
+}
+
+int? _readCantidadClasificada(dynamic data) {
+  if (data is! List) return null;
+  var total = 0;
+  for (final value in data) {
+    if (value is! Map) return null;
+    final cantidad = _asInt(value['cantidad']);
+    if (cantidad == null || cantidad < 0) return null;
+    total += cantidad;
+  }
+  return total;
 }

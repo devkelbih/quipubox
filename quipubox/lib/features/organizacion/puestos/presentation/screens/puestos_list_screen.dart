@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:quipubox/core/common/string_extensions.dart';
 import 'package:provider/provider.dart';
 
 import 'package:quipubox/core/ui/navigation/app_status_tab_bar.dart';
@@ -25,6 +25,10 @@ class PuestoListScreen extends StatefulWidget {
 class _PuestoListScreenState extends State<PuestoListScreen> {
   final TextEditingController _searchController = TextEditingController();
 
+  Timer? _searchDebounce;
+  String _lastSearchText = '';
+  String _appliedSearch = '';
+
   StatusSummaryValue _statusFilter = StatusSummaryValue.all;
 
   int? _selectedSedeId;
@@ -45,6 +49,7 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController
       ..removeListener(_onSearchChanged)
       ..dispose();
@@ -53,7 +58,20 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
   }
 
   void _onSearchChanged() {
+    if (_lastSearchText == _searchController.text) return;
+    _lastSearchText = _searchController.text;
     setState(() {});
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), _applySearch);
+  }
+
+  void _applySearch() {
+    _searchDebounce?.cancel();
+    if (mounted) {
+      setState(
+        () => _appliedSearch = _searchController.text.trim().toLowerCase(),
+      );
+    }
   }
 
   @override
@@ -63,7 +81,7 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
     final activeCount = vm.items.where((e) => e.estado).length;
     final inactiveCount = vm.items.length - activeCount;
 
-    final search = _searchController.text.value.toLowerCase();
+    final search = _appliedSearch;
 
     final filteredItems = vm.items.where((item) {
       final matchesStatus = switch (_statusFilter) {
@@ -113,10 +131,11 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
                   child: TextField(
                     controller: _searchController,
                     textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _applySearch(),
                     decoration: InputDecoration(
                       hintText: 'Buscar por número o código de puesto',
                       prefixIcon: const Icon(Icons.search_rounded),
-                      suffixIcon: search.isNotEmpty
+                      suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.clear_rounded),
                               onPressed: _searchController.clear,
@@ -393,6 +412,7 @@ class _PuestoListScreenState extends State<PuestoListScreen> {
 
   void _clearFilters() {
     _searchController.clear();
+    _applySearch();
 
     setState(() {
       _selectedSedeId = null;

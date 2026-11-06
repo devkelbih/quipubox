@@ -31,11 +31,7 @@ class LoginAuthSheetContent extends StatelessWidget {
 
                     if (!context.mounted) return;
 
-                    if (ok) {
-                      Navigator.pop(
-                        context,
-                      ); // Cierra el sheet al loguearse con éxito
-                    } else {
+                    if (!ok) {
                       AppToast.show(
                         authViewModel.errorMessage ??
                             'No se pudo iniciar sesión.',
@@ -52,7 +48,11 @@ class LoginAuthSheetContent extends StatelessWidget {
                   )
                 : const Icon(Icons.login_rounded),
             label: Text(
-              auth.isSigningIn ? 'Iniciando sesión...' : 'Continuar con Google',
+              auth.isSigningIn
+                  ? 'Iniciando sesión...'
+                  : auth.hasSupabaseSession && !auth.hasProfile
+                  ? 'Reintentar carga de perfil'
+                  : 'Continuar con Google',
             ),
           ),
         ),

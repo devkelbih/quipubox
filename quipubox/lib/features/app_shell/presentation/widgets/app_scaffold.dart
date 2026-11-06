@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/navigation/app_exit_handler.dart';
+import '../../../../core/ui/feedback/app_blocking_loader_overlay.dart';
 import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'drawer/app_drawer.dart';
 
@@ -55,7 +56,8 @@ class AppScaffold extends StatelessWidget {
             absorbing: isSigningOut,
             child: Scaffold(
               appBar: AppBar(
-                title: title, // Pasa directamente el Widget, limpio y sin ternarios
+                title:
+                    title, // Pasa directamente el Widget, limpio y sin ternarios
                 leading: Builder(
                   builder: (drawerContext) {
                     return IconButton(
@@ -76,65 +78,12 @@ class AppScaffold extends StatelessWidget {
           ),
           if (isSigningOut)
             const Positioned.fill(
-              child: _BlockingLoaderOverlay(
+              child: AppBlockingLoaderOverlay(
                 text: 'Cerrando sesión...',
                 message: 'Espera un momento.',
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _BlockingLoaderOverlay extends StatelessWidget {
-  final String text;
-  final String message;
-
-  const _BlockingLoaderOverlay({required this.text, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Material(
-      color: theme.colorScheme.surface.withValues(alpha: .96),
-      child: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    child: CircularProgressIndicator(
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

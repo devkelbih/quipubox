@@ -4,6 +4,7 @@ import '../../domain/entities/detalle_carga.dart';
 import '../../domain/entities/guia_operacion_carga.dart';
 import '../../domain/entities/operacion_carga.dart';
 import '../../domain/usecases/cancelar_operacion_carga.dart';
+import '../../domain/usecases/delete_detalle_operacion_carga.dart';
 import '../../domain/usecases/change_estado_operacion_carga.dart';
 import '../../domain/usecases/create_operacion_carga.dart';
 import '../../domain/usecases/finalizar_operacion_carga.dart';
@@ -23,6 +24,7 @@ class CargaViewModel extends BaseStateViewModel {
   final FinalizarOperacionCargaUseCase finalizarUseCase;
   final GenerarGuiasOperacionCargaUseCase generarGuiasUseCase;
   final GetDetallesOperacionUseCase getDetallesUseCase;
+  final DeleteDetalleOperacionCargaUseCase deleteDetalleUseCase;
 
   CargaViewModel({
     required this.getOperacionesUseCase,
@@ -34,6 +36,7 @@ class CargaViewModel extends BaseStateViewModel {
     required this.finalizarUseCase,
     required this.generarGuiasUseCase,
     required this.getDetallesUseCase,
+    required this.deleteDetalleUseCase,
   });
 
   List<OperacionCarga> items = [];
@@ -69,6 +72,7 @@ class CargaViewModel extends BaseStateViewModel {
     if (result == null) return false;
 
     selected = result;
+    _replaceItem(result);
     notifyListeners();
     return true;
   }
@@ -136,6 +140,36 @@ class CargaViewModel extends BaseStateViewModel {
     detalles = result.detalles ?? [];
     notifyListeners();
     return true;
+  }
+
+  Future<bool> eliminarDetalle({
+    required int operacionId,
+    required int detalleId,
+  }) async {
+    final succeeded = await runBool(
+      state: ViewModelActionState.deleting,
+      action: () async {
+        final operation = selected;
+        if (operation == null ||
+            operation.id != operacionId ||
+            !detalles.any((item) => item.id == detalleId)) {
+          throw const AppException(
+            'No se encontró el detalle en esta operación.',
+          );
+        }
+        await deleteDetalleUseCase(
+          detalleId: detalleId,
+          estado: operation.estado,
+        );
+        // Actualizar únicamente tras la confirmación del servidor.
+        if (selected?.id == operacionId) {
+          detalles = detalles.where((item) => item.id != detalleId).toList();
+          selected = selected!.copyWith(detalles: detalles);
+          _replaceItem(selected!);
+        }
+      },
+    );
+    return succeeded;
   }
 
   Future<bool> update(OperacionCarga operation) async {

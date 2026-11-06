@@ -66,12 +66,17 @@ class AppDrawerFooter extends StatelessWidget {
           onChanged: (_) => onToggleTheme(),
           contentPadding: const EdgeInsets.fromLTRB(14, 4, 12, 4),
 
+          thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+            if (states.contains(WidgetState.selected)) return null;
+            return theme.colorScheme.primary;
+          }),
+
           // Color de la cápsula de fondo (Track)
           trackColor: WidgetStateProperty.resolveWith<Color>((states) {
             if (states.contains(WidgetState.selected)) {
               return theme.colorScheme.primary; // Azul cuando está activo
             }
-            return theme.colorScheme.outlineVariant; // Gris cuando está apagado
+            return theme.colorScheme.primary.withValues(alpha: .12);
           }),
 
           // Color del borde de la cápsula
@@ -79,7 +84,7 @@ class AppDrawerFooter extends StatelessWidget {
             if (states.contains(WidgetState.selected)) {
               return Colors.transparent;
             }
-            return theme.colorScheme.primary; // Silueta cuando está apagado
+            return theme.colorScheme.primary.withValues(alpha: .45);
           }),
 
           secondary: _buildThemeIcon(theme),

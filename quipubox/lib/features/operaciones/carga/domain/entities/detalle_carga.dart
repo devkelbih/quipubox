@@ -16,15 +16,17 @@ class DetalleCarga {
   final String? instruccionReparto;
   final String? observaciones;
   final bool requiereRetornoJabas;
-  final int? idClienteReceptor;
-  final int? idPuesto;
-  final String? idSeccion;
   final Cliente? clienteEmisor;
+
+  /// Receptor único disponible en la respuesta, sin convertirlo en una lista.
+  final Cliente? clienteReceptor;
   final Fruta? fruta;
   final Variedad? variedad;
   final TiposJaba? tipoJaba;
   final List<String> calidades;
-  final List<String> clientesReceptores;
+
+  /// Null cuando la respuesta no incluye las cantidades por calidad.
+  final int? cantidadClasificada;
 
   const DetalleCarga({
     this.id,
@@ -39,15 +41,13 @@ class DetalleCarga {
     this.instruccionReparto,
     this.observaciones,
     this.requiereRetornoJabas = false,
-    this.idClienteReceptor,
-    this.idPuesto,
-    this.idSeccion,
     this.clienteEmisor,
+    this.clienteReceptor,
     this.fruta,
     this.variedad,
     this.tipoJaba,
     this.calidades = const [],
-    this.clientesReceptores = const [],
+    this.cantidadClasificada,
   });
 
   DetalleCarga copyWith({
@@ -63,15 +63,13 @@ class DetalleCarga {
     String? instruccionReparto,
     String? observaciones,
     bool? requiereRetornoJabas,
-    int? idClienteReceptor,
-    int? idPuesto,
-    String? idSeccion,
     Cliente? clienteEmisor,
+    Cliente? clienteReceptor,
     Fruta? fruta,
     Variedad? variedad,
     TiposJaba? tipoJaba,
     List<String>? calidades,
-    List<String>? clientesReceptores,
+    int? cantidadClasificada,
   }) {
     return DetalleCarga(
       id: id ?? this.id,
@@ -86,15 +84,13 @@ class DetalleCarga {
       instruccionReparto: instruccionReparto ?? this.instruccionReparto,
       observaciones: observaciones ?? this.observaciones,
       requiereRetornoJabas: requiereRetornoJabas ?? this.requiereRetornoJabas,
-      idClienteReceptor: idClienteReceptor ?? this.idClienteReceptor,
-      idPuesto: idPuesto ?? this.idPuesto,
-      idSeccion: idSeccion ?? this.idSeccion,
       clienteEmisor: clienteEmisor ?? this.clienteEmisor,
+      clienteReceptor: clienteReceptor ?? this.clienteReceptor,
       fruta: fruta ?? this.fruta,
       variedad: variedad ?? this.variedad,
       tipoJaba: tipoJaba ?? this.tipoJaba,
       calidades: calidades ?? this.calidades,
-      clientesReceptores: clientesReceptores ?? this.clientesReceptores,
+      cantidadClasificada: cantidadClasificada ?? this.cantidadClasificada,
     );
   }
 }

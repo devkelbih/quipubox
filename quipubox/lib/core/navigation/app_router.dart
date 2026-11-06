@@ -1,8 +1,14 @@
+import '../../features/operaciones/reparto/presentation/screens/reparto_operacion_screen.dart';
+import '../../features/operaciones/reparto/presentation/viewmodels/reparto_operacion_viewmodel.dart';
+import '../../features/operaciones/reparto/presentation/screens/reparto_list_screen.dart';
+import '../../features/operaciones/reparto/presentation/screens/reparto_detail_screen.dart';
+import '../../features/operaciones/reparto/presentation/viewmodels/reparto_list_viewmodel.dart';
+import '../../features/operaciones/reparto/presentation/viewmodels/reparto_detail_viewmodel.dart';
+import '../../features/operaciones/carga/domain/entities/detalle_carga.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/auth/presentation/screens/auth_entry_screen.dart';
 import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -10,6 +16,9 @@ import '../../features/company/presentation/screens/company_profile_screen.dart'
 import '../../features/operaciones/carga/domain/entities/operacion_carga.dart';
 import '../../features/operaciones/carga/presentation/screens/carga_detail_screen.dart';
 import '../../features/operaciones/carga/presentation/screens/carga_form_screen.dart';
+import '../../features/operaciones/carga/presentation/screens/detalle_carga_form_screen.dart';
+import '../../features/operaciones/carga/presentation/viewmodels/detalle_carga_form_viewmodel.dart';
+import 'package:provider/provider.dart';
 import '../../features/operaciones/carga/presentation/screens/carga_list_screen.dart';
 
 // Screens simples (Solo ListScreen, sus forms son BottomSheets)
@@ -67,8 +76,21 @@ class AppRouter {
       // -----------------------------------------------------------------------
       // RUTAS PRINCIPALES Y SISTEMA
       // -----------------------------------------------------------------------
-      GoRoute(path: AppRoutes.splash, builder: (_, __) => const SplashScreen()),
-      GoRoute(path: AppRoutes.login, builder: (_, __) => const LoginScreen()),
+      // La misma página conserva el fondo y el logo al terminar la carga.
+      GoRoute(
+        path: AppRoutes.splash,
+        pageBuilder: (_, __) => const NoTransitionPage<void>(
+          key: ValueKey('auth-entry'),
+          child: AuthEntryScreen(isCheckingSession: true),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.login,
+        pageBuilder: (_, __) => const NoTransitionPage<void>(
+          key: ValueKey('auth-entry'),
+          child: AuthEntryScreen(isCheckingSession: false),
+        ),
+      ),
       GoRoute(path: AppRoutes.home, builder: (_, __) => const HomeScreen()),
       GoRoute(
         path: AppRoutes.settings,
@@ -115,6 +137,46 @@ class AppRouter {
         builder: (_, __) => const CamionListScreen(),
       ),
       GoRoute(
+        path: AppRoutes.repartos,
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) =>
+              context.read<RepartoListViewModel Function()>()()..load(),
+          child: const RepartoListScreen(),
+        ),
+        routes: [
+          GoRoute(
+            path: ':operationId',
+            builder: (context, state) {
+              final id = int.parse(state.pathParameters['operationId']!);
+              return ChangeNotifierProvider(
+                create: (_) =>
+                    context.read<RepartoOperacionViewModel Function()>()()
+                      ..load(id),
+                child: RepartoOperacionScreen(operacionId: id),
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'cargas/:detailId',
+                builder: (context, state) {
+                  final op = int.parse(state.pathParameters['operationId']!);
+                  final detail = int.parse(state.pathParameters['detailId']!);
+                  return ChangeNotifierProvider(
+                    create: (_) =>
+                        context.read<RepartoDetailViewModel Function()>()()
+                          ..load(op, detail),
+                    child: RepartoDetailScreen(
+                      operacionId: op,
+                      detalleId: detail,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+      GoRoute(
         path: AppRoutes.operacionesCarga,
         builder: (_, __) => const CargaListScreen(),
         routes: [
@@ -132,11 +194,34 @@ class AppRouter {
             path: ':id',
             builder: (_, state) => CargaDetailScreen(
               operationId: int.parse(state.pathParameters['id']!),
+              openDetalleForm:
+                  state.uri.queryParameters['agregarDetalle'] == 'true',
               operation: state.extra is OperacionCarga
                   ? state.extra as OperacionCarga
                   : null,
             ),
             routes: [
+              GoRoute(
+                path: 'detalles/:detalleId/edit',
+                builder: (context, state) => ChangeNotifierProvider(
+                  create: (_) =>
+                      context.read<DetalleCargaFormViewModel Function()>()(),
+                  child: DetalleCargaFormScreen(
+                    operacionId: int.parse(state.pathParameters['id']!),
+                    item: state.extra as DetalleCarga,
+                  ),
+                ),
+              ),
+              GoRoute(
+                path: 'detalles/create',
+                builder: (context, state) => ChangeNotifierProvider(
+                  create: (_) =>
+                      context.read<DetalleCargaFormViewModel Function()>()(),
+                  child: DetalleCargaFormScreen(
+                    operacionId: int.parse(state.pathParameters['id']!),
+                  ),
+                ),
+              ),
               GoRoute(
                 path: 'edit',
                 builder: (_, state) => Scaffold(

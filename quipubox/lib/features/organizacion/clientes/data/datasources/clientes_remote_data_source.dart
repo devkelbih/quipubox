@@ -3,6 +3,7 @@ import 'package:quipubox/features/organizacion/clientes/data/models/cliente_full
 
 import '../../../../../core/network/api_client.dart';
 import '../models/cliente_model.dart';
+import '../models/cliente_page_model.dart';
 
 class ClienteRemoteDataSource {
   final ApiClient apiClient;
@@ -40,10 +41,32 @@ class ClienteRemoteDataSource {
   }
 
   Future<List<ClienteModel>> getAll() async {
-    final response = await apiClient.get('/clientes');
+    // TODO: Temporal para selectores de carga. Sustituir por consulta por sede y
+    // tipo de relación cuando la API los filtre antes de paginar, sin descargar todos.
+    final response = await apiClient.get('/clientes/all');
 
     return ResponseParser.extractList(
       response,
     ).map(ClienteModel.fromJson).toList();
+  }
+
+  Future<ClientePageModel> getPage({
+    int page = 1,
+    int limit = 10,
+    String buscar = '',
+    bool? estado,
+    String? tipoRelacion,
+  }) async {
+    final response = await apiClient.get(
+      '/clientes',
+      query: {
+        'page': '$page',
+        if (tipoRelacion != null) 'tipo_relacion': tipoRelacion,
+        'limit': '$limit',
+        'estado': estado == null ? 'todos' : '$estado',
+        if (buscar.trim().isNotEmpty) 'buscar': buscar.trim(),
+      },
+    );
+    return ClientePageModel.fromJson(ResponseParser.extractObject(response));
   }
 }

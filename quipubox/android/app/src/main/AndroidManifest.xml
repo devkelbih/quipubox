@@ -3,6 +3,7 @@
 
     <application
         android:label="Quipubox"
+        android:icon="@mipmap/ic_launcher"
         android:name="${applicationName}"
         android:enableOnBackInvokedCallback="true">
 

@@ -145,9 +145,9 @@ class _CargaListScreenState extends State<CargaListScreen> {
     await AppBottomSheet.show<void>(
       context: context,
       title: item == null ? 'Nueva operación' : 'Editar operación',
-      minChildSize: 0.75,
-      initialChildSize: 0.8,
-      maxChildSize: 0.85,
+      minChildSize: 0.70,
+      initialChildSize: 0.75,
+      maxChildSize: 0.8,
       builder: (context, controller) => SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(
@@ -165,20 +165,13 @@ class _CargaListScreenState extends State<CargaListScreen> {
     context.push(AppRoutes.operacionCargaDetailPath(id), extra: item);
   }
 
-  // TODO: Implementar la pantalla/formulario para asignar detalle a la carga
   void _openAsignarCarga(BuildContext context, OperacionCarga item) {
     final id = item.id;
     if (id == null) return;
-
-    // Feedback temporal para saber que el botón funciona
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Próximamente: Asignar carga a la operación #$id'),
-      ),
+    // El detalle abre el formulario y espera su resultado para actualizarse.
+    context.push(
+      '${AppRoutes.operacionCargaDetailPath(id)}?agregarDetalle=true',
+      extra: item,
     );
-
-    // Aquí irá la navegación futura, por ejemplo:
-    // context.push(AppRoutes.operacionCargaAsignarPath(id));
-    // o abrir un AppBottomSheet con el formulario de detalle de carga.
   }
 }

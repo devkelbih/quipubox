@@ -1,6 +1,9 @@
+import '../../domain/entities/detalle_carga.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/response_parser.dart';
 import '../models/detalle_carga_model.dart';
+import '../models/detalle_carga_calidad_model.dart';
+import '../../domain/entities/detalle_carga_calidad.dart';
 import '../models/detalle_carga_request_model.dart';
 import '../models/guia_operacion_carga_model.dart';
 import '../models/operacion_carga_model.dart';
@@ -118,6 +121,65 @@ class OperacionCargaRemoteDataSource {
     return ResponseParser.extractList(
       response,
     ).map(DetalleCargaModel.fromJson).toList();
+  }
+
+  Future<DetalleCargaModel> updateDetalle(DetalleCarga detalle) async {
+    final response = await apiClient.put(
+      '/detalle-carga/${detalle.id}',
+      preserveNulls: true,
+      body: {
+        'id_cliente_emisor': detalle.idClienteEmisor,
+        'id_fruta': detalle.idFruta,
+        'id_variedad': detalle.idVariedad,
+        'id_tipo_jaba': detalle.idTipoJaba,
+        'cantidad_jabas': detalle.cantidadJabas,
+        'instruccion_reparto': detalle.instruccionReparto,
+        'observaciones': detalle.observaciones,
+        'requiere_retorno_jabas': detalle.requiereRetornoJabas,
+      },
+    );
+    return DetalleCargaModel.fromJson(ResponseParser.extractObject(response));
+  }
+
+  Future<DetalleCargaCalidadModel> updateCalidadDetalle(
+    DetalleCargaCalidad calidad,
+  ) async {
+    final response = await apiClient.put(
+      '/detalle-carga/calidades/${calidad.id}',
+      preserveNulls: true,
+      body: {
+        'cantidad': calidad.cantidad,
+        'precio_unitario': calidad.precioUnitario,
+      },
+    );
+    return DetalleCargaCalidadModel.fromJson(
+      ResponseParser.extractObject(response),
+    );
+  }
+
+  Future<void> deleteDetalle(int detalleId) async {
+    await apiClient.delete('/detalle-carga/$detalleId');
+  }
+
+  Future<List<DetalleCargaCalidadModel>> getCalidadesDetalle(
+    int detalleId,
+  ) async {
+    final response = await apiClient.get('/detalle-carga/$detalleId/calidades');
+    return ResponseParser.extractList(
+      response,
+    ).map(DetalleCargaCalidadModel.fromJson).toList();
+  }
+
+  Future<DetalleCargaCalidadModel> addCalidadDetalle(
+    DetalleCargaCalidad calidad,
+  ) async {
+    final response = await apiClient.post(
+      '/detalle-carga/${calidad.idDetalleCarga}/calidades',
+      body: DetalleCargaCalidadModel.toCreateJson(calidad),
+    );
+    return DetalleCargaCalidadModel.fromJson(
+      ResponseParser.extractObject(response),
+    );
   }
 
   Future<List<DetalleCargaModel>> getDetallesRepartoPendientes(
